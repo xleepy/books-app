@@ -17,9 +17,10 @@ interface SwipeableCardProps {
   children: ReactNode;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
+  onTap?: () => void;
 }
 
-export function SwipeableCard({ children, onSwipeLeft, onSwipeRight }: SwipeableCardProps) {
+export function SwipeableCard({ children, onSwipeLeft, onSwipeRight, onTap }: SwipeableCardProps) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
@@ -37,6 +38,14 @@ export function SwipeableCard({ children, onSwipeLeft, onSwipeRight }: Swipeable
     onSwipeRight?.();
     reset();
   };
+
+  const handleTap = () => {
+    onTap?.();
+  };
+
+  const tap = Gesture.Tap().onEnd(() => {
+    runOnJS(handleTap)();
+  });
 
   const pan = Gesture.Pan()
     .onUpdate((e) => {
@@ -58,6 +67,8 @@ export function SwipeableCard({ children, onSwipeLeft, onSwipeRight }: Swipeable
       }
     });
 
+  const composed = Gesture.Race(tap, pan);
+
   const animatedStyle = useAnimatedStyle(() => {
     const rotate = interpolate(translateX.value, [-SCREEN_WIDTH, 0, SCREEN_WIDTH], [-12, 0, 12]);
     const opacity = interpolate(
@@ -76,7 +87,7 @@ export function SwipeableCard({ children, onSwipeLeft, onSwipeRight }: Swipeable
   });
 
   return (
-    <GestureDetector gesture={pan}>
+    <GestureDetector gesture={composed}>
       <Animated.View style={[styles.card, animatedStyle]}>{children}</Animated.View>
     </GestureDetector>
   );

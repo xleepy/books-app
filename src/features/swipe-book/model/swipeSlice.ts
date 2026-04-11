@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { mockBooks } from "@entities/book/mock/books";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface SwipeState {
   currentIndex: number;
@@ -7,11 +8,11 @@ interface SwipeState {
 
 const initialState: SwipeState = {
   currentIndex: 0,
-  totalCards: 0,
+  totalCards: mockBooks.length,
 };
 
 const swipeSlice = createSlice({
-  name: 'swipe',
+  name: "swipe",
   initialState,
   reducers: {
     setTotalCards(state, action: PayloadAction<number>) {

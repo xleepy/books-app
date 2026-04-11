@@ -21,7 +21,7 @@ export function DiscoverScreen() {
         />
       </View>
       <View style={styles.stackArea}>
-        <BookSwipeStack onLike={(book) => navigation.navigate('BookDetail', { bookId: book.id })} />
+        <BookSwipeStack onCardTap={(book) => navigation.navigate('BookDetail', { bookId: book.id })} />
       </View>
     </Screen>
   );

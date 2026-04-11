@@ -33,7 +33,7 @@ export function ActionButton({
     elevation: 4,
   };
   return (
-    <Pressable onPress={onPress} style={[styles.button, style]}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={[styles.button, style]}>
       {children}
     </Pressable>
   );

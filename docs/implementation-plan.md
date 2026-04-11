@@ -4,18 +4,18 @@
 
 ## Tech Stack
 
-| Category   | Choice                                                            | Version  |
-| ---------- | ----------------------------------------------------------------- | -------- |
-| Framework  | React Native (Expo managed workflow, SDK 54)                      | 0.81.5   |
-| Language   | TypeScript (strict mode)                                          | 6.0.2    |
-| React      | React                                                             | 19.2.5   |
-| Navigation | React Navigation (bottom tabs + native stack)                     | 6.x      |
-| State      | Redux Toolkit + RTK Query (prepped for future API)                | 2.11.2   |
-| Animations | react-native-reanimated v4 + react-native-gesture-handler         | 4.1.7    |
-| Worklets   | react-native-worklets (required peer dep for reanimated v4)       | 0.5.1    |
-| Icons      | lucide-react-native                                               | 1.8.0    |
-| Typography | @expo-google-fonts/inter                                          | 0.2.3    |
-| Data       | Static/mock data (UI prototype)                                   | —        |
+| Category   | Choice                                                      | Version |
+| ---------- | ----------------------------------------------------------- | ------- |
+| Framework  | React Native (Expo managed workflow, SDK 54)                | 0.81.5  |
+| Language   | TypeScript (strict mode)                                    | 6.0.2   |
+| React      | React                                                       | 19.2.5  |
+| Navigation | React Navigation (bottom tabs + native stack)               | 6.x     |
+| State      | Redux Toolkit + RTK Query (prepped for future API)          | 2.11.2  |
+| Animations | react-native-reanimated v4 + react-native-gesture-handler   | 4.1.7   |
+| Worklets   | react-native-worklets (required peer dep for reanimated v4) | 0.5.1   |
+| Icons      | lucide-react-native                                         | 1.8.0   |
+| Typography | @expo-google-fonts/inter                                    | 0.2.3   |
+| Data       | Static/mock data (UI prototype)                             | —       |
 
 ### Package pinning
 
@@ -294,30 +294,30 @@ Shared helpers: `pages/_shared/Screen.tsx` (SafeArea + optional ScrollView) and 
 
 ## Decisions
 
-| Decision | Rationale |
-| --- | --- |
-| Expo managed workflow | Avoids native config; reanimated v4 works in managed with worklets peer |
-| Redux Toolkit | Chosen over Zustand to leverage RTK Query for future API integration |
-| Feature-Sliced Design | Pragmatic 6-layer approach (no processes layer) for scalable architecture |
-| Custom tab bar | Pill design requires fully custom `tabBar` component |
-| Swipe via reanimated v4 | `GestureDetector` + `useAnimatedStyle` for 60fps card drag; babel plugin moved to `react-native-worklets/plugin` |
-| Static data only | All content is hardcoded mocks; RTK Query shell prepped but empty |
-| Exact dep pinning | All package.json versions pinned without `^`/`~` for reproducible builds |
-| TypeScript 6 + React 19.2 | Intentionally ahead of Expo SDK 54 recommendations; excluded from `expo install` validation |
-| No `baseUrl` in tsconfig | `baseUrl` deprecated in TypeScript 6; paths prefixed with `./` instead |
-| `pages/_shared` helpers | `Screen.tsx` + `ScreenHeader.tsx` avoid duplication across all 6 screens |
-| Dark mode deferred | `$bg-dark` token exists but not wired in this phase |
+| Decision                  | Rationale                                                                                                        |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Expo managed workflow     | Avoids native config; reanimated v4 works in managed with worklets peer                                          |
+| Redux Toolkit             | Chosen over Zustand to leverage RTK Query for future API integration                                             |
+| Feature-Sliced Design     | Pragmatic 6-layer approach (no processes layer) for scalable architecture                                        |
+| Custom tab bar            | Pill design requires fully custom `tabBar` component                                                             |
+| Swipe via reanimated v4   | `GestureDetector` + `useAnimatedStyle` for 60fps card drag; babel plugin moved to `react-native-worklets/plugin` |
+| Static data only          | All content is hardcoded mocks; RTK Query shell prepped but empty                                                |
+| Exact dep pinning         | All package.json versions pinned without `^`/`~` for reproducible builds                                         |
+| TypeScript 6 + React 19.2 | Intentionally ahead of Expo SDK 54 recommendations; excluded from `expo install` validation                      |
+| No `baseUrl` in tsconfig  | `baseUrl` deprecated in TypeScript 6; paths prefixed with `./` instead                                           |
+| `pages/_shared` helpers   | `Screen.tsx` + `ScreenHeader.tsx` avoid duplication across all 6 screens                                         |
+| Dark mode deferred        | `$bg-dark` token exists but not wired in this phase                                                              |
 
 ## Verification Checklist
 
-- [ ] `npx expo start` boots without errors on iOS and Android
-- [ ] All 4 bottom tabs navigate correctly; active tab matches `$accent` color
-- [ ] Swipe card: drag left dismisses, drag right likes, buttons trigger same
-- [ ] Tapping a card navigates to BookDetail with correct data
-- [ ] "Add to Library" persists book — appears in Library saved grid
-- [ ] All 24 color tokens visually match `design-proposal.pen` variables
-- [ ] Inter font renders in all weight variants (400/500/600/700)
-- [ ] ScrollView screens scroll correctly with no layout overflow
-- [ ] Safe area insets work on devices with notch/Dynamic Island
+- [x] `npx expo start` boots without errors on iOS and Android
+- [x] All 4 bottom tabs navigate correctly; active tab matches `$accent` color
+- [x] Swipe card: drag left dismisses, drag right likes, buttons trigger same
+- [x] Tapping a card navigates to BookDetail with correct data
+- [x] "Add to Library" persists book — appears in Library saved grid
+- [x] All 24 color tokens visually match `design-proposal.pen` variables
+- [x] Inter font renders in all weight variants (400/500/600/700)
+- [x] ScrollView screens scroll correctly with no layout overflow
+- [x] Safe area insets work on devices with notch/Dynamic Island
 - [x] No TypeScript errors (`npx tsc --noEmit`) — TS 6.0.2 clean
 - [x] `npx expo-doctor` — 17/17 checks passed

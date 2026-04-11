@@ -6,7 +6,7 @@ import { mockBooks } from '@entities/book/mock/books';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { addBook } from '@features/add-to-library/model/librarySlice';
-import { nextCard, setTotalCards } from '@features/swipe-book/model/swipeSlice';
+import { nextCard } from '@features/swipe-book/model/swipeSlice';
 import { SwipeableCard } from '@features/swipe-book/ui/SwipeableCard';
 import { SwipeActions } from '@features/swipe-book/ui/SwipeActions';
 import { colors, fontFamily } from '@shared/theme';
@@ -14,15 +14,12 @@ import { RootState } from '@store/store';
 
 interface BookSwipeStackProps {
   onLike?: (book: Book) => void;
+  onCardTap?: (book: Book) => void;
 }
 
-export function BookSwipeStack({ onLike }: BookSwipeStackProps) {
+export function BookSwipeStack({ onLike, onCardTap }: BookSwipeStackProps) {
   const dispatch = useDispatch();
   const currentIndex = useSelector((state: RootState) => state.swipe.currentIndex);
-
-  useEffect(() => {
-    dispatch(setTotalCards(mockBooks.length));
-  }, [dispatch]);
 
   const currentBook = mockBooks[currentIndex];
   const nextBook = mockBooks[(currentIndex + 1) % mockBooks.length];
@@ -49,7 +46,7 @@ export function BookSwipeStack({ onLike }: BookSwipeStackProps) {
           <BookCardContent book={nextBook} />
         </View>
         <View style={styles.cardContainer}>
-          <SwipeableCard onSwipeLeft={handlePass} onSwipeRight={handleLike}>
+          <SwipeableCard onSwipeLeft={handlePass} onSwipeRight={handleLike} onTap={() => onCardTap?.(currentBook)}>
             <BookCardContent book={currentBook} />
           </SwipeableCard>
         </View>
