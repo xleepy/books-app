@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fontFamily } from '@shared/theme';
 import { Avatar } from '@shared/ui';
 
@@ -8,9 +8,10 @@ interface ScreenHeaderProps {
   subtitle?: string;
   rightAction?: ReactNode;
   hue?: number;
+  onAvatarPress?: () => void;
 }
 
-export function ScreenHeader({ title, subtitle, rightAction, hue = 18 }: ScreenHeaderProps) {
+export function ScreenHeader({ title, subtitle, rightAction, hue = 18, onAvatarPress }: ScreenHeaderProps) {
   return (
     <View style={styles.header}>
       <View style={styles.left}>
@@ -19,7 +20,9 @@ export function ScreenHeader({ title, subtitle, rightAction, hue = 18 }: ScreenH
       </View>
       <View style={styles.right}>
         {rightAction}
-        <Avatar initials="JD" size={40} hue={hue} />
+        <Pressable onPress={onAvatarPress} disabled={!onAvatarPress}>
+          <Avatar initials="JD" size={40} hue={hue} />
+        </Pressable>
       </View>
     </View>
   );

@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Trophy } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { mockChallenges, mockLeaderboard } from '@entities/challenge/mock/challenges';
 import { ChallengeCard } from '@entities/challenge/ui/ChallengeCard';
 import { FilterRow } from '@features/filter-list/ui/FilterRow';
@@ -7,8 +9,12 @@ import { LeaderboardSection } from '@widgets/leaderboard/ui/LeaderboardSection';
 import { Screen } from '@pages/_shared/Screen';
 import { colors, fontFamily } from '@shared/theme';
 import { Avatar } from '@shared/ui';
+import { RootStackParamList } from '@app/navigation/types';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function ChallengesScreen() {
+  const navigation = useNavigation<Nav>();
   return (
     <Screen scroll>
       <View style={styles.header}>
@@ -17,7 +23,9 @@ export function ChallengesScreen() {
           <Pressable style={styles.trophyBtn}>
             <Trophy size={20} color={colors.badgeGold} />
           </Pressable>
-          <Avatar initials="JD" size={40} hue={120} />
+          <Pressable onPress={() => navigation.navigate('Progress')}>
+            <Avatar initials="JD" size={40} hue={120} />
+          </Pressable>
         </View>
       </View>
 

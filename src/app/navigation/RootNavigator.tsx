@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookDetailScreen } from '@pages/book-detail/ui/BookDetailScreen';
 import { ProgressScreen } from '@pages/progress/ui/ProgressScreen';
+import { SettingsScreen } from '@pages/settings/ui/SettingsScreen';
 import { TabNavigator } from './TabNavigator';
 import { RootStackParamList } from './types';
 
@@ -12,6 +13,7 @@ export function RootNavigator() {
       <Stack.Screen name="Tabs" component={TabNavigator} />
       <Stack.Screen name="BookDetail" component={BookDetailScreen} />
       <Stack.Screen name="Progress" component={ProgressScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 }

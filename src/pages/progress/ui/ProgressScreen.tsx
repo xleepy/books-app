@@ -1,22 +1,40 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ChevronLeft, Settings } from 'lucide-react-native';
 import { useSelector } from 'react-redux';
 import { LevelCard } from '@widgets/level-card/ui/LevelCard';
 import { StreakCard } from '@widgets/streak-card/ui/StreakCard';
 import { StatsGrid } from '@widgets/stats-grid/ui/StatsGrid';
 import { BadgesRow } from '@widgets/badges-row/ui/BadgesRow';
-import { ScreenHeader } from '@pages/_shared/ScreenHeader';
 import { Screen } from '@pages/_shared/Screen';
 import { colors, fontFamily } from '@shared/theme';
+import { Avatar } from '@shared/ui';
 import { RootState } from '@store/store';
+import { RootStackParamList } from '@app/navigation/types';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function ProgressScreen() {
+  const navigation = useNavigation<Nav>();
   const user = useSelector((state: RootState) => state.user.user);
   const stats = useSelector((state: RootState) => state.user.stats);
 
   return (
     <Screen scroll>
       <View style={styles.headerWrap}>
-        <ScreenHeader title="My Progress" hue={280} />
+        <View style={styles.header}>
+          <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <ChevronLeft size={24} color={colors.fontPrimary} />
+          </Pressable>
+          <Text style={styles.title}>My Progress</Text>
+          <View style={styles.headerRight}>
+            <Pressable onPress={() => navigation.navigate('Settings')}>
+              <Settings size={24} color={colors.fontPrimary} />
+            </Pressable>
+            <Avatar initials="JD" size={40} hue={280} />
+          </View>
+        </View>
       </View>
       <View style={styles.section}>
         <LevelCard user={user} />
@@ -43,6 +61,25 @@ export function ProgressScreen() {
 const styles = StyleSheet.create({
   headerWrap: {
     marginBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backBtn: {
+    marginRight: 8,
+  },
+  title: {
+    fontFamily: fontFamily.bold,
+    fontSize: 28,
+    color: colors.fontPrimary,
+    flex: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   section: {
     marginBottom: 20,

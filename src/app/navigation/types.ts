@@ -2,6 +2,7 @@ export type RootStackParamList = {
   Tabs: undefined;
   BookDetail: { bookId: string };
   Progress: undefined;
+  Settings: undefined;
 };
 
 export type TabParamList = {
