@@ -18,7 +18,6 @@ export function DiscoverScreen() {
         <ScreenHeader
           title="Discover"
           rightAction={<SlidersHorizontal size={24} color={colors.fontSecondary} />}
-          onAvatarPress={() => navigation.navigate('Progress')}
         />
       </View>
       <View style={styles.stackArea}>

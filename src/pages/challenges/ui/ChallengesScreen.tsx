@@ -1,32 +1,25 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Trophy } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { mockChallenges, mockLeaderboard } from '@entities/challenge/mock/challenges';
 import { ChallengeCard } from '@entities/challenge/ui/ChallengeCard';
 import { FilterRow } from '@features/filter-list/ui/FilterRow';
 import { LeaderboardSection } from '@widgets/leaderboard/ui/LeaderboardSection';
 import { Screen } from '@pages/_shared/Screen';
+import { ScreenHeader } from '@pages/_shared/ScreenHeader';
 import { colors, fontFamily } from '@shared/theme';
-import { Avatar } from '@shared/ui';
-import { RootStackParamList } from '@app/navigation/types';
-
-type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function ChallengesScreen() {
-  const navigation = useNavigation<Nav>();
   return (
     <Screen scroll>
-      <View style={styles.header}>
-        <Text style={styles.title}>Challenges</Text>
-        <View style={styles.right}>
-          <Pressable style={styles.trophyBtn}>
-            <Trophy size={20} color={colors.badgeGold} />
-          </Pressable>
-          <Pressable onPress={() => navigation.navigate('Progress')}>
-            <Avatar initials="JD" size={40} hue={120} />
-          </Pressable>
-        </View>
+      <View style={styles.headerWrap}>
+        <ScreenHeader
+          title="Challenges"
+          rightAction={
+            <Pressable style={styles.trophyBtn}>
+              <Trophy size={20} color={colors.badgeGold} />
+            </Pressable>
+          }
+        />
       </View>
 
       <View style={styles.filterWrap}>
@@ -51,21 +44,8 @@ export function ChallengesScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  headerWrap: {
     marginBottom: 20,
-  },
-  title: {
-    fontFamily: fontFamily.bold,
-    fontSize: 28,
-    color: colors.fontPrimary,
-  },
-  right: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
   },
   trophyBtn: {
     width: 40,

@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Star } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { mockBooks } from '@entities/book/mock/books';
 import { BookCover } from '@entities/book/ui/BookCover';
@@ -10,12 +8,8 @@ import { ScreenHeader } from '@pages/_shared/ScreenHeader';
 import { Screen } from '@pages/_shared/Screen';
 import { colors, fontFamily } from '@shared/theme';
 import { RootState } from '@store/store';
-import { RootStackParamList } from '@app/navigation/types';
-
-type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function LibraryScreen() {
-  const navigation = useNavigation<Nav>();
   const savedBooks = useSelector((state: RootState) => state.library.savedBooks);
   const totalBooks = savedBooks.length + 11 + 12;
 
@@ -25,8 +19,6 @@ export function LibraryScreen() {
         <ScreenHeader
           title="My Library"
           subtitle={`${totalBooks} books collected`}
-          hue={45}
-          onAvatarPress={() => navigation.navigate('Progress')}
         />
       </View>
 

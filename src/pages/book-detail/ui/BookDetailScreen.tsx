@@ -8,9 +8,10 @@ import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { addBook } from '@features/add-to-library/model/librarySlice';
 import { AddToLibraryButton } from '@features/add-to-library/ui/AddToLibraryButton';
+import { UserAvatar } from '@features/user-avatar';
 import { ReviewSection } from '@widgets/review-section/ui/ReviewSection';
 import { colors, fontFamily } from '@shared/theme';
-import { Avatar, Separator, StarRating } from '@shared/ui';
+import { Separator, StarRating } from '@shared/ui';
 import { RootStackParamList } from '@app/navigation/types';
 
 type Route = RouteProp<RootStackParamList, 'BookDetail'>;
@@ -38,7 +39,7 @@ export function BookDetailScreen() {
             <ChevronLeft size={24} color={colors.fontPrimary} />
             <Text style={styles.navTitle}>{book.title}</Text>
           </Pressable>
-          <Avatar initials="JD" size={36} hue={200} />
+          <UserAvatar size={36} />
         </View>
 
         <View style={styles.coverWrap}>

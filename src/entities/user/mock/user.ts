@@ -2,7 +2,8 @@ import { ReadingStats, User } from '../model/types';
 
 export const mockUser: User = {
   id: 'user-1',
-  name: 'You',
+  name: 'Jane Doe',
+  avatarHue: 280,
   level: 12,
   levelTitle: 'Bookworm',
   xpCurrent: 2450,

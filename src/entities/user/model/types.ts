@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   name: string;
+  avatarHue: number;
   level: number;
   levelTitle: string;
   xpCurrent: number;
