@@ -12,7 +12,7 @@ export function ThreadCard({ thread }: ThreadCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.top}>
-        <BookCover cover={thread.cover} width={48} height={68} radius={6} shadow={false} />
+        <BookCover coverUrl={thread.coverUrl} width={48} height={68} radius={6} shadow={false} />
         <View style={styles.info}>
           <Text style={styles.title} numberOfLines={2}>
             {thread.title}

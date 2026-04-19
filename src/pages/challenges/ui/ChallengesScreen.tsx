@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Trophy } from 'lucide-react-native';
-import { mockChallenges, mockLeaderboard } from '@entities/challenge/mock/challenges';
+import { useGetChallengesQuery } from '@store/api/challengesApi.generated';
+import { useGetChallengesByIdLeaderboardQuery } from '@store/api/challengesApi.generated';
 import { ChallengeCard } from '@entities/challenge/ui/ChallengeCard';
 import { FilterRow } from '@features/filter-list/ui/FilterRow';
 import { LeaderboardSection } from '@widgets/leaderboard/ui/LeaderboardSection';
@@ -9,6 +10,16 @@ import { ScreenHeader } from '@pages/_shared/ScreenHeader';
 import { colors, fontFamily } from '@shared/theme';
 
 export function ChallengesScreen() {
+  const { data: challengesData, isLoading: challengesLoading } = useGetChallengesQuery();
+  const challenges = challengesData?.data ?? [];
+  const firstChallengeId = challenges[0]?.id;
+
+  const { data: leaderboardData } = useGetChallengesByIdLeaderboardQuery(
+    { id: firstChallengeId! },
+    { skip: !firstChallengeId }
+  );
+  const leaderboard = leaderboardData?.data ?? [];
+
   return (
     <Screen scroll>
       <View style={styles.headerWrap}>
@@ -31,14 +42,18 @@ export function ChallengesScreen() {
           <Text style={styles.sectionTitle}>Active Challenges</Text>
           <Text style={styles.seeAll}>See all</Text>
         </View>
-        <View style={styles.list}>
-          {mockChallenges.map((challenge) => (
-            <ChallengeCard key={challenge.id} challenge={challenge} />
-          ))}
-        </View>
+        {challengesLoading ? (
+          <ActivityIndicator color={colors.accent} />
+        ) : (
+          <View style={styles.list}>
+            {challenges.map((challenge) => (
+              <ChallengeCard key={challenge.id} challenge={challenge} />
+            ))}
+          </View>
+        )}
       </View>
 
-      <LeaderboardSection entries={mockLeaderboard} />
+      <LeaderboardSection entries={leaderboard} />
     </Screen>
   );
 }

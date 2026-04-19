@@ -1,67 +1,80 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Star } from 'lucide-react-native';
-import { useSelector } from 'react-redux';
-import { mockBooks } from '@entities/book/mock/books';
+import { useGetLibraryQuery, useGetLibraryStatsQuery } from '@store/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { ReadingCard } from '@widgets/reading-card/ui/ReadingCard';
 import { ScreenHeader } from '@pages/_shared/ScreenHeader';
 import { Screen } from '@pages/_shared/Screen';
 import { colors, fontFamily } from '@shared/theme';
-import { RootState } from '@store/store';
+
+function formatTimeLeft(minutes: number | null | undefined): string {
+  if (!minutes) return '—';
+  if (minutes < 60) return `${minutes}m left`;
+  return `${Math.round(minutes / 60)}h left`;
+}
 
 export function LibraryScreen() {
-  const savedBooks = useSelector((state: RootState) => state.library.savedBooks);
-  const totalBooks = savedBooks.length + 11 + 12;
+  const { data, isLoading } = useGetLibraryQuery({});
+  const { data: stats } = useGetLibraryStatsQuery();
+  const savedBooks = data?.data ?? [];
+  const totalBooks = data?.pagination.total ?? 0;
+  const currentBook = savedBooks.find((b) => b.isCurrent) ?? savedBooks.find((b) => b.status === 'reading');
 
   return (
     <Screen scroll>
       <View style={styles.headerWrap}>
         <ScreenHeader
           title="My Library"
-          subtitle={`${totalBooks} books collected`}
+          subtitle={totalBooks ? `${totalBooks} books collected` : 'Your collection'}
         />
       </View>
 
       <View style={styles.statsRow}>
-        <StatTile value="12" label="Finished" highlight />
-        <StatTile value="3" label="Reading" />
-        <StatTile value={String(savedBooks.length)} label="Wishlist" />
+        <StatTile value={stats ? String(stats.finished) : '—'} label="Finished" highlight />
+        <StatTile value={stats ? String(stats.reading) : '—'} label="Reading" />
+        <StatTile value={stats ? String(stats.saved) : '—'} label="Saved" />
       </View>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Currently Reading</Text>
-          <Text style={styles.seeAll}>See all</Text>
+      {currentBook && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Currently Reading</Text>
+            <Text style={styles.seeAll}>See all</Text>
+          </View>
+          <ReadingCard
+            title={currentBook.title}
+            author={currentBook.author}
+            coverUrl={currentBook.coverUrl}
+            progress={currentBook.progressPct / 100}
+            timeLeft={formatTimeLeft(currentBook.timeLeftMin)}
+          />
         </View>
-        <ReadingCard
-          cover="cover3"
-          title="Atomic Habits"
-          author="James Clear"
-          progress={0.68}
-          timeLeft="4h left"
-        />
-      </View>
+      )}
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Saved Books</Text>
           <Text style={styles.seeAll}>See all</Text>
         </View>
-        <View style={styles.grid}>
-          {(savedBooks.length ? savedBooks : mockBooks).slice(0, 4).map((book) => (
-            <View key={book.id} style={styles.bookTile}>
-              <BookCover cover={book.cover} height={140} radius={10} />
-              <Text style={styles.bookTitle} numberOfLines={1}>
-                {book.title}
-              </Text>
-              <Text style={styles.bookAuthor}>{book.author}</Text>
-              <View style={styles.bookRating}>
-                <Star size={12} color={colors.starGold} fill={colors.starGold} />
-                <Text style={styles.ratingText}>{book.rating}</Text>
+        {isLoading ? (
+          <ActivityIndicator color={colors.accent} />
+        ) : (
+          <View style={styles.grid}>
+            {savedBooks.slice(0, 4).map((book) => (
+              <View key={book.id} style={styles.bookTile}>
+                <BookCover coverUrl={book.coverUrl} height={140} radius={10} />
+                <Text style={styles.bookTitle} numberOfLines={1}>
+                  {book.title}
+                </Text>
+                <Text style={styles.bookAuthor}>{book.author}</Text>
+                <View style={styles.bookRating}>
+                  <Star size={12} color={colors.starGold} fill={colors.starGold} />
+                  <Text style={styles.ratingText}>{book.rating}</Text>
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
       </View>
     </Screen>
   );

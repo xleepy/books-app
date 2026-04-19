@@ -29,7 +29,8 @@ The card occupies the full content area below the header. Three action buttons s
 |--------|---------|--------|
 | `nextCard` | — | Advance index; wraps back to `0` at the end of the deck |
 | `resetDeck` | — | Reset `currentIndex` to `0` |
-| `setTotalCards` | `number` | Update deck size (e.g. after a data fetch) |
+
+`totalCards` is set automatically via `extraReducers` when the `getBooks` RTK Query fulfills — no manual dispatch needed.
 
 ## UI Components
 

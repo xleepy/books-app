@@ -1,23 +1,22 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { BookOpen } from 'lucide-react-native';
 import { BookCover } from '@entities/book/ui/BookCover';
-import { BookCoverKey } from '@shared/assets/images';
 import { colors, fontFamily } from '@shared/theme';
 import { ProgressBar } from '@shared/ui';
 
 interface ReadingCardProps {
-  cover: BookCoverKey;
+  coverUrl?: string | null;
   title: string;
   author: string;
   progress: number;
   timeLeft: string;
 }
 
-export function ReadingCard({ cover, title, author, progress, timeLeft }: ReadingCardProps) {
+export function ReadingCard({ coverUrl, title, author, progress, timeLeft }: ReadingCardProps) {
   const pct = Math.round(progress * 100);
   return (
     <View style={styles.card}>
-      <BookCover cover={cover} width={72} height={108} radius={8} shadow={false} />
+      <BookCover coverUrl={coverUrl} width={72} height={108} radius={8} shadow={false} />
       <View style={styles.info}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.author}>{author}</Text>

@@ -1,5 +1,5 @@
-import { mockBooks } from "@entities/book/mock/books";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { booksApi } from "@store/api/booksApi.generated";
 
 interface SwipeState {
   currentIndex: number;
@@ -8,16 +8,13 @@ interface SwipeState {
 
 const initialState: SwipeState = {
   currentIndex: 0,
-  totalCards: mockBooks.length,
+  totalCards: 0,
 };
 
 const swipeSlice = createSlice({
   name: "swipe",
   initialState,
   reducers: {
-    setTotalCards(state, action: PayloadAction<number>) {
-      state.totalCards = action.payload;
-    },
     nextCard(state) {
       if (state.currentIndex < state.totalCards - 1) {
         state.currentIndex += 1;
@@ -29,7 +26,15 @@ const swipeSlice = createSlice({
       state.currentIndex = 0;
     },
   },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      booksApi.endpoints.getBooks.matchFulfilled,
+      (state, action) => {
+        state.totalCards = action.payload.data.length;
+      }
+    );
+  },
 });
 
-export const { nextCard, resetDeck, setTotalCards } = swipeSlice.actions;
+export const { nextCard, resetDeck } = swipeSlice.actions;
 export const swipeReducer = swipeSlice.reducer;

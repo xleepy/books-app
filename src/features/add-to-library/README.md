@@ -8,20 +8,14 @@ Corresponds to the `stkBtn` / `stk` frame in the **Book Detail - Reviews** scree
 
 The button is full-width, accent-coloured, and has a soft accent-tinted drop shadow. It shows a `+` (Plus) icon followed by the label "Add to Library".
 
-## State — `librarySlice`
+## API
 
-**File:** [model/librarySlice.ts](model/librarySlice.ts)
+Saving and removing books is handled via RTK Query mutations from `libraryApi.generated.ts`. There is no local Redux state for saved books — the backend is the source of truth.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `savedBooks` | `Book[]` | The user's saved book collection |
-
-### Actions
-
-| Action | Payload | Effect |
-|--------|---------|--------|
-| `addBook` | `Book` | Appends the book if it is not already saved (deduplication by `id`) |
-| `removeBook` | `string` (book id) | Removes the book with the given id |
+| Hook | Effect |
+|------|--------|
+| `usePostLibraryByBookIdMutation` | Add a book to the library; invalidates the `Library` cache tag so `LibraryScreen` auto-refetches |
+| `useDeleteLibraryByBookIdMutation` | Remove a book from the library; same cache invalidation |
 
 ## UI Component — `AddToLibraryButton`
 

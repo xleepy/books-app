@@ -1,12 +1,11 @@
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ChevronLeft } from 'lucide-react-native';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { mockBooks } from '@entities/book/mock/books';
+import { useGetBooksByIdQuery } from '@store/api/booksApi.generated';
+import { usePostLibraryByBookIdMutation } from '@store/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
-import { addBook } from '@features/add-to-library/model/librarySlice';
 import { AddToLibraryButton } from '@features/add-to-library/ui/AddToLibraryButton';
 import { UserAvatar } from '@features/user-avatar';
 import { ReviewSection } from '@widgets/review-section/ui/ReviewSection';
@@ -19,10 +18,22 @@ type Route = RouteProp<RootStackParamList, 'BookDetail'>;
 export function BookDetailScreen() {
   const navigation = useNavigation();
   const route = useRoute<Route>();
-  const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
 
-  const book = mockBooks.find((b) => b.id === route.params.bookId) ?? mockBooks[0];
+  const { data: book, isLoading } = useGetBooksByIdQuery({ id: route.params.bookId });
+  const [addToLibrary] = usePostLibraryByBookIdMutation();
+
+  if (isLoading || !book) {
+    return (
+      <View style={[styles.root, styles.centered]}>
+        {isLoading ? (
+          <ActivityIndicator color={colors.accent} size="large" />
+        ) : (
+          <Text style={styles.errorText}>Book not found</Text>
+        )}
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -43,7 +54,7 @@ export function BookDetailScreen() {
         </View>
 
         <View style={styles.coverWrap}>
-          <BookCover cover={book.cover} width={180} height={260} radius={12} />
+          <BookCover coverUrl={book.coverUrl} width={180} height={260} radius={12} />
         </View>
 
         <View style={styles.info}>
@@ -54,24 +65,19 @@ export function BookDetailScreen() {
           </View>
         </View>
 
-        <Text style={styles.synopsis}>
-          Between life and death there is a library, and within that library, the shelves go on
-          forever. Every book provides a chance to try another life you could have lived. To see
-          how things would be if you had made other choices... Would you have done anything
-          different, if you had the chance to undo your regrets?
-        </Text>
+        <Text style={styles.synopsis}>{book.description}</Text>
 
         <View style={styles.separatorWrap}>
           <Separator />
         </View>
 
-        <ReviewSection rating={book.rating} reviewCount={book.reviewCount} />
+        <ReviewSection bookId={book.id} rating={book.rating} reviewCount={book.reviewCount} />
       </ScrollView>
 
       <View style={[styles.cta, { paddingBottom: insets.bottom + 12 }]}>
         <AddToLibraryButton
           onPress={() => {
-            dispatch(addBook(book));
+            addToLibrary({ bookId: book.id });
             navigation.goBack();
           }}
         />
@@ -84,6 +90,15 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontFamily: fontFamily.medium,
+    fontSize: 16,
+    color: colors.fontSecondary,
   },
   nav: {
     flexDirection: 'row',

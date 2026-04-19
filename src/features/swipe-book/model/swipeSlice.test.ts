@@ -1,4 +1,4 @@
-import { swipeReducer, nextCard, resetDeck, setTotalCards } from './swipeSlice';
+import { swipeReducer, nextCard, resetDeck } from './swipeSlice';
 
 // Use explicit state so tests are independent of the real mockBooks initial state
 const state = (currentIndex: number, totalCards: number) => ({ currentIndex, totalCards });
@@ -42,17 +42,4 @@ describe('swipeSlice', () => {
     });
   });
 
-  describe('setTotalCards', () => {
-    it('updates totalCards', () => {
-      expect(swipeReducer(state(0, 4), setTotalCards(10)).totalCards).toBe(10);
-    });
-
-    it('does not change currentIndex', () => {
-      expect(swipeReducer(state(2, 4), setTotalCards(10)).currentIndex).toBe(2);
-    });
-
-    it('can set totalCards to 0', () => {
-      expect(swipeReducer(state(0, 4), setTotalCards(0)).totalCards).toBe(0);
-    });
-  });
 });

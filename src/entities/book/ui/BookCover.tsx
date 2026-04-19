@@ -1,9 +1,9 @@
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
-import { bookCovers, BookCoverKey } from '@shared/assets/images';
+import { BookOpen } from 'lucide-react-native';
 import { colors } from '@shared/theme';
 
 interface BookCoverProps {
-  cover: BookCoverKey;
+  coverUrl?: string | null;
   width?: number | `${number}%`;
   height?: number;
   radius?: number;
@@ -12,7 +12,7 @@ interface BookCoverProps {
 }
 
 export function BookCover({
-  cover,
+  coverUrl,
   width = '100%',
   height = 260,
   radius = 12,
@@ -28,11 +28,17 @@ export function BookCover({
         style,
       ]}
     >
-      <Image
-        source={bookCovers[cover]}
-        style={[styles.image as ImageStyle, { borderRadius: radius }]}
-        resizeMode="cover"
-      />
+      {coverUrl ? (
+        <Image
+          source={{ uri: coverUrl }}
+          style={[styles.image as ImageStyle, { borderRadius: radius }]}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={[styles.placeholder, { borderRadius: radius }]}>
+          <BookOpen size={32} color={colors.fontTertiary} />
+        </View>
+      )}
     </View>
   );
 }
@@ -45,6 +51,11 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  placeholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   shadow: {
     shadowColor: '#1A161420',

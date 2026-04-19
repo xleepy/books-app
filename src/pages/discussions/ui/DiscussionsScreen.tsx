@@ -1,12 +1,15 @@
 import { Plus, Search } from 'lucide-react-native';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ThreadCard } from '@entities/discussion/ui/ThreadCard';
-import { mockThreads } from '@entities/discussion/mock/discussions';
+import { useGetDiscussionsQuery } from '@store/api/discussionsApi.generated';
 import { FilterRow } from '@features/filter-list/ui/FilterRow';
 import { Screen } from '@pages/_shared/Screen';
 import { colors, fontFamily } from '@shared/theme';
 
 export function DiscussionsScreen() {
+  const { data, isLoading } = useGetDiscussionsQuery({});
+  const threads = data?.data ?? [];
+
   return (
     <Screen scroll>
       <View style={styles.header}>
@@ -26,11 +29,15 @@ export function DiscussionsScreen() {
       <View style={styles.filterWrap}>
         <FilterRow filters={['All', 'Popular', 'Recent', 'My Threads']} />
       </View>
-      <View style={styles.list}>
-        {mockThreads.map((thread) => (
-          <ThreadCard key={thread.id} thread={thread} />
-        ))}
-      </View>
+      {isLoading ? (
+        <ActivityIndicator color={colors.accent} style={styles.loader} />
+      ) : (
+        <View style={styles.list}>
+          {threads.map((thread) => (
+            <ThreadCard key={thread.id} thread={thread} />
+          ))}
+        </View>
+      )}
     </Screen>
   );
 }
@@ -73,6 +80,9 @@ const styles = StyleSheet.create({
   },
   filterWrap: {
     marginBottom: 20,
+  },
+  loader: {
+    marginTop: 40,
   },
   list: {
     gap: 12,

@@ -1,15 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { ReviewCard } from '@entities/review/ui/ReviewCard';
-import { mockReviews } from '@entities/review/mock/reviews';
+import { useGetBooksByIdReviewsQuery } from '@store/api/reviewsApi.generated';
 import { colors, fontFamily } from '@shared/theme';
 import { StarRating } from '@shared/ui';
 
 interface ReviewSectionProps {
+  bookId: string;
   rating: number;
   reviewCount: number;
 }
 
-export function ReviewSection({ rating, reviewCount }: ReviewSectionProps) {
+export function ReviewSection({ bookId, rating, reviewCount }: ReviewSectionProps) {
+  const { data, isLoading } = useGetBooksByIdReviewsQuery({ id: bookId });
+  const reviews = data?.data ?? [];
+
   return (
     <View style={styles.wrap}>
       <View style={styles.header}>
@@ -23,11 +27,15 @@ export function ReviewSection({ rating, reviewCount }: ReviewSectionProps) {
           <Text style={styles.summaryText}>Based on {reviewCount} reviews</Text>
         </View>
       </View>
-      <View style={styles.list}>
-        {mockReviews.map((review) => (
-          <ReviewCard key={review.id} review={review} />
-        ))}
-      </View>
+      {isLoading ? (
+        <ActivityIndicator color={colors.accent} />
+      ) : (
+        <View style={styles.list}>
+          {reviews.map((review) => (
+            <ReviewCard key={review.id} review={review} />
+          ))}
+        </View>
+      )}
     </View>
   );
 }

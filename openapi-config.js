@@ -18,7 +18,7 @@ const config = {
     },
     "./src/store/api/libraryApi.generated.ts": {
       exportName: "libraryApi",
-      filterEndpoints: ["getLibrary", "postLibraryByBookId", "deleteLibraryByBookId"],
+      filterEndpoints: ["getLibraryStats", "getLibrary", "postLibraryByBookId", "deleteLibraryByBookId"],
     },
     "./src/store/api/swipesApi.generated.ts": {
       exportName: "swipesApi",

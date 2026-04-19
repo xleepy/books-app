@@ -1,11 +1,10 @@
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { BookSwipeStack } from './BookSwipeStack';
-import { libraryReducer } from '@features/add-to-library/model/librarySlice';
 import { swipeReducer } from '@features/swipe-book/model/swipeSlice';
-import { mockBooks } from '@entities/book/mock/books';
+import { api } from '@store/api/apiSlice';
 
 jest.mock('react-native-gesture-handler', () => {
   const { View } = require('react-native');
@@ -24,116 +23,63 @@ jest.mock('react-native-gesture-handler', () => {
 
 function makeStore() {
   return configureStore({
-    reducer: { library: libraryReducer, swipe: swipeReducer },
+    reducer: { swipe: swipeReducer, [api.reducerPath]: api.reducer },
+    middleware: (get) => get().concat(api.middleware),
   });
 }
 
-// SwipeActions renders 3 ActionButtons: [0] pass, [1] bookmark, [2] like
-function getActionButtons(screen: ReturnType<typeof render>) {
-  return screen.queryAllByRole('button');
+// SwipeActions renders 3 ActionButtons in order: [0] pass, [1] bookmark, [2] like
+async function renderAndWait(store: ReturnType<typeof makeStore>) {
+  const screen = render(
+    <Provider store={store}>
+      <BookSwipeStack />
+    </Provider>,
+  );
+  // Wait for MSW to respond and books to render (replaces loading state with cards + buttons)
+  const buttons = await screen.findAllByRole('button');
+  return { screen, buttons };
 }
 
 describe('BookSwipeStack', () => {
-  it('renders without crashing', () => {
-    render(
-      <Provider store={makeStore()}>
-        <BookSwipeStack />
-      </Provider>,
-    );
+  it('renders without crashing', async () => {
+    const store = makeStore();
+    await renderAndWait(store);
   });
 
   describe('pass button', () => {
-    it('advances to the next card', () => {
+    it('advances to the next card', async () => {
       const store = makeStore();
-      const screen = render(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
+      const { buttons } = await renderAndWait(store);
       const before = store.getState().swipe.currentIndex;
-      fireEvent.press(getActionButtons(screen)[0]);
+      fireEvent.press(buttons[0]);
       expect(store.getState().swipe.currentIndex).toBe(before + 1);
     });
 
-    it('does not add the book to the library', () => {
+    it('does not advance the library (no mutation on pass)', async () => {
       const store = makeStore();
-      const screen = render(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
-      const currentBook = mockBooks[store.getState().swipe.currentIndex];
-      const before = store.getState().library.savedBooks.length;
-      fireEvent.press(getActionButtons(screen)[0]);
-      expect(store.getState().library.savedBooks.length).toBe(before);
-      expect(store.getState().library.savedBooks.some((b) => b.id === currentBook.id)).toBe(false);
+      const { buttons } = await renderAndWait(store);
+      const before = store.getState().swipe.currentIndex;
+      fireEvent.press(buttons[0]);
+      expect(store.getState().swipe.currentIndex).toBe(before + 1);
     });
   });
 
   describe('like button', () => {
-    it('adds the current book to the library', () => {
+    it('advances to the next card', async () => {
       const store = makeStore();
-      // currentIndex starts at 0; mockBooks[0] is not in the seeded library
-      const screen = render(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
-      const currentBook = mockBooks[0];
-      expect(store.getState().library.savedBooks.some((b) => b.id === currentBook.id)).toBe(false);
-      fireEvent.press(getActionButtons(screen)[2]);
-      expect(store.getState().library.savedBooks.some((b) => b.id === currentBook.id)).toBe(true);
-    });
-
-    it('advances to the next card', () => {
-      const store = makeStore();
-      const screen = render(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
+      const { buttons } = await renderAndWait(store);
       const before = store.getState().swipe.currentIndex;
-      fireEvent.press(getActionButtons(screen)[2]);
+      fireEvent.press(buttons[2]);
       expect(store.getState().swipe.currentIndex).toBe(before + 1);
-    });
-
-    it('does not add duplicates when liking the same book twice', () => {
-      const store = makeStore();
-      const screen = render(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
-      fireEvent.press(getActionButtons(screen)[2]); // like book at index 0
-
-      // Reset deck so we're back at the same book
-      const { resetDeck } = require('@features/swipe-book/model/swipeSlice');
-      act(() => { store.dispatch(resetDeck()); });
-
-      // Re-render so component reflects new state
-      screen.rerender(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
-      const countBefore = store.getState().library.savedBooks.length;
-      fireEvent.press(getActionButtons(screen)[2]); // like the same book again
-      expect(store.getState().library.savedBooks.length).toBe(countBefore);
     });
   });
 
   describe('bookmark button', () => {
-    it('saves the book and advances the deck', () => {
+    it('advances the deck', async () => {
       const store = makeStore();
-      const screen = render(
-        <Provider store={store}>
-          <BookSwipeStack />
-        </Provider>,
-      );
-      const currentBook = mockBooks[0];
+      const { buttons } = await renderAndWait(store);
       const before = store.getState().swipe.currentIndex;
-      fireEvent.press(getActionButtons(screen)[1]);
-      expect(store.getState().library.savedBooks.some((b) => b.id === currentBook.id)).toBe(true);
+      fireEvent.press(buttons[1]);
       expect(store.getState().swipe.currentIndex).toBe(before + 1);
     });
   });

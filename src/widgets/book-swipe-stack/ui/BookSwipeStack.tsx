@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Book } from '@entities/book/model/types';
-import { mockBooks } from '@entities/book/mock/books';
+import { Book } from '@store/api/booksApi.generated';
+import { useGetBooksQuery } from '@store/api/booksApi.generated';
+import { usePostLibraryByBookIdMutation } from '@store/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
-import { addBook } from '@features/add-to-library/model/librarySlice';
 import { nextCard } from '@features/swipe-book/model/swipeSlice';
 import { SwipeableCard } from '@features/swipe-book/ui/SwipeableCard';
 import { SwipeActions } from '@features/swipe-book/ui/SwipeActions';
@@ -20,33 +20,58 @@ interface BookSwipeStackProps {
 export function BookSwipeStack({ onLike, onCardTap }: BookSwipeStackProps) {
   const dispatch = useDispatch();
   const currentIndex = useSelector((state: RootState) => state.swipe.currentIndex);
+  const { data, isLoading } = useGetBooksQuery({});
+  const [addToLibrary] = usePostLibraryByBookIdMutation();
+  const books = data?.data ?? [];
 
-  const currentBook = mockBooks[currentIndex];
-  const nextBook = mockBooks[(currentIndex + 1) % mockBooks.length];
+  const currentBook = books[currentIndex];
+  const nextBook = books[(currentIndex + 1) % Math.max(books.length, 1)];
 
-  const handlePass = useCallback(() => {
-    dispatch(nextCard());
-  }, [dispatch]);
+  const handlePass = useCallback(() => dispatch(nextCard()), [dispatch]);
 
   const handleBookmark = useCallback(() => {
-    dispatch(addBook(currentBook));
+    if (!currentBook) return;
+    addToLibrary({ bookId: currentBook.id });
     dispatch(nextCard());
-  }, [dispatch, currentBook]);
+  }, [addToLibrary, dispatch, currentBook]);
 
   const handleLike = useCallback(() => {
-    dispatch(addBook(currentBook));
+    if (!currentBook) return;
+    addToLibrary({ bookId: currentBook.id });
     onLike?.(currentBook);
     dispatch(nextCard());
-  }, [dispatch, currentBook, onLike]);
+  }, [addToLibrary, dispatch, currentBook, onLike]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator color={colors.accent} size="large" />
+      </View>
+    );
+  }
+
+  if (!currentBook) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.emptyText}>No books to discover</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.wrap}>
       <View style={styles.cardArea}>
-        <View style={[styles.cardContainer, styles.behind]}>
-          <BookCardContent book={nextBook} />
-        </View>
+        {nextBook && (
+          <View style={[styles.cardContainer, styles.behind]}>
+            <BookCardContent book={nextBook} />
+          </View>
+        )}
         <View style={styles.cardContainer}>
-          <SwipeableCard onSwipeLeft={handlePass} onSwipeRight={handleLike} onTap={() => onCardTap?.(currentBook)}>
+          <SwipeableCard
+            onSwipeLeft={handlePass}
+            onSwipeRight={handleLike}
+            onTap={() => onCardTap?.(currentBook)}
+          >
             <BookCardContent book={currentBook} />
           </SwipeableCard>
         </View>
@@ -59,7 +84,7 @@ export function BookSwipeStack({ onLike, onCardTap }: BookSwipeStackProps) {
 function BookCardContent({ book }: { book: Book }) {
   return (
     <View style={styles.card}>
-      <BookCover cover={book.cover} height={260} radius={0} shadow={false} />
+      <BookCover coverUrl={book.coverUrl} height={260} radius={0} shadow={false} />
       <View style={styles.cardBody}>
         <BookMeta book={book} />
         <Text style={styles.description}>{book.description}</Text>
@@ -69,6 +94,16 @@ function BookCardContent({ book }: { book: Book }) {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontFamily: fontFamily.medium,
+    fontSize: 16,
+    color: colors.fontSecondary,
+  },
   wrap: {
     flex: 1,
     gap: 20,

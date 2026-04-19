@@ -1,6 +1,13 @@
 import { api } from "./apiSlice";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getLibraryStats: build.query<
+      GetLibraryStatsApiResponse,
+      GetLibraryStatsApiArg
+    >({
+      query: () => ({ url: `/library/stats` }),
+      providesTags: ["Library"],
+    }),
     getLibrary: build.query<GetLibraryApiResponse, GetLibraryApiArg>({
       query: (queryArg) => ({
         url: `/library`,
@@ -9,6 +16,7 @@ const injectedRtkApi = api.injectEndpoints({
           limit: queryArg.limit,
         },
       }),
+      providesTags: ["Library"],
     }),
     postLibraryByBookId: build.mutation<
       PostLibraryByBookIdApiResponse,
@@ -18,6 +26,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/library/${queryArg.bookId}`,
         method: "POST",
       }),
+      invalidatesTags: ["Library"],
     }),
     deleteLibraryByBookId: build.mutation<
       DeleteLibraryByBookIdApiResponse,
@@ -27,13 +36,17 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/library/${queryArg.bookId}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Library"],
     }),
   }),
   overrideExisting: false,
 });
 export { injectedRtkApi as libraryApi };
+export type GetLibraryStatsApiResponse =
+  /** status 200 Default Response */ LibraryStats;
+export type GetLibraryStatsApiArg = void;
 export type GetLibraryApiResponse = /** status 200 Default Response */ {
-  data: Book[];
+  data: LibraryBook[];
   pagination: Pagination;
 };
 export type GetLibraryApiArg = {
@@ -48,7 +61,16 @@ export type DeleteLibraryByBookIdApiResponse = unknown;
 export type DeleteLibraryByBookIdApiArg = {
   bookId: string;
 };
-export type Book = {
+export type LibraryStats = {
+  finished: number;
+  reading: number;
+  saved: number;
+};
+export type ApiError = {
+  error: string;
+  message: string;
+};
+export type LibraryBook = {
   id: string;
   title: string;
   author: string;
@@ -57,17 +79,19 @@ export type Book = {
   description: string;
   rating: number;
   reviewCount: number;
+  status: "saved" | "reading" | "finished";
+  isCurrent: boolean;
+  progressPct: number;
+  timeLeftMin?: number | null;
 };
 export type Pagination = {
   total: number;
   page: number;
   limit: number;
 };
-export type ApiError = {
-  error: string;
-  message: string;
-};
 export const {
+  useGetLibraryStatsQuery,
+  useLazyGetLibraryStatsQuery,
   useGetLibraryQuery,
   useLazyGetLibraryQuery,
   usePostLibraryByBookIdMutation,

@@ -7,7 +7,7 @@ export const mockThreads: Thread[] = [
     bookContext: '1984 · George Orwell',
     preview:
       'I just finished re-reading this and the parallels to modern surveillance are striking. What do you all think about...',
-    cover: 'cover1',
+    coverUrl: '',
     replies: 24,
     likes: 18,
     timeAgo: '2h ago',
@@ -18,7 +18,7 @@ export const mockThreads: Thread[] = [
     bookContext: 'General · Fantasy',
     preview:
       'My friend wants to get into fantasy but finds LOTR too dense. Any suggestions for lighter entry points?',
-    cover: 'cover2',
+    coverUrl: '',
     replies: 42,
     likes: 37,
     timeAgo: '5h ago',
@@ -30,7 +30,7 @@ export const mockThreads: Thread[] = [
     bookContext: 'Project Hail Mary · Andy Weir',
     preview:
       "Can we talk about Rocky? That friendship arc was the most emotional thing I've read in years...",
-    cover: 'cover3',
+    coverUrl: '',
     replies: 56,
     likes: 45,
     timeAgo: '1d ago',
@@ -42,7 +42,7 @@ export const mockThreads: Thread[] = [
     bookContext: 'General · Open Thread',
     preview:
       "Drop your current reads below — looking for something cozy to start before Sunday morning coffee.",
-    cover: 'cover4',
+    coverUrl: '',
     replies: 31,
     likes: 22,
     timeAgo: '2d ago',
