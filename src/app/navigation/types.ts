@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   Tabs: undefined;
-  BookDetail: { bookId: string };
+  BookDetail: { bookId: string; libraryStatus?: 'want' | 'reading' | 'finished' };
+  LibraryList: { initialStatus?: 'want' | 'reading' | 'finished' };
   Progress: undefined;
   Settings: undefined;
 };

@@ -3,6 +3,7 @@
     "name": "Books App",
     "slug": "books-app",
     "version": "1.0.0",
+    "scheme": "booksapp",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "splash": {
@@ -10,7 +11,8 @@
       "backgroundColor": "#FDFAF6"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +23,10 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-apple-authentication"
     ]
   }
 }

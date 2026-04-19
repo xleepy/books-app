@@ -1,11 +1,16 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Star } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useGetLibraryQuery, useGetLibraryStatsQuery } from '@store/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { ReadingCard } from '@widgets/reading-card/ui/ReadingCard';
 import { ScreenHeader } from '@pages/_shared/ScreenHeader';
 import { Screen } from '@pages/_shared/Screen';
 import { colors, fontFamily } from '@shared/theme';
+import { RootStackParamList } from '@app/navigation/types';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 function formatTimeLeft(minutes: number | null | undefined): string {
   if (!minutes) return '—';
@@ -14,6 +19,7 @@ function formatTimeLeft(minutes: number | null | undefined): string {
 }
 
 export function LibraryScreen() {
+  const navigation = useNavigation<Nav>();
   const { data, isLoading } = useGetLibraryQuery({});
   const { data: stats } = useGetLibraryStatsQuery();
   const savedBooks = data?.data ?? [];
@@ -39,29 +45,51 @@ export function LibraryScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Currently Reading</Text>
-            <Text style={styles.seeAll}>See all</Text>
+            <Pressable onPress={() => navigation.navigate('LibraryList', { initialStatus: 'reading' })}>
+              <Text style={styles.seeAll}>See all</Text>
+            </Pressable>
           </View>
-          <ReadingCard
-            title={currentBook.title}
-            author={currentBook.author}
-            coverUrl={currentBook.coverUrl}
-            progress={currentBook.progressPct / 100}
-            timeLeft={formatTimeLeft(currentBook.timeLeftMin)}
-          />
+          <Pressable
+            onPress={() =>
+              navigation.navigate('BookDetail', {
+                bookId: currentBook.id,
+                libraryStatus: currentBook.status,
+              })
+            }
+          >
+            <ReadingCard
+              title={currentBook.title}
+              author={currentBook.author}
+              coverUrl={currentBook.coverUrl}
+              progress={currentBook.progressPct / 100}
+              timeLeft={formatTimeLeft(currentBook.timeLeftMin)}
+            />
+          </Pressable>
         </View>
       )}
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Saved Books</Text>
-          <Text style={styles.seeAll}>See all</Text>
+          <Pressable onPress={() => navigation.navigate('LibraryList', {})}>
+            <Text style={styles.seeAll}>See all</Text>
+          </Pressable>
         </View>
         {isLoading ? (
           <ActivityIndicator color={colors.accent} />
         ) : (
           <View style={styles.grid}>
             {savedBooks.slice(0, 4).map((book) => (
-              <View key={book.id} style={styles.bookTile}>
+              <Pressable
+                key={book.id}
+                style={styles.bookTile}
+                onPress={() =>
+                  navigation.navigate('BookDetail', {
+                    bookId: book.id,
+                    libraryStatus: book.status,
+                  })
+                }
+              >
                 <BookCover coverUrl={book.coverUrl} height={140} radius={10} />
                 <Text style={styles.bookTitle} numberOfLines={1}>
                   {book.title}
@@ -71,7 +99,7 @@ export function LibraryScreen() {
                   <Star size={12} color={colors.starGold} fill={colors.starGold} />
                   <Text style={styles.ratingText}>{book.rating}</Text>
                 </View>
-              </View>
+              </Pressable>
             ))}
           </View>
         )}

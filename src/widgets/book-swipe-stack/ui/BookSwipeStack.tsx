@@ -13,11 +13,10 @@ import { colors, fontFamily } from '@shared/theme';
 import { RootState } from '@store/store';
 
 interface BookSwipeStackProps {
-  onLike?: (book: Book) => void;
   onCardTap?: (book: Book) => void;
 }
 
-export function BookSwipeStack({ onLike, onCardTap }: BookSwipeStackProps) {
+export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
   const dispatch = useDispatch();
   const currentIndex = useSelector((state: RootState) => state.swipe.currentIndex);
   const { data, isLoading } = useGetBooksQuery({});
@@ -35,12 +34,16 @@ export function BookSwipeStack({ onLike, onCardTap }: BookSwipeStackProps) {
     dispatch(nextCard());
   }, [addToLibrary, dispatch, currentBook]);
 
-  const handleLike = useCallback(() => {
+  const handleLike = useCallback(async () => {
+    console.log('Liked book:', currentBook.title);
     if (!currentBook) return;
-    addToLibrary({ bookId: currentBook.id });
-    onLike?.(currentBook);
+    try {
+      await addToLibrary({ bookId: currentBook.id }).unwrap();
+    } catch (err) {
+      console.error('Failed to add book to library:', err);
+    }
     dispatch(nextCard());
-  }, [addToLibrary, dispatch, currentBook, onLike]);
+  }, [addToLibrary, dispatch, currentBook]);
 
   if (isLoading) {
     return (

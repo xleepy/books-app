@@ -6,10 +6,52 @@ React Native / Expo app for discovering and tracking books.
 
 ```bash
 npm install
+cp .env.example .env   # then fill in EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY
 npm start        # Expo dev server
 npm test         # Jest
 npm run typecheck
 npm run codegen  # Regenerate RTK Query API clients from OpenAPI spec
+```
+
+### Environment variables
+
+| Variable | Purpose |
+|----------|---------|
+| `EXPO_PUBLIC_API_URL` | Backend base URL (default `http://localhost:3000`) |
+| `EXPO_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
+| `EXPO_PUBLIC_MOCK_API` | Set to `true` to run with MSW mocks instead of the real backend |
+
+The app requires a Supabase session to render the main navigation. Set `EXPO_PUBLIC_MOCK_API=true` to bypass the auth gate and use MSW fixtures without a real Supabase project.
+
+## API layer
+
+RTK Query clients in `src/store/api/` are generated from the backend OpenAPI spec via `npm run codegen`. The active clients are:
+
+| File | Endpoints |
+|------|-----------|
+| `booksApi.generated.ts` | `GET /books`, `GET /books/feed`, `GET /books/:id`, `GET /books/:id/recommendations`, `GET /books/:id/reviews`, `POST /books/:id/reviews` |
+| `libraryApi.generated.ts` | `GET /library` (filterable by `status`), `GET /library/stats`, `POST /library`, `PATCH /library/:bookId`, `DELETE /library/:bookId` |
+
+Adding a book to the library is also the recommendation signal — the discovery feed excludes library books and personalises by subject overlap with all saved books.
+
+## Navigation
+
+React Navigation stack (`src/app/navigation/`):
+
+```
+RootNavigator (Stack, auth-gated)
+  └── Tabs
+  │   ├── Discover        — swipe deck, tapping a card opens BookDetail
+  │   ├── Discussions
+  │   ├── Library         — stats tiles + previews; "See all" → LibraryList
+  │   └── Compete
+  ├── BookDetail { bookId, libraryStatus? }
+  │       — libraryStatus present → shows Remove / Reading / Finished actions
+  │       — libraryStatus absent  → shows "Add to Library"
+  ├── LibraryList { initialStatus? }  — full list with All/Reading/Saved/Finished tabs
+  ├── Progress
+  └── Settings
 ```
 
 ## Mock API (MSW)

@@ -14,6 +14,7 @@ const injectedRtkApi = api.injectEndpoints({
         params: {
           page: queryArg.page,
           limit: queryArg.limit,
+          status: queryArg.status,
         },
       }),
       providesTags: ["Library"],
@@ -23,8 +24,24 @@ const injectedRtkApi = api.injectEndpoints({
       PostLibraryByBookIdApiArg
     >({
       query: (queryArg) => ({
-        url: `/library/${queryArg.bookId}`,
+        url: `/library`,
         method: "POST",
+        body: { bookId: queryArg.bookId, status: queryArg.status ?? "want" },
+      }),
+      invalidatesTags: ["Library"],
+    }),
+    patchLibraryByBookId: build.mutation<
+      PatchLibraryByBookIdApiResponse,
+      PatchLibraryByBookIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/library/${queryArg.bookId}`,
+        method: "PATCH",
+        body: {
+          ...(queryArg.status !== undefined && { status: queryArg.status }),
+          ...(queryArg.progressPct !== undefined && { progressPct: queryArg.progressPct }),
+          ...(queryArg.isCurrent !== undefined && { isCurrent: queryArg.isCurrent }),
+        },
       }),
       invalidatesTags: ["Library"],
     }),
@@ -52,10 +69,19 @@ export type GetLibraryApiResponse = /** status 200 Default Response */ {
 export type GetLibraryApiArg = {
   page?: number;
   limit?: number;
+  status?: "want" | "reading" | "finished";
 };
 export type PostLibraryByBookIdApiResponse = unknown;
 export type PostLibraryByBookIdApiArg = {
   bookId: string;
+  status?: "want" | "reading" | "finished";
+};
+export type PatchLibraryByBookIdApiResponse = LibraryBook;
+export type PatchLibraryByBookIdApiArg = {
+  bookId: string;
+  status?: "want" | "reading" | "finished";
+  progressPct?: number;
+  isCurrent?: boolean;
 };
 export type DeleteLibraryByBookIdApiResponse = unknown;
 export type DeleteLibraryByBookIdApiArg = {
@@ -79,7 +105,7 @@ export type LibraryBook = {
   description: string;
   rating: number;
   reviewCount: number;
-  status: "saved" | "reading" | "finished";
+  status: "want" | "reading" | "finished";
   isCurrent: boolean;
   progressPct: number;
   timeLeftMin?: number | null;
@@ -95,5 +121,6 @@ export const {
   useGetLibraryQuery,
   useLazyGetLibraryQuery,
   usePostLibraryByBookIdMutation,
+  usePatchLibraryByBookIdMutation,
   useDeleteLibraryByBookIdMutation,
 } = injectedRtkApi;

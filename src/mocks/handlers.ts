@@ -56,7 +56,7 @@ export const handlers = [
     HttpResponse.json({
       data: mockBooks.slice(0, 3).map((b, i) => ({
         ...b,
-        status: i === 0 ? 'reading' : 'saved',
+        status: i === 0 ? 'reading' : 'want',
         isCurrent: i === 0,
         progressPct: i === 0 ? 68 : 0,
         timeLeftMin: i === 0 ? 240 : null,
@@ -66,9 +66,6 @@ export const handlers = [
   ),
   http.post(`${BASE}/library/:bookId`, () => new HttpResponse(null, { status: 204 })),
   http.delete(`${BASE}/library/:bookId`, () => new HttpResponse(null, { status: 204 })),
-
-  // Swipes
-  http.post(`${BASE}/swipes`, () => new HttpResponse(null, { status: 204 })),
 
   // Discussions
   http.get(`${BASE}/discussions`, () =>

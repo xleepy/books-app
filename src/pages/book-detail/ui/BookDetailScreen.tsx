@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { ChevronLeft } from 'lucide-react-native';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ChevronLeft, Trash2 } from 'lucide-react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGetBooksByIdQuery } from '@store/api/booksApi.generated';
-import { usePostLibraryByBookIdMutation } from '@store/api/libraryApi.generated';
+import {
+  usePostLibraryByBookIdMutation,
+  usePatchLibraryByBookIdMutation,
+  useDeleteLibraryByBookIdMutation,
+} from '@store/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { AddToLibraryButton } from '@features/add-to-library/ui/AddToLibraryButton';
@@ -20,8 +25,28 @@ export function BookDetailScreen() {
   const route = useRoute<Route>();
   const insets = useSafeAreaInsets();
 
-  const { data: book, isLoading } = useGetBooksByIdQuery({ id: route.params.bookId });
+  const { bookId, libraryStatus: initialLibraryStatus } = route.params;
+  const [libraryStatus, setLibraryStatus] = useState(initialLibraryStatus);
+
+  const { data: book, isLoading } = useGetBooksByIdQuery({ id: bookId });
   const [addToLibrary] = usePostLibraryByBookIdMutation();
+  const [patchLibrary, { isLoading: isPatching }] = usePatchLibraryByBookIdMutation();
+  const [deleteFromLibrary, { isLoading: isDeleting }] = useDeleteLibraryByBookIdMutation();
+
+  function handleMarkStatus(status: 'reading' | 'finished') {
+    patchLibrary({ bookId, status }).then(() => setLibraryStatus(status));
+  }
+
+  function handleRemove() {
+    Alert.alert('Remove from library', 'Are you sure?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => deleteFromLibrary({ bookId }).then(() => navigation.goBack()),
+      },
+    ]);
+  }
 
   if (isLoading || !book) {
     return (
@@ -75,12 +100,54 @@ export function BookDetailScreen() {
       </ScrollView>
 
       <View style={[styles.cta, { paddingBottom: insets.bottom + 12 }]}>
-        <AddToLibraryButton
-          onPress={() => {
-            addToLibrary({ bookId: book.id });
-            navigation.goBack();
-          }}
-        />
+        {libraryStatus ? (
+          <View style={styles.libraryActions}>
+            <Pressable style={styles.removeBtn} onPress={handleRemove} disabled={isDeleting}>
+              <Trash2 size={18} color={colors.accentRed} />
+            </Pressable>
+            <Pressable
+              style={[
+                styles.statusBtn,
+                libraryStatus === 'reading' && styles.statusBtnActive,
+              ]}
+              onPress={() => handleMarkStatus('reading')}
+              disabled={isPatching || libraryStatus === 'reading'}
+            >
+              <Text
+                style={[
+                  styles.statusBtnText,
+                  libraryStatus === 'reading' && styles.statusBtnTextActive,
+                ]}
+              >
+                Reading
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[
+                styles.statusBtn,
+                libraryStatus === 'finished' && styles.statusBtnActive,
+              ]}
+              onPress={() => handleMarkStatus('finished')}
+              disabled={isPatching || libraryStatus === 'finished'}
+            >
+              <Text
+                style={[
+                  styles.statusBtnText,
+                  libraryStatus === 'finished' && styles.statusBtnTextActive,
+                ]}
+              >
+                Finished
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <AddToLibraryButton
+            onPress={() => {
+              addToLibrary({ bookId: book.id });
+              navigation.goBack();
+            }}
+          />
+        )}
       </View>
     </View>
   );
@@ -154,5 +221,41 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: colors.bgPrimary,
     paddingTop: 12,
+  },
+  libraryActions: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  removeBtn: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1.5,
+    borderColor: colors.accentRed,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusBtn: {
+    flex: 1,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.bgSecondary,
+  },
+  statusBtnActive: {
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
+  },
+  statusBtnText: {
+    fontFamily: fontFamily.semibold,
+    fontSize: 15,
+    color: colors.fontSecondary,
+  },
+  statusBtnTextActive: {
+    color: colors.fontInverse,
   },
 });

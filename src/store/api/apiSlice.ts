@@ -5,8 +5,9 @@ export const api = createApi({
   tagTypes: ["Library"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000",
-    prepareHeaders: (headers) => {
-      const token = null; // TODO: read from auth store once auth is implemented
+    prepareHeaders: (headers, { getState }) => {
+      const state = getState() as { auth: { session: { access_token: string } | null } };
+      const token = state.auth?.session?.access_token;
       if (token) headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },

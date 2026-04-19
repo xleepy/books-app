@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { supabase } from '@shared/lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,6 +32,11 @@ export function SettingsScreen() {
   const [pushEnabled, setPushEnabled] = useState(true);
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [challengeEnabled, setChallengeEnabled] = useState(true);
+
+  async function handleSignOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) Alert.alert('Error', error.message);
+  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -153,7 +159,7 @@ export function SettingsScreen() {
         </View>
 
         {/* Sign Out */}
-        <Pressable style={styles.signOutBtn}>
+        <Pressable style={styles.signOutBtn} onPress={handleSignOut}>
           <LogOut size={18} color={colors.accentRed} />
           <Text style={styles.signOutText}>Sign Out</Text>
         </Pressable>
