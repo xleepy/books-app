@@ -30,6 +30,7 @@ export function BookCover({
     >
       {coverUrl ? (
         <Image
+          key={coverUrl}
           source={{ uri: coverUrl }}
           style={[styles.image as ImageStyle, { borderRadius: radius }]}
           resizeMode="cover"

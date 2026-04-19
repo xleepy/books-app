@@ -32,7 +32,11 @@ export function ProgressScreen() {
             <Pressable onPress={() => navigation.navigate('Settings')}>
               <Settings size={24} color={colors.fontPrimary} />
             </Pressable>
-            <Avatar initials="JD" size={40} hue={280} />
+            <Avatar
+              initials={user.name.split(' ').filter(Boolean).map((p) => p[0]).join('')}
+              size={40}
+              hue={user.avatarHue}
+            />
           </View>
         </View>
       </View>

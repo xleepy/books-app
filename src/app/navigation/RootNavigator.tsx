@@ -11,6 +11,7 @@ import { TabNavigator } from "./TabNavigator";
 import { RootStackParamList } from "./types";
 import { supabase } from "@shared/lib/supabase";
 import { setSession } from "@features/auth/model/authSlice";
+import { useGetMeQuery } from "@store/api/meApi.generated";
 import type { RootState, AppDispatch } from "@store/store";
 import { colors } from "@shared/theme";
 
@@ -19,6 +20,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   const dispatch = useDispatch<AppDispatch>();
   const { session, isLoading } = useSelector((state: RootState) => state.auth);
+  useGetMeQuery(undefined, { skip: !session });
 
   useEffect(() => {
     // Restore existing session on mount

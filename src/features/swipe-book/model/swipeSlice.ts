@@ -28,9 +28,10 @@ const swipeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      booksApi.endpoints.getBooks.matchFulfilled,
+      booksApi.endpoints.getBooksFeed.matchFulfilled,
       (state, action) => {
         state.totalCards = action.payload.data.length;
+        state.currentIndex = 0;
       }
     );
   },

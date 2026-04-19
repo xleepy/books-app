@@ -4,6 +4,7 @@ import { supabase } from '@shared/lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
 import {
   Bookmark,
   Bell,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react-native';
 import { colors, fontFamily } from '@shared/theme';
 import { Avatar } from '@shared/ui';
+import { RootState } from '@store/store';
 import { RootStackParamList } from '@app/navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -28,6 +30,8 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 export function SettingsScreen() {
   const navigation = useNavigation<Nav>();
   const insets = useSafeAreaInsets();
+  const user = useSelector((state: RootState) => state.user.user);
+  const initials = user.name.split(' ').filter(Boolean).map((p) => p[0]).join('');
 
   const [pushEnabled, setPushEnabled] = useState(true);
   const [emailEnabled, setEmailEnabled] = useState(false);
@@ -50,7 +54,7 @@ export function SettingsScreen() {
         </View>
         <Text style={styles.headerTitle}>Settings</Text>
         <View style={[styles.headerSide, styles.headerSideRight]}>
-          <Avatar initials="JD" size={36} hue={280} />
+          <Avatar initials={initials} size={36} hue={user.avatarHue} />
         </View>
       </View>
 
@@ -60,13 +64,13 @@ export function SettingsScreen() {
       >
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <Avatar initials="JD" size={84} hue={280} />
-          <Text style={styles.profileName}>Jane Doe</Text>
+          <Avatar initials={initials} size={84} hue={user.avatarHue} />
+          <Text style={styles.profileName}>{user.name}</Text>
           <View style={styles.levelRow}>
             <View style={styles.levelBadge}>
-              <Text style={styles.levelNum}>12</Text>
+              <Text style={styles.levelNum}>{user.level}</Text>
             </View>
-            <Text style={styles.levelLabel}>Level 12 · Bookworm</Text>
+            <Text style={styles.levelLabel}>Level {user.level} · {user.levelTitle}</Text>
           </View>
           <Pressable style={styles.editBtn}>
             <Pencil size={14} color={colors.accent} />

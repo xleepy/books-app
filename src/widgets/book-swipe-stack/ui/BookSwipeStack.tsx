@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect } from 'react';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Book } from '@store/api/booksApi.generated';
-import { useGetBooksQuery } from '@store/api/booksApi.generated';
+import { Book, useGetBooksFeedQuery } from '@store/api/booksApi.generated';
 import { usePostLibraryByBookIdMutation } from '@store/api/libraryApi.generated';
+import { usePostSwipesMutation } from '@store/api/swipesApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { nextCard } from '@features/swipe-book/model/swipeSlice';
@@ -19,14 +19,25 @@ interface BookSwipeStackProps {
 export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
   const dispatch = useDispatch();
   const currentIndex = useSelector((state: RootState) => state.swipe.currentIndex);
-  const { data, isLoading } = useGetBooksQuery({});
+  const { data, isLoading } = useGetBooksFeedQuery({});
   const [addToLibrary] = usePostLibraryByBookIdMutation();
+  const [recordSwipe] = usePostSwipesMutation();
   const books = data?.data ?? [];
 
   const currentBook = books[currentIndex];
   const nextBook = books[(currentIndex + 1) % Math.max(books.length, 1)];
 
-  const handlePass = useCallback(() => dispatch(nextCard()), [dispatch]);
+  useEffect(() => {
+    books.slice(currentIndex + 1, currentIndex + 4).forEach((book) => {
+      if (book.coverUrl) Image.prefetch(book.coverUrl);
+    });
+  }, [currentIndex, books]);
+
+  const handlePass = useCallback(() => {
+    if (!currentBook) return;
+    dispatch(nextCard());
+    recordSwipe({ bookId: currentBook.id, direction: 'left' });
+  }, [dispatch, currentBook, recordSwipe]);
 
   const handleBookmark = useCallback(() => {
     if (!currentBook) return;
@@ -34,15 +45,10 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
     dispatch(nextCard());
   }, [addToLibrary, dispatch, currentBook]);
 
-  const handleLike = useCallback(async () => {
-    console.log('Liked book:', currentBook.title);
+  const handleLike = useCallback(() => {
     if (!currentBook) return;
-    try {
-      await addToLibrary({ bookId: currentBook.id }).unwrap();
-    } catch (err) {
-      console.error('Failed to add book to library:', err);
-    }
     dispatch(nextCard());
+    addToLibrary({ bookId: currentBook.id });
   }, [addToLibrary, dispatch, currentBook]);
 
   if (isLoading) {

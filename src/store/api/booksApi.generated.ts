@@ -26,6 +26,16 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getBooksFeed: build.query<GetBooksFeedApiResponse, GetBooksFeedApiArg>({
+      query: (queryArg) => ({
+        url: `/books/feed`,
+        params: {
+          cursor: queryArg.cursor,
+          limit: queryArg.limit,
+        },
+      }),
+      providesTags: ["Feed"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -69,6 +79,14 @@ export type Pagination = {
   page: number;
   limit: number;
 };
+export type GetBooksFeedApiResponse = {
+  data: Book[];
+  nextCursor?: string | null;
+};
+export type GetBooksFeedApiArg = {
+  cursor?: string;
+  limit?: number;
+};
 export type ApiError = {
   error: string;
   message: string;
@@ -80,4 +98,6 @@ export const {
   useLazyGetBooksByIdQuery,
   useGetBooksByIdRecommendationsQuery,
   useLazyGetBooksByIdRecommendationsQuery,
+  useGetBooksFeedQuery,
+  useLazyGetBooksFeedQuery,
 } = injectedRtkApi;

@@ -10,7 +10,7 @@ const config = {
     },
     "./src/store/api/booksApi.generated.ts": {
       exportName: "booksApi",
-      filterEndpoints: ["getBooks", "getBooksById", "getBooksByIdRecommendations"],
+      filterEndpoints: ["getBooks", "getBooksFeed", "getBooksById", "getBooksByIdRecommendations"],
     },
     "./src/store/api/reviewsApi.generated.ts": {
       exportName: "reviewsApi",
@@ -19,6 +19,10 @@ const config = {
     "./src/store/api/libraryApi.generated.ts": {
       exportName: "libraryApi",
       filterEndpoints: ["getLibraryStats", "getLibrary", "postLibraryByBookId", "deleteLibraryByBookId"],
+    },
+    "./src/store/api/meApi.generated.ts": {
+      exportName: "meApi",
+      filterEndpoints: ["getMe"],
     },
     "./src/store/api/swipesApi.generated.ts": {
       exportName: "swipesApi",

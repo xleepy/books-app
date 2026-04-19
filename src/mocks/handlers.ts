@@ -19,7 +19,30 @@ export const handlers = [
     HttpResponse.json({ accessToken: 'mock-token' })
   ),
 
+  // Me
+  http.get(`${BASE}/me`, () =>
+    HttpResponse.json({
+      id: 'user-1',
+      name: 'Jane Doe',
+      email: 'jane@example.com',
+      avatarHue: 280,
+      level: 12,
+      levelTitle: 'Bookworm',
+      xpTotal: 2450,
+      booksFinished: 12,
+      pagesRead: 4280,
+      hoursRead: 86,
+      streak: 14,
+      bestStreak: 21,
+      weekDays: [true, true, true, true, true, false, false],
+      readingGoal: 30,
+    })
+  ),
+
   // Books — specific sub-routes first
+  http.get(`${BASE}/books/feed`, () =>
+    HttpResponse.json({ data: mockBooks, nextCursor: null })
+  ),
   http.get(`${BASE}/books`, () =>
     HttpResponse.json({
       data: mockBooks,
@@ -64,7 +87,8 @@ export const handlers = [
       pagination: { total: 3, page: 1, limit: 20 },
     })
   ),
-  http.post(`${BASE}/library/:bookId`, () => new HttpResponse(null, { status: 204 })),
+  http.post(`${BASE}/swipes`, () => new HttpResponse(null, { status: 204 })),
+  http.post(`${BASE}/library`, () => new HttpResponse(null, { status: 204 })),
   http.delete(`${BASE}/library/:bookId`, () => new HttpResponse(null, { status: 204 })),
 
   // Discussions

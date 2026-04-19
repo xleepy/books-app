@@ -28,7 +28,7 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: { bookId: queryArg.bookId, status: queryArg.status ?? "want" },
       }),
-      invalidatesTags: ["Library"],
+      invalidatesTags: ["Library", "Feed"],
     }),
     patchLibraryByBookId: build.mutation<
       PatchLibraryByBookIdApiResponse,

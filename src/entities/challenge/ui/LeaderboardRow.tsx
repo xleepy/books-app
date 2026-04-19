@@ -37,7 +37,7 @@ export function LeaderboardRow({ entry }: LeaderboardRowProps) {
         <Text style={[styles.rankText, { color: rankColor }]}>{entry.rank}</Text>
       </View>
       <Avatar
-        initials={entry.name[0]}
+        initials={entry.name.split(' ').filter(Boolean).map((p) => p[0]).join('')}
         size={36}
         hue={entry.avatarHue}
       />
