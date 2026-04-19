@@ -93,7 +93,7 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
 function BookCardContent({ book }: { book: Book }) {
   return (
     <View style={styles.card}>
-      <BookCover coverUrl={book.coverUrl} height={260} radius={0} shadow={false} />
+      <BookCover coverUrl={book.coverUrl} height={260} radius={0} shadow={false} resizeMode="contain" />
       <View style={styles.cardBody}>
         <BookMeta book={book} />
         <Text style={styles.description}>{book.description}</Text>

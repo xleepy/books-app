@@ -8,6 +8,7 @@ interface BookCoverProps {
   height?: number;
   radius?: number;
   shadow?: boolean;
+  resizeMode?: 'cover' | 'contain';
   style?: ViewStyle;
 }
 
@@ -17,6 +18,7 @@ export function BookCover({
   height = 260,
   radius = 12,
   shadow = true,
+  resizeMode = 'cover',
   style,
 }: BookCoverProps) {
   return (
@@ -33,7 +35,7 @@ export function BookCover({
           key={coverUrl}
           source={{ uri: coverUrl }}
           style={[styles.image as ImageStyle, { borderRadius: radius }]}
-          resizeMode="cover"
+          resizeMode={resizeMode}
         />
       ) : (
         <View style={[styles.placeholder, { borderRadius: radius }]}>

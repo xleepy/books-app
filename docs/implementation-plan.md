@@ -1,5 +1,8 @@
 # Books App — Implementation Plan
 
+**Status:** Phases 1–11 complete. Phase 12 blocked until backend Phases 5–6 are done.
+**Last updated:** 2026-04-19
+
 > React Native mobile app built from `design-proposal.pen`, using Expo, TypeScript, Redux Toolkit, and Feature-Sliced Design architecture.
 
 ## Tech Stack
@@ -276,10 +279,46 @@ Shared helpers: `pages/_shared/Screen.tsx` (SafeArea + optional ScrollView) and 
 
 ### Phase 9 — Polish ✅
 
+
+
 1. `SafeAreaView` / `useSafeAreaInsets` applied via `pages/_shared/Screen.tsx` wrapper
 2. ScrollView screens: BookDetail, Discussions, Library, Progress, Challenges
 3. Lucide icon names verified against design: `compass`, `message-circle`, `book-open`, `trophy`, `sliders-horizontal`, `bookmark`, `heart`, `x`, `chevron-left`, `plus`, `search`, `star`, `flame`, `zap`, `star`
 4. `expo.install.exclude` added for `typescript`, `react`, `@types/react` to silence intentional version overrides
+
+### Phase 10 — API Integration ✅ (2026-04-19)
+
+RTK Query code-generated hooks replace all mock data. MSW still active in dev via `EXPO_PUBLIC_MOCK_API=true`.
+
+- ✅ `src/store/api/apiSlice.ts` — `fetchBaseQuery` with `prepareHeaders` injecting `auth.session.access_token`
+- ✅ Generated API hooks: `authApi`, `booksApi`, `libraryApi`, `meApi`, `reviewsApi`, `discussionsApi`, `challengesApi`, `swipesApi`
+- ✅ `BookSwipeStack` — `useGetBooksFeedQuery`, `usePostSwipesMutation`, `usePostLibraryByBookIdMutation`
+- ✅ `LibraryScreen` — `useGetLibraryQuery`, `useGetLibraryStatsQuery`
+- ✅ `LibraryListScreen` — full list with status filter tabs; `src/pages/library/ui/LibraryListScreen.tsx`
+- ✅ `BookDetailScreen` — `useGetBooksByIdQuery`, `usePatchLibraryByBookIdMutation`, `useDeleteLibraryByBookIdMutation`; shows Remove/Reading/Finished actions when opened from library
+- ✅ `DiscussionsScreen` — `useGetDiscussionsQuery` (backend stub → MSW covers in dev)
+- ✅ `ChallengesScreen` — `useGetChallengesQuery` (backend stub → MSW covers in dev)
+- ✅ `userSlice` — `extraReducers` populates from `meApi.getMe.matchFulfilled`; seeds `ProgressScreen` from real API when authed
+- ✅ MSW handlers in `src/mocks/handlers.ts` cover all endpoints with realistic shapes
+
+### Phase 11 — Auth ✅ (2026-04-19)
+
+- ✅ `@supabase/supabase-js` + `expo-secure-store` + `expo-web-browser` installed
+- ✅ `src/shared/lib/supabase.ts` — Supabase client with SecureStore session persistence
+- ✅ `src/features/auth/model/authSlice.ts` — Redux session state (`session`, `isLoading`)
+- ✅ `src/pages/auth/ui/LoginScreen.tsx` — email/password + Google OAuth (PKCE) + Apple Sign-In (iOS only)
+- ✅ `RootNavigator` auth gate: shows `LoginScreen` when no session; subscribes to `onAuthStateChange`
+- ✅ Settings → Sign Out calls `supabase.auth.signOut()`
+- ✅ `app.json` — `scheme: "booksapp"` for OAuth deep-link callback
+- ⏳ **Blocked on Supabase credentials** in `.env` before live auth works (see backend Phase 2)
+
+### Phase 12 — Discussions & Challenges live ⏳ not started
+
+Depends on backend Phases 5 (gamification) and 6 (community threads).
+
+- ⏳ Challenges tab: live data from `GET /challenges`, `GET /challenges/:id/leaderboard`; XP/badges/streak from `GET /me`
+- ⏳ Discussions tab: live threads, `POST /discussions/:id/like`, thread-detail screen + replies
+- ⏳ ProgressScreen: all stats driven by `GET /me` — currently seeds from mock until auth works end-to-end
 
 ## FSD Import Rules
 
