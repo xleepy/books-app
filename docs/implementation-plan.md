@@ -347,6 +347,12 @@ Depends on backend Phases 5 (gamification) and 6 (community threads).
 | `pages/_shared` helpers   | `Screen.tsx` + `ScreenHeader.tsx` avoid duplication across all 6 screens                                         |
 | Dark mode deferred        | `$bg-dark` token exists but not wired in this phase                                                              |
 
+## Ideas to Decide
+
+| Idea | Description | Open Questions |
+| ---- | ----------- | -------------- |
+| Onboarding: prefill read books + genres | During signup/onboarding, ask the user to (1) search and mark books they've already read and (2) pick favourite genres from a fixed list. Feed both signals to the recommendation engine so the initial Discover feed is personalised from day one. | How many books to ask for (floor/cap)? How many genres to require/allow? Skip option? Where in auth flow — after email verify or after first login? Books stored as `status: "finished"` library entries or separate seed table? Genres stored on user profile or as tag weights? |
+
 ## Verification Checklist
 
 - [x] `npx expo start` boots without errors on iOS and Android
