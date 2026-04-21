@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --forceExit",
     "test:watch": "jest --watch",
-    "codegen": "npx @rtk-query/codegen-openapi openapi-config.js"
+    "codegen": "npx @rtk-query/codegen-openapi openapi-config.js && node scripts/post-codegen.js"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "0.2.3",

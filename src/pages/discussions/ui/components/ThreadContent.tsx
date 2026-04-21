@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Heart, MessageCircle } from 'lucide-react-native';
 import { Avatar } from '@shared/ui';
 import { BookCover } from '@entities/book/ui/BookCover';
@@ -10,9 +10,10 @@ interface ThreadContentProps {
   liked: boolean;
   likes: number;
   onLike: () => void;
+  isLiking?: boolean;
 }
 
-export function ThreadContent({ thread, liked, likes, onLike }: ThreadContentProps) {
+export function ThreadContent({ thread, liked, likes, onLike, isLiking }: ThreadContentProps) {
   return (
     <View style={styles.card}>
       <View style={styles.meta}>
@@ -45,12 +46,16 @@ export function ThreadContent({ thread, liked, likes, onLike }: ThreadContentPro
             <MessageCircle size={16} color={colors.fontTertiary} />
             <Text style={styles.actionCount}>{thread.replies.length}</Text>
           </View>
-          <Pressable style={styles.actionItem} onPress={onLike}>
-            <Heart
-              size={16}
-              color={liked ? colors.accentRed : colors.fontTertiary}
-              fill={liked ? colors.accentRed : 'none'}
-            />
+          <Pressable style={styles.actionItem} onPress={onLike} disabled={isLiking}>
+            {isLiking ? (
+              <ActivityIndicator size={16} color={colors.accentRed} />
+            ) : (
+              <Heart
+                size={16}
+                color={liked ? colors.accentRed : colors.fontTertiary}
+                fill={liked ? colors.accentRed : 'none'}
+              />
+            )}
             <Text style={[styles.actionCount, liked && styles.likedCount]}>
               {likes}
             </Text>

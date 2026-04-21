@@ -9,6 +9,7 @@ const injectedRtkApi = api.injectEndpoints({
           limit: queryArg.limit,
         },
       }),
+      providesTags: ["Feed"],
     }),
     getBooks: build.query<GetBooksApiResponse, GetBooksApiArg>({
       query: (queryArg) => ({
@@ -22,7 +23,7 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getBooksById: build.query<GetBooksByIdApiResponse, GetBooksByIdApiArg>({
-      query: (queryArg) => ({ url: `/books/${queryArg.id}` }),
+      query: (queryArg) => ({ url: `/books/${queryArg}` }),
     }),
     getBooksByIdRecommendations: build.query<
       GetBooksByIdRecommendationsApiResponse,
@@ -31,18 +32,6 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/books/${queryArg.id}/recommendations`,
         params: {
-          limit: queryArg.limit,
-        },
-      }),
-    }),
-    getBooksByIdReviews: build.query<
-      GetBooksByIdReviewsApiResponse,
-      GetBooksByIdReviewsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/books/${queryArg.id}/reviews`,
-        params: {
-          page: queryArg.page,
           limit: queryArg.limit,
         },
       }),
@@ -73,24 +62,12 @@ export type GetBooksApiArg = {
   tag?: string;
 };
 export type GetBooksByIdApiResponse = /** status 200 Default Response */ Book;
-export type GetBooksByIdApiArg = {
-  id: string;
-};
+export type GetBooksByIdApiArg = string;
 export type GetBooksByIdRecommendationsApiResponse =
   /** status 200 Default Response */ {
     data: Book[];
   };
 export type GetBooksByIdRecommendationsApiArg = {
-  limit?: number;
-  id: string;
-};
-export type GetBooksByIdReviewsApiResponse =
-  /** status 200 Default Response */ {
-    data: Review[];
-    pagination: Pagination;
-  };
-export type GetBooksByIdReviewsApiArg = {
-  page?: number;
   limit?: number;
   id: string;
 };
@@ -113,14 +90,6 @@ export type ApiError = {
   error: string;
   message: string;
 };
-export type Review = {
-  id: string;
-  reviewer: string;
-  date: string;
-  rating: number;
-  text: string;
-  avatarHue: number;
-};
 export const {
   useGetBooksFeedQuery,
   useLazyGetBooksFeedQuery,
@@ -130,6 +99,4 @@ export const {
   useLazyGetBooksByIdQuery,
   useGetBooksByIdRecommendationsQuery,
   useLazyGetBooksByIdRecommendationsQuery,
-  useGetBooksByIdReviewsQuery,
-  useLazyGetBooksByIdReviewsQuery,
 } = injectedRtkApi;

@@ -33,8 +33,8 @@ export function ThreadDetailScreen() {
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
-  const { data: thread, isLoading, refetch } = useGetThreadsByIdQuery({ id: params.threadId });
-  const [likeThread] = usePostThreadsByIdLikeMutation();
+  const { data: thread, isLoading, refetch } = useGetThreadsByIdQuery(params.threadId);
+  const [likeThread, { isLoading: isLiking }] = usePostThreadsByIdLikeMutation();
   const [postReply, { isLoading: isPosting }] = usePostThreadsByIdRepliesMutation();
   const [deleteThread, { isLoading: isDeleting }] = useDeleteThreadsByIdMutation();
 
@@ -47,7 +47,7 @@ export function ThreadDetailScreen() {
   async function handleLike() {
     if (!thread) return;
     try {
-      const result = await likeThread({ id: thread.id }).unwrap();
+      const result = await likeThread(thread.id).unwrap();
       setLiked(result.liked);
       setLocalLikes(result.likes);
     } catch {
@@ -57,7 +57,7 @@ export function ThreadDetailScreen() {
 
   async function handleReply(text: string) {
     if (!thread) return;
-    await postReply({ id: thread.id, body: text }).unwrap();
+    await postReply({ id: thread.id, body: { body: text } }).unwrap();
     await refetch();
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
   }
@@ -74,7 +74,7 @@ export function ThreadDetailScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteThread({ id: thread.id }).unwrap();
+              await deleteThread(thread.id).unwrap();
               navigation.goBack();
             } catch {
               Alert.alert('Error', 'Failed to delete the thread. Please try again.');
@@ -118,6 +118,7 @@ export function ThreadDetailScreen() {
           liked={currentLiked}
           likes={currentLikes}
           onLike={handleLike}
+          isLiking={isLiking}
         />
         <ReplyList replies={thread.replies} />
       </ScrollView>

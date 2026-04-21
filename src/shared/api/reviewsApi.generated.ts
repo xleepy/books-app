@@ -12,6 +12,7 @@ const injectedRtkApi = api.injectEndpoints({
           limit: queryArg.limit,
         },
       }),
+      providesTags: ["Review"],
     }),
     postBooksByIdReviews: build.mutation<
       PostBooksByIdReviewsApiResponse,
@@ -22,6 +23,7 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.body,
       }),
+      invalidatesTags: ["Review"],
     }),
   }),
   overrideExisting: false,

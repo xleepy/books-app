@@ -5,7 +5,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGetBooksByIdQuery } from '@shared/api/booksApi.generated';
 import {
-  usePostLibraryByBookIdMutation,
+  usePostLibraryMutation,
   usePatchLibraryByBookIdMutation,
   useDeleteLibraryByBookIdMutation,
 } from '@shared/api/libraryApi.generated';
@@ -28,13 +28,18 @@ export function BookDetailScreen() {
   const { bookId, libraryStatus: initialLibraryStatus } = route.params;
   const [libraryStatus, setLibraryStatus] = useState(initialLibraryStatus);
 
-  const { data: book, isLoading } = useGetBooksByIdQuery({ id: bookId });
-  const [addToLibrary] = usePostLibraryByBookIdMutation();
+  const { data: book, isLoading } = useGetBooksByIdQuery(bookId);
+  const [addToLibrary, { isLoading: isAdding }] = usePostLibraryMutation();
   const [patchLibrary, { isLoading: isPatching }] = usePatchLibraryByBookIdMutation();
   const [deleteFromLibrary, { isLoading: isDeleting }] = useDeleteLibraryByBookIdMutation();
 
-  function handleMarkStatus(status: 'reading' | 'finished') {
-    patchLibrary({ bookId, status }).then(() => setLibraryStatus(status));
+  async function handleMarkStatus(status: 'reading' | 'finished') {
+    try {
+      await patchLibrary({ bookId, body: { status } }).unwrap();
+      setLibraryStatus(status);
+    } catch {
+      Alert.alert('Error', 'Failed to update reading status. Please try again.');
+    }
   }
 
   function handleRemove() {
@@ -43,7 +48,14 @@ export function BookDetailScreen() {
       {
         text: 'Remove',
         style: 'destructive',
-        onPress: () => deleteFromLibrary({ bookId }).then(() => navigation.goBack()),
+        onPress: async () => {
+          try {
+            await deleteFromLibrary(bookId).unwrap();
+            navigation.goBack();
+          } catch {
+            Alert.alert('Error', 'Failed to remove book. Please try again.');
+          }
+        },
       },
     ]);
   }
@@ -103,7 +115,11 @@ export function BookDetailScreen() {
         {libraryStatus ? (
           <View style={styles.libraryActions}>
             <Pressable style={styles.removeBtn} onPress={handleRemove} disabled={isDeleting}>
-              <Trash2 size={18} color={colors.accentRed} />
+              {isDeleting ? (
+                <ActivityIndicator size="small" color={colors.accentRed} />
+              ) : (
+                <Trash2 size={18} color={colors.accentRed} />
+              )}
             </Pressable>
             <Pressable
               style={[
@@ -113,14 +129,18 @@ export function BookDetailScreen() {
               onPress={() => handleMarkStatus('reading')}
               disabled={isPatching || libraryStatus === 'reading'}
             >
-              <Text
-                style={[
-                  styles.statusBtnText,
-                  libraryStatus === 'reading' && styles.statusBtnTextActive,
-                ]}
-              >
-                Reading
-              </Text>
+              {isPatching && libraryStatus !== 'reading' ? (
+                <ActivityIndicator size="small" color={colors.fontSecondary} />
+              ) : (
+                <Text
+                  style={[
+                    styles.statusBtnText,
+                    libraryStatus === 'reading' && styles.statusBtnTextActive,
+                  ]}
+                >
+                  Reading
+                </Text>
+              )}
             </Pressable>
             <Pressable
               style={[
@@ -130,22 +150,31 @@ export function BookDetailScreen() {
               onPress={() => handleMarkStatus('finished')}
               disabled={isPatching || libraryStatus === 'finished'}
             >
-              <Text
-                style={[
-                  styles.statusBtnText,
-                  libraryStatus === 'finished' && styles.statusBtnTextActive,
-                ]}
-              >
-                Finished
-              </Text>
+              {isPatching && libraryStatus !== 'finished' ? (
+                <ActivityIndicator size="small" color={colors.fontSecondary} />
+              ) : (
+                <Text
+                  style={[
+                    styles.statusBtnText,
+                    libraryStatus === 'finished' && styles.statusBtnTextActive,
+                  ]}
+                >
+                  Finished
+                </Text>
+              )}
             </Pressable>
           </View>
         ) : (
           <AddToLibraryButton
-            onPress={() => {
-              addToLibrary({ bookId: book.id });
-              navigation.goBack();
+            onPress={async () => {
+              try {
+                await addToLibrary({ bookId: book.id, status: 'want' }).unwrap();
+                navigation.goBack();
+              } catch {
+                Alert.alert('Error', 'Failed to add book to library. Please try again.');
+              }
             }}
+            isLoading={isAdding}
           />
         )}
       </View>

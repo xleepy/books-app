@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Book, useGetBooksFeedQuery } from '@shared/api/booksApi.generated';
-import { usePostLibraryByBookIdMutation } from '@shared/api/libraryApi.generated';
+import { usePostLibraryMutation } from '@shared/api/libraryApi.generated';
 import { usePostSwipesMutation } from '@shared/api/swipesApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
@@ -20,7 +20,7 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
   const dispatch = useDispatch();
   const currentIndex = useSelector((state: RootState) => state.swipe.currentIndex);
   const { data, isLoading } = useGetBooksFeedQuery({});
-  const [addToLibrary] = usePostLibraryByBookIdMutation();
+  const [addToLibrary] = usePostLibraryMutation();
   const [recordSwipe] = usePostSwipesMutation();
   const books = data?.data ?? [];
 
@@ -33,22 +33,28 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
     });
   }, [currentIndex, books]);
 
-  const handlePass = useCallback(() => {
+  const handlePass = useCallback(async () => {
     if (!currentBook) return;
     dispatch(nextCard());
-    recordSwipe({ bookId: currentBook.id, direction: 'left' });
+    try {
+      await recordSwipe({ bookId: currentBook.id, direction: 'left' }).unwrap();
+    } catch {}
   }, [dispatch, currentBook, recordSwipe]);
 
-  const handleBookmark = useCallback(() => {
+  const handleBookmark = useCallback(async () => {
     if (!currentBook) return;
-    addToLibrary({ bookId: currentBook.id });
     dispatch(nextCard());
+    try {
+      await addToLibrary({ bookId: currentBook.id, status: 'want' }).unwrap();
+    } catch {}
   }, [addToLibrary, dispatch, currentBook]);
 
-  const handleLike = useCallback(() => {
+  const handleLike = useCallback(async () => {
     if (!currentBook) return;
     dispatch(nextCard());
-    addToLibrary({ bookId: currentBook.id });
+    try {
+      await addToLibrary({ bookId: currentBook.id, status: 'want' }).unwrap();
+    } catch {}
   }, [addToLibrary, dispatch, currentBook]);
 
   if (isLoading) {

@@ -10,7 +10,7 @@ import { ScreenHeader } from '@shared/ui/ScreenHeader';
 import { colors, fontFamily } from '@shared/theme';
 
 export function ChallengesScreen() {
-  const { data: challengesData, isLoading: challengesLoading } = useGetChallengesQuery({});
+  const { data: challengesData, isLoading: challengesLoading } = useGetChallengesQuery(undefined);
   const challenges = challengesData?.data ?? [];
   const firstChallengeId = challenges[0]?.id;
 

@@ -11,28 +11,29 @@ const injectedRtkApi = api.injectEndpoints({
           limit: queryArg.limit,
         },
       }),
+      providesTags: ["Thread"],
     }),
     postThreads: build.mutation<PostThreadsApiResponse, PostThreadsApiArg>({
       query: (queryArg) => ({
         url: `/threads`,
         method: "POST",
-        body: { title: queryArg.title, body: queryArg.body, bookId: queryArg.bookId, spoiler: queryArg.spoiler },
+        body: queryArg,
       }),
+      invalidatesTags: ["Thread"],
     }),
     getThreadsById: build.query<
       GetThreadsByIdApiResponse,
       GetThreadsByIdApiArg
     >({
-      query: (queryArg) => ({ url: `/threads/${queryArg.id}` }),
+      query: (queryArg) => ({ url: `/threads/${queryArg}` }),
+      providesTags: ["Thread"],
     }),
     deleteThreadsById: build.mutation<
       DeleteThreadsByIdApiResponse,
       DeleteThreadsByIdApiArg
     >({
-      query: (queryArg) => ({
-        url: `/threads/${queryArg.id}`,
-        method: "DELETE",
-      }),
+      query: (queryArg) => ({ url: `/threads/${queryArg}`, method: "DELETE" }),
+      invalidatesTags: ["Thread"],
     }),
     postThreadsByIdReplies: build.mutation<
       PostThreadsByIdRepliesApiResponse,
@@ -41,17 +42,19 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/threads/${queryArg.id}/replies`,
         method: "POST",
-        body: { body: queryArg.body },
+        body: queryArg.body,
       }),
+      invalidatesTags: ["Thread"],
     }),
     postThreadsByIdLike: build.mutation<
       PostThreadsByIdLikeApiResponse,
       PostThreadsByIdLikeApiArg
     >({
       query: (queryArg) => ({
-        url: `/threads/${queryArg.id}/like`,
+        url: `/threads/${queryArg}/like`,
         method: "POST",
       }),
+      invalidatesTags: ["Thread"],
     }),
   }),
   overrideExisting: false,
@@ -76,27 +79,23 @@ export type PostThreadsApiArg = {
 };
 export type GetThreadsByIdApiResponse =
   /** status 200 Default Response */ ThreadDetail;
-export type GetThreadsByIdApiArg = {
-  id: string;
-};
+export type GetThreadsByIdApiArg = string;
 export type DeleteThreadsByIdApiResponse = unknown;
-export type DeleteThreadsByIdApiArg = {
-  id: string;
-};
+export type DeleteThreadsByIdApiArg = string;
 export type PostThreadsByIdRepliesApiResponse =
   /** status 201 Default Response */ ThreadReply;
 export type PostThreadsByIdRepliesApiArg = {
   id: string;
-  body: string;
+  body: {
+    body: string;
+  };
 };
 export type PostThreadsByIdLikeApiResponse =
   /** status 200 Default Response */ {
     liked: boolean;
     likes: number;
   };
-export type PostThreadsByIdLikeApiArg = {
-  id: string;
-};
+export type PostThreadsByIdLikeApiArg = string;
 export type Thread = {
   id: string;
   title: string;

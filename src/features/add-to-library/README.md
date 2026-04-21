@@ -14,7 +14,7 @@ Saving and removing books is handled via RTK Query mutations from `libraryApi.ge
 
 | Hook | Effect |
 |------|--------|
-| `usePostLibraryByBookIdMutation` | Add a book to the library; invalidates the `Library` cache tag so `LibraryScreen` auto-refetches |
+| `usePostLibraryMutation` | Add a book to the library; invalidates the `Library` cache tag so `LibraryScreen` auto-refetches |
 | `useDeleteLibraryByBookIdMutation` | Remove a book from the library; same cache invalidation |
 
 ## UI Component — `AddToLibraryButton`

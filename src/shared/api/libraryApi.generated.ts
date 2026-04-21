@@ -6,6 +6,7 @@ const injectedRtkApi = api.injectEndpoints({
       GetLibraryStatsApiArg
     >({
       query: () => ({ url: `/library/stats` }),
+      providesTags: ["Library"],
     }),
     getLibrary: build.query<GetLibraryApiResponse, GetLibraryApiArg>({
       query: (queryArg) => ({
@@ -16,16 +17,15 @@ const injectedRtkApi = api.injectEndpoints({
           status: queryArg.status,
         },
       }),
+      providesTags: ["Library"],
     }),
-    postLibraryByBookId: build.mutation<
-      PostLibraryByBookIdApiResponse,
-      PostLibraryByBookIdApiArg
-    >({
+    postLibrary: build.mutation<PostLibraryApiResponse, PostLibraryApiArg>({
       query: (queryArg) => ({
         url: `/library`,
         method: "POST",
-        body: { bookId: queryArg.bookId, status: queryArg.status ?? "want" },
+        body: queryArg,
       }),
+      invalidatesTags: ["Library", "Feed", "User"],
     }),
     patchLibraryByBookId: build.mutation<
       PatchLibraryByBookIdApiResponse,
@@ -34,21 +34,16 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/library/${queryArg.bookId}`,
         method: "PATCH",
-        body: {
-          ...(queryArg.status !== undefined && { status: queryArg.status }),
-          ...(queryArg.progressPct !== undefined && { progressPct: queryArg.progressPct }),
-          ...(queryArg.isCurrent !== undefined && { isCurrent: queryArg.isCurrent }),
-        },
+        body: queryArg.body,
       }),
+      invalidatesTags: ["Library", "User"],
     }),
     deleteLibraryByBookId: build.mutation<
       DeleteLibraryByBookIdApiResponse,
       DeleteLibraryByBookIdApiArg
     >({
-      query: (queryArg) => ({
-        url: `/library/${queryArg.bookId}`,
-        method: "DELETE",
-      }),
+      query: (queryArg) => ({ url: `/library/${queryArg}`, method: "DELETE" }),
+      invalidatesTags: ["Library", "User"],
     }),
   }),
   overrideExisting: false,
@@ -66,22 +61,25 @@ export type GetLibraryApiArg = {
   limit?: number;
   status?: "want" | "reading" | "finished";
 };
-export type PostLibraryByBookIdApiResponse = unknown;
-export type PostLibraryByBookIdApiArg = {
+export type PostLibraryApiResponse =
+  /** status 201 Default Response */ LibraryBook;
+export type PostLibraryApiArg = {
   bookId: string;
-  status?: "want" | "reading" | "finished";
+  status: "want" | "reading" | "finished";
 };
-export type PatchLibraryByBookIdApiResponse = LibraryBook;
+export type PatchLibraryByBookIdApiResponse =
+  /** status 200 Default Response */ LibraryBook;
 export type PatchLibraryByBookIdApiArg = {
   bookId: string;
-  status?: "want" | "reading" | "finished";
-  progressPct?: number;
-  isCurrent?: boolean;
+  body: {
+    status?: "want" | "reading" | "finished";
+    progressPct?: number;
+    timeLeftMin?: number | null;
+    isCurrent?: boolean;
+  };
 };
 export type DeleteLibraryByBookIdApiResponse = unknown;
-export type DeleteLibraryByBookIdApiArg = {
-  bookId: string;
-};
+export type DeleteLibraryByBookIdApiArg = string;
 export type LibraryStats = {
   finished: number;
   reading: number;
@@ -115,7 +113,7 @@ export const {
   useLazyGetLibraryStatsQuery,
   useGetLibraryQuery,
   useLazyGetLibraryQuery,
-  usePostLibraryByBookIdMutation,
+  usePostLibraryMutation,
   usePatchLibraryByBookIdMutation,
   useDeleteLibraryByBookIdMutation,
 } = injectedRtkApi;

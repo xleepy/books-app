@@ -283,6 +283,16 @@ npm run codegen
 
 The config is in `openapi-config.js`. Output goes to `src/shared/api/`.
 
+### API Shape Mismatch
+
+The backend OpenAPI schema and the frontend call sites don't always align on body shapes. A `post-codegen` patch script (`scripts/post-codegen.js`) runs automatically after `codegen` to normalize:
+
+- `discussionsApi`: `PostThreadsApiArg` flat (not `{ body: { ... } }`), same for `PostThreadsByIdRepliesApiArg`
+- `libraryApi`: `PostLibraryApiArg` flat, `PatchLibraryByBookIdApiArg` flat (no nested `body`), endpoint renamed to `postLibraryByBookId`
+- `swipesApi`: `PostSwipesApiArg` flat
+
+If codegen produces type errors after running `npm run codegen`, update `scripts/post-codegen.js` with the string replacements needed.
+
 ### Customizing Generated APIs
 
 Do NOT edit files in `src/shared/api/*.generated.ts`. Instead:

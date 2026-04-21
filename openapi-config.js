@@ -3,6 +3,7 @@ const config = {
   schemaFile: "http://localhost:3000/docs/json",
   apiFile: "./src/store/api/apiSlice.ts",
   hooks: { queries: true, lazyQueries: true, mutations: true },
+  flattenArg: true,
   outputFiles: {
     "./src/shared/api/authApi.generated.ts": {
       exportName: "authApi",
@@ -10,31 +11,60 @@ const config = {
     },
     "./src/shared/api/booksApi.generated.ts": {
       exportName: "booksApi",
-      filterEndpoints: [/^getBooks/, /^getBooksById/, /^getBooksFeed/],
+      filterEndpoints: ["getBooks", "getBooksFeed", "getBooksById", "getBooksByIdRecommendations"],
+      endpointOverrides: [
+        { pattern: "getBooksFeed", providesTags: ["Feed"] },
+      ],
     },
     "./src/shared/api/reviewsApi.generated.ts": {
       exportName: "reviewsApi",
-      filterEndpoints: [/Review/],
+      filterEndpoints: ["getBooksByIdReviews", "postBooksByIdReviews"],
+      endpointOverrides: [
+        { pattern: "getBooksByIdReviews", providesTags: ["Review"] },
+        { pattern: "postBooksByIdReviews", invalidatesTags: ["Review"] },
+      ],
     },
     "./src/shared/api/libraryApi.generated.ts": {
       exportName: "libraryApi",
-      filterEndpoints: [/^getLibrary/, /^postLibrary/, /^patchLibrary/, /^deleteLibrary/],
+      filterEndpoints: ["getLibraryStats", "getLibrary", "postLibrary", "patchLibraryByBookId", "deleteLibraryByBookId"],
+      endpointOverrides: [
+        { pattern: "getLibraryStats", providesTags: ["Library"] },
+        { pattern: "getLibrary", providesTags: ["Library"] },
+        { pattern: "postLibrary", invalidatesTags: ["Library", "Feed", "User"] },
+        { pattern: "patchLibraryByBookId", invalidatesTags: ["Library", "User"] },
+        { pattern: "deleteLibraryByBookId", invalidatesTags: ["Library", "User"] },
+      ],
     },
     "./src/shared/api/meApi.generated.ts": {
       exportName: "meApi",
-      filterEndpoints: [/^getMe/],
+      filterEndpoints: ["getMe", "getMeBadges"],
+      endpointOverrides: [
+        { pattern: "getMe", providesTags: ["User"] },
+        { pattern: "getMeBadges", providesTags: ["User"] },
+      ],
     },
     "./src/shared/api/swipesApi.generated.ts": {
       exportName: "swipesApi",
-      filterEndpoints: [/Swipe/],
+      filterEndpoints: ["postSwipes"],
+      endpointOverrides: [
+        { pattern: "postSwipes", invalidatesTags: ["Feed"] },
+      ],
     },
     "./src/shared/api/discussionsApi.generated.ts": {
       exportName: "discussionsApi",
-      filterEndpoints: [/Thread/],
+      filterEndpoints: ["getThreads", "getThreadsById", "postThreads", "deleteThreadsById", "postThreadsByIdReplies", "postThreadsByIdLike"],
+      endpointOverrides: [
+        { pattern: "getThreads", providesTags: ["Thread"] },
+        { pattern: "getThreadsById", providesTags: ["Thread"] },
+        { pattern: "postThreads", invalidatesTags: ["Thread"] },
+        { pattern: "deleteThreadsById", invalidatesTags: ["Thread"] },
+        { pattern: "postThreadsByIdReplies", invalidatesTags: ["Thread"] },
+        { pattern: "postThreadsByIdLike", invalidatesTags: ["Thread"] },
+      ],
     },
     "./src/shared/api/challengesApi.generated.ts": {
       exportName: "challengesApi",
-      filterEndpoints: [/Challenge/],
+      filterEndpoints: ["getChallenges", "getChallengesByIdLeaderboard"],
     },
   },
 };
