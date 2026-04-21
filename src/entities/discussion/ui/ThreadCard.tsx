@@ -1,16 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Heart, MessageCircle } from 'lucide-react-native';
 import { colors, fontFamily } from '@shared/theme';
 import { BookCover } from '@entities/book/ui/BookCover';
+import { Avatar } from '@shared/ui';
 import { Thread } from '../model/types';
 
 interface ThreadCardProps {
   thread: Thread;
+  onPress?: () => void;
 }
 
-export function ThreadCard({ thread }: ThreadCardProps) {
+export function ThreadCard({ thread, onPress }: ThreadCardProps) {
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.top}>
         <BookCover coverUrl={thread.coverUrl} width={48} height={68} radius={6} shadow={false} />
         <View style={styles.info}>
@@ -45,7 +47,15 @@ export function ThreadCard({ thread }: ThreadCardProps) {
         </View>
         <Text style={styles.time}>{thread.timeAgo}</Text>
       </View>
-    </View>
+      <View style={styles.author}>
+        <Avatar
+          initials={thread.creatorName.split(' ').filter(Boolean).map((p) => p[0]).join('')}
+          size={20}
+          hue={thread.creatorAvatarHue}
+        />
+        <Text style={styles.authorName}>{thread.creatorName}</Text>
+      </View>
+    </Pressable>
   );
 }
 
@@ -67,7 +77,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    fontFamily: fontFamily.semibold,
+    fontFamily: fontFamily.bold,
     fontSize: 15,
     color: colors.fontPrimary,
   },
@@ -117,6 +127,16 @@ const styles = StyleSheet.create({
   time: {
     fontFamily: fontFamily.regular,
     fontSize: 12,
+    color: colors.fontTertiary,
+  },
+  author: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  authorName: {
+    fontFamily: fontFamily.regular,
+    fontSize: 11,
     color: colors.fontTertiary,
   },
 });

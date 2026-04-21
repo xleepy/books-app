@@ -7,11 +7,13 @@ import { LibraryListScreen } from "@pages/library/ui/LibraryListScreen";
 import { ProgressScreen } from "@pages/progress/ui/ProgressScreen";
 import { SettingsScreen } from "@pages/settings/ui/SettingsScreen";
 import { LoginScreen } from "@pages/auth/ui/LoginScreen";
+import { ThreadDetailScreen } from "@pages/discussions/ui/ThreadDetailScreen";
+import { CreateThreadScreen } from "@pages/discussions/ui/CreateThreadScreen";
 import { TabNavigator } from "./TabNavigator";
 import { RootStackParamList } from "./types";
 import { supabase } from "@shared/lib/supabase";
 import { setSession } from "@features/auth/model/authSlice";
-import { useGetMeQuery } from "@store/api/meApi.generated";
+import { useGetMeQuery } from "@shared/api/meApi.generated";
 import type { RootState, AppDispatch } from "@store/store";
 import { colors } from "@shared/theme";
 
@@ -57,6 +59,12 @@ export function RootNavigator() {
       <Stack.Screen name="LibraryList" component={LibraryListScreen} />
       <Stack.Screen name="Progress" component={ProgressScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="ThreadDetail" component={ThreadDetailScreen} />
+      <Stack.Screen
+        name="CreateThread"
+        component={CreateThreadScreen}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }

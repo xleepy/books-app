@@ -1,1 +1,1 @@
-export type { Review } from '@store/api/reviewsApi.generated';
+export type { Review } from '@shared/api/reviewsApi.generated';

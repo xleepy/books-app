@@ -1,6 +1,15 @@
-import { api } from "./apiSlice";
+import { api } from "../../store/api/apiSlice";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getBooksFeed: build.query<GetBooksFeedApiResponse, GetBooksFeedApiArg>({
+      query: (queryArg) => ({
+        url: `/books/feed`,
+        params: {
+          cursor: queryArg.cursor,
+          limit: queryArg.limit,
+        },
+      }),
+    }),
     getBooks: build.query<GetBooksApiResponse, GetBooksApiArg>({
       query: (queryArg) => ({
         url: `/books`,
@@ -26,20 +35,31 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
-    getBooksFeed: build.query<GetBooksFeedApiResponse, GetBooksFeedApiArg>({
+    getBooksByIdReviews: build.query<
+      GetBooksByIdReviewsApiResponse,
+      GetBooksByIdReviewsApiArg
+    >({
       query: (queryArg) => ({
-        url: `/books/feed`,
+        url: `/books/${queryArg.id}/reviews`,
         params: {
-          cursor: queryArg.cursor,
+          page: queryArg.page,
           limit: queryArg.limit,
         },
       }),
-      providesTags: ["Feed"],
     }),
   }),
   overrideExisting: false,
 });
 export { injectedRtkApi as booksApi };
+export type GetBooksFeedApiResponse = /** status 200 Default Response */ {
+  data: Book[];
+  nextCursor?: string | null;
+};
+export type GetBooksFeedApiArg = {
+  /** Opaque pagination cursor */
+  cursor?: string;
+  limit?: number;
+};
 export type GetBooksApiResponse = /** status 200 Default Response */ {
   data: Book[];
   pagination: Pagination;
@@ -47,9 +67,9 @@ export type GetBooksApiResponse = /** status 200 Default Response */ {
 export type GetBooksApiArg = {
   page?: number;
   limit?: number;
-  /** Full-text search */
+  /** Full-text search on title / author */
   q?: string;
-  /** Filter by genre/tag */
+  /** Filter by subject slug */
   tag?: string;
 };
 export type GetBooksByIdApiResponse = /** status 200 Default Response */ Book;
@@ -61,6 +81,16 @@ export type GetBooksByIdRecommendationsApiResponse =
     data: Book[];
   };
 export type GetBooksByIdRecommendationsApiArg = {
+  limit?: number;
+  id: string;
+};
+export type GetBooksByIdReviewsApiResponse =
+  /** status 200 Default Response */ {
+    data: Review[];
+    pagination: Pagination;
+  };
+export type GetBooksByIdReviewsApiArg = {
+  page?: number;
   limit?: number;
   id: string;
 };
@@ -79,25 +109,27 @@ export type Pagination = {
   page: number;
   limit: number;
 };
-export type GetBooksFeedApiResponse = {
-  data: Book[];
-  nextCursor?: string | null;
-};
-export type GetBooksFeedApiArg = {
-  cursor?: string;
-  limit?: number;
-};
 export type ApiError = {
   error: string;
   message: string;
 };
+export type Review = {
+  id: string;
+  reviewer: string;
+  date: string;
+  rating: number;
+  text: string;
+  avatarHue: number;
+};
 export const {
+  useGetBooksFeedQuery,
+  useLazyGetBooksFeedQuery,
   useGetBooksQuery,
   useLazyGetBooksQuery,
   useGetBooksByIdQuery,
   useLazyGetBooksByIdQuery,
   useGetBooksByIdRecommendationsQuery,
   useLazyGetBooksByIdRecommendationsQuery,
-  useGetBooksFeedQuery,
-  useLazyGetBooksFeedQuery,
+  useGetBooksByIdReviewsQuery,
+  useLazyGetBooksByIdReviewsQuery,
 } = injectedRtkApi;

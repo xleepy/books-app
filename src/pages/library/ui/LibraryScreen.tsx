@@ -2,11 +2,11 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Star } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useGetLibraryQuery, useGetLibraryStatsQuery } from '@store/api/libraryApi.generated';
+import { useGetLibraryQuery, useGetLibraryStatsQuery } from '@shared/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { ReadingCard } from '@widgets/reading-card/ui/ReadingCard';
-import { ScreenHeader } from '@pages/_shared/ScreenHeader';
-import { Screen } from '@pages/_shared/Screen';
+import { ScreenHeader } from '@shared/ui/ScreenHeader';
+import { Screen } from '@shared/ui/Screen';
 import { colors, fontFamily } from '@shared/theme';
 import { RootStackParamList } from '@app/navigation/types';
 

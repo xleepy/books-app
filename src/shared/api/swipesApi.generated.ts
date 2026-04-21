@@ -1,4 +1,4 @@
-import { api } from "./apiSlice";
+import { api } from "../../store/api/apiSlice";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     postSwipes: build.mutation<PostSwipesApiResponse, PostSwipesApiArg>({
@@ -7,7 +7,6 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: { bookId: queryArg.bookId, direction: queryArg.direction },
       }),
-      invalidatesTags: ["Feed"],
     }),
   }),
   overrideExisting: false,
@@ -17,5 +16,9 @@ export type PostSwipesApiResponse = unknown;
 export type PostSwipesApiArg = {
   bookId: string;
   direction: "left" | "right";
+};
+export type ApiError = {
+  error: string;
+  message: string;
 };
 export const { usePostSwipesMutation } = injectedRtkApi;

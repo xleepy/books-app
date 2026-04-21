@@ -6,44 +6,45 @@
 
 ## Purpose
 
-Community hub where users browse, search, and filter book discussion threads. Users can also start new threads.
+Community hub where users browse, search, and filter live book discussion threads. Users can start new threads, navigate to thread detail, and filter their own or community threads.
 
 ## Layout
 
 ```
 ┌─────────────────────────────┐
-│  "Discussions"          [+] │  ← + button starts a new thread
+│  "Discussions"          [+] │  ← + navigates to CreateThread (modal)
 ├─────────────────────────────┤
-│  🔍 Search discussions...   │
+│  🔍 Search discussions...   │  ← controlled TextInput, debounced via state
 ├─────────────────────────────┤
 │  [All] [Popular] [Recent]   │
-│  [My Threads]               │  ← FilterRow (horizontal scroll)
+│  [My Threads]               │  ← FilterRow, onChange fires API refetch
 ├─────────────────────────────┤
-│  Thread card                │
+│  Thread card                │  ← tappable → ThreadDetail
 │  Thread card                │
 │  Thread card                │
 │  …                          │
+│  — or —                     │
+│  "No threads yet — …"       │  ← empty state
 └─────────────────────────────┘
 │  Pill tab bar               │
 └─────────────────────────────┘
 ```
 
-The full content area is inside a scrollable `Screen` component.
-
 ## User flow
 
-1. Screen loads with all threads from `mockThreads`.
-2. **Search bar** — free-text input to filter threads by keyword (UI only, no filtering logic yet).
-3. **Filter chips** — one of `All / Popular / Recent / My Threads` is active at a time; managed by `FilterRow` internally.
-4. **Thread cards** — tapping a card would navigate to a thread detail view (not yet implemented).
-5. **`+` button** — intended entry point for creating a new thread (not yet implemented).
+1. Screen mounts → `useGetThreadsQuery({ filter: 'recent' })` fires; thread list renders.
+2. **Search bar** — `TextInput` controls `search` state; a `useEffect` debounces it 300ms before it's passed to the query.
+3. **Filter chips** — `FilterRow` calls `onChange` which maps the label to an API `filter` value (`all | popular | recent | mine`) and triggers a re-query. Initial active chip: `Recent`.
+4. **Thread cards** — each card shows cover thumbnail (or placeholder), title, book context, preview text, reply count, like count, author avatar + name, and relative time. Tapping navigates to `ThreadDetail`.
+5. **`+` button** — navigates to `CreateThread` (modal presentation).
+6. **Empty state** — displayed when the query returns no results; message changes depending on whether a search term is active.
 
 ## Navigation targets
 
 | Trigger | Destination |
 |---------|-------------|
-| Thread card tap | Thread detail (not yet implemented) |
-| `+` button | New thread flow (not yet implemented) |
+| Thread card tap | `ThreadDetail` `{ threadId: string }` |
+| `+` button | `CreateThread` (modal) |
 
 ## Key components used
 
@@ -52,10 +53,34 @@ The full content area is inside a scrollable `Screen` component.
 | `FilterRow` | `@features/filter-list/ui/FilterRow` |
 | `ThreadCard` | `@entities/discussion/ui/ThreadCard` |
 
+### `ThreadCard` typography note
+
+The thread title inside `ThreadCard` uses `fontFamily.bold` (`Inter_700Bold`, 15 px) — matching the weight used for the same title in `ThreadDetailScreen` (`Inter_700Bold`, 17 px). The size intentionally differs (compact list vs full view), but the weight is consistent.
+
+## API
+
+```ts
+useGetThreadsQuery({
+  filter?: 'all' | 'popular' | 'recent' | 'mine',
+  search?: string,   // sent only when ≥ 1 character after debounce
+  page?: number,
+  limit?: number,    // default 20
+})
+```
+
+`popular` sorts by `likes DESC`, `recent` by `createdAt DESC`, `mine` scopes to the authenticated user's threads.
+
 ## Filters
 
 ```ts
 filters={['All', 'Popular', 'Recent', 'My Threads']}
 ```
 
-Initial active filter: `'All'` (default first item). See [feature docs](../../src/features/filter-list/README.md).
+Label → API `filter` mapping:
+
+| Label | API value |
+|-------|-----------|
+| All | `all` |
+| Popular | `popular` |
+| Recent | `recent` |
+| My Threads | `mine` |

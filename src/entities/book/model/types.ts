@@ -1,1 +1,1 @@
-export type { Book } from '@store/api/booksApi.generated';
+export type { Book } from '@shared/api/booksApi.generated';

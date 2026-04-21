@@ -1,29 +1,66 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { Compass, LucideIcon, Star, Zap } from 'lucide-react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import {
+  Award,
+  BookOpen,
+  Compass,
+  Flame,
+  LucideIcon,
+  ShieldCheck,
+  Star,
+  Trophy,
+  Zap,
+} from 'lucide-react-native';
 import { colors, fontFamily } from '@shared/theme';
+import { UserBadge } from '@shared/api/meApi.generated';
 
-interface Badge {
-  icon: LucideIcon;
-  label: string;
+// Map badge slugs to a Lucide icon — falls back to Award for unrecognised slugs
+const BADGE_ICONS: Record<string, LucideIcon> = {
+  'first-chapter': BookOpen,
+  'on-fire': Flame,
+  critic: Star,
+  centurion: Trophy,
+  champion: ShieldCheck,
+  // legacy / extra
+  'speed-reader': Zap,
+  'night-owl': Zap,
+  explorer: Compass,
+};
+
+interface BadgesRowProps {
+  badges: UserBadge[];
+  isLoading?: boolean;
 }
 
-const BADGES: Badge[] = [
-  { icon: Star, label: 'Speed Reader' },
-  { icon: Zap, label: 'Night Owl' },
-  { icon: Compass, label: 'Explorer' },
-];
+export function BadgesRow({ badges, isLoading }: BadgesRowProps) {
+  if (isLoading) {
+    return (
+      <View style={styles.loadingWrap}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
+    );
+  }
 
-export function BadgesRow() {
+  if (!badges.length) {
+    return (
+      <View style={styles.emptyWrap}>
+        <Text style={styles.emptyText}>No badges earned yet — keep reading!</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.row}>
-      {BADGES.map(({ icon: Icon, label }) => (
-        <View key={label} style={styles.col}>
-          <View style={styles.circle}>
-            <Icon size={24} color={colors.badgeGold} fill={colors.badgeGold} />
+      {badges.map((badge) => {
+        const Icon = BADGE_ICONS[badge.slug] ?? Award;
+        return (
+          <View key={badge.slug} style={styles.col}>
+            <View style={styles.circle}>
+              <Icon size={24} color={colors.badgeGold} fill={colors.badgeGold} />
+            </View>
+            <Text style={styles.label} numberOfLines={2}>{badge.name}</Text>
           </View>
-          <Text style={styles.label}>{label}</Text>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }
@@ -31,10 +68,11 @@ export function BadgesRow() {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
   },
   col: {
-    flex: 1,
+    width: 72,
     alignItems: 'center',
     gap: 8,
   },
@@ -51,5 +89,17 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: colors.fontSecondary,
     textAlign: 'center',
+  },
+  loadingWrap: {
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  emptyWrap: {
+    paddingVertical: 12,
+  },
+  emptyText: {
+    fontFamily: fontFamily.regular,
+    fontSize: 13,
+    color: colors.fontSecondary,
   },
 });

@@ -1,16 +1,16 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Trophy } from 'lucide-react-native';
-import { useGetChallengesQuery } from '@store/api/challengesApi.generated';
-import { useGetChallengesByIdLeaderboardQuery } from '@store/api/challengesApi.generated';
+import { useGetChallengesQuery } from '@shared/api/challengesApi.generated';
+import { useGetChallengesByIdLeaderboardQuery } from '@shared/api/challengesApi.generated';
 import { ChallengeCard } from '@entities/challenge/ui/ChallengeCard';
 import { FilterRow } from '@features/filter-list/ui/FilterRow';
 import { LeaderboardSection } from '@widgets/leaderboard/ui/LeaderboardSection';
-import { Screen } from '@pages/_shared/Screen';
-import { ScreenHeader } from '@pages/_shared/ScreenHeader';
+import { Screen } from '@shared/ui/Screen';
+import { ScreenHeader } from '@shared/ui/ScreenHeader';
 import { colors, fontFamily } from '@shared/theme';
 
 export function ChallengesScreen() {
-  const { data: challengesData, isLoading: challengesLoading } = useGetChallengesQuery();
+  const { data: challengesData, isLoading: challengesLoading } = useGetChallengesQuery({});
   const challenges = challengesData?.data ?? [];
   const firstChallengeId = challenges[0]?.id;
 

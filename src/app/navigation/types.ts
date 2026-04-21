@@ -4,6 +4,8 @@ export type RootStackParamList = {
   LibraryList: { initialStatus?: 'want' | 'reading' | 'finished' };
   Progress: undefined;
   Settings: undefined;
+  ThreadDetail: { threadId: string };
+  CreateThread: undefined;
 };
 
 export type TabParamList = {

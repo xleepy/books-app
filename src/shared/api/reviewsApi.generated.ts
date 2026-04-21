@@ -1,4 +1,4 @@
-import { api } from "./apiSlice";
+import { api } from "../../store/api/apiSlice";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getBooksByIdReviews: build.query<

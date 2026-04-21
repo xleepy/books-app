@@ -7,11 +7,12 @@ import { LevelCard } from '@widgets/level-card/ui/LevelCard';
 import { StreakCard } from '@widgets/streak-card/ui/StreakCard';
 import { StatsGrid } from '@widgets/stats-grid/ui/StatsGrid';
 import { BadgesRow } from '@widgets/badges-row/ui/BadgesRow';
-import { Screen } from '@pages/_shared/Screen';
+import { Screen } from '@shared/ui/Screen';
 import { colors, fontFamily } from '@shared/theme';
 import { Avatar } from '@shared/ui';
 import { RootState } from '@store/store';
 import { RootStackParamList } from '@app/navigation/types';
+import { useGetMeBadgesQuery } from '@shared/api/meApi.generated';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -19,6 +20,8 @@ export function ProgressScreen() {
   const navigation = useNavigation<Nav>();
   const user = useSelector((state: RootState) => state.user.user);
   const stats = useSelector((state: RootState) => state.user.stats);
+  const { data: badgesData, isLoading: badgesLoading } = useGetMeBadgesQuery();
+  const badges = badgesData?.data ?? [];
 
   return (
     <Screen scroll>
@@ -57,7 +60,7 @@ export function ProgressScreen() {
         <Text style={styles.badgesTitle}>Recent Badges</Text>
         <Text style={styles.seeAll}>See all</Text>
       </View>
-      <BadgesRow />
+      <BadgesRow badges={badges} isLoading={badgesLoading} />
     </Screen>
   );
 }

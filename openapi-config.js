@@ -4,37 +4,37 @@ const config = {
   apiFile: "./src/store/api/apiSlice.ts",
   hooks: { queries: true, lazyQueries: true, mutations: true },
   outputFiles: {
-    "./src/store/api/authApi.generated.ts": {
+    "./src/shared/api/authApi.generated.ts": {
       exportName: "authApi",
-      filterEndpoints: ["postAuthRegister", "postAuthLogin"],
+      filterEndpoints: [/postAuth/],
     },
-    "./src/store/api/booksApi.generated.ts": {
+    "./src/shared/api/booksApi.generated.ts": {
       exportName: "booksApi",
-      filterEndpoints: ["getBooks", "getBooksFeed", "getBooksById", "getBooksByIdRecommendations"],
+      filterEndpoints: [/^getBooks/, /^getBooksById/, /^getBooksFeed/],
     },
-    "./src/store/api/reviewsApi.generated.ts": {
+    "./src/shared/api/reviewsApi.generated.ts": {
       exportName: "reviewsApi",
-      filterEndpoints: ["getBooksByIdReviews", "postBooksByIdReviews"],
+      filterEndpoints: [/Review/],
     },
-    "./src/store/api/libraryApi.generated.ts": {
+    "./src/shared/api/libraryApi.generated.ts": {
       exportName: "libraryApi",
-      filterEndpoints: ["getLibraryStats", "getLibrary", "postLibraryByBookId", "deleteLibraryByBookId"],
+      filterEndpoints: [/^getLibrary/, /^postLibrary/, /^patchLibrary/, /^deleteLibrary/],
     },
-    "./src/store/api/meApi.generated.ts": {
+    "./src/shared/api/meApi.generated.ts": {
       exportName: "meApi",
-      filterEndpoints: ["getMe"],
+      filterEndpoints: [/^getMe/],
     },
-    "./src/store/api/swipesApi.generated.ts": {
+    "./src/shared/api/swipesApi.generated.ts": {
       exportName: "swipesApi",
-      filterEndpoints: ["postSwipes"],
+      filterEndpoints: [/Swipe/],
     },
-    "./src/store/api/discussionsApi.generated.ts": {
+    "./src/shared/api/discussionsApi.generated.ts": {
       exportName: "discussionsApi",
-      filterEndpoints: ["getDiscussions", "getDiscussionsById", "postDiscussionsByIdLike"],
+      filterEndpoints: [/Thread/],
     },
-    "./src/store/api/challengesApi.generated.ts": {
+    "./src/shared/api/challengesApi.generated.ts": {
       exportName: "challengesApi",
-      filterEndpoints: ["getChallenges", "getChallengesByIdLeaderboard"],
+      filterEndpoints: [/Challenge/],
     },
   },
 };

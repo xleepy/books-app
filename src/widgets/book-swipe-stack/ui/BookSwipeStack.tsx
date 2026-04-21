@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Book, useGetBooksFeedQuery } from '@store/api/booksApi.generated';
-import { usePostLibraryByBookIdMutation } from '@store/api/libraryApi.generated';
-import { usePostSwipesMutation } from '@store/api/swipesApi.generated';
+import { Book, useGetBooksFeedQuery } from '@shared/api/booksApi.generated';
+import { usePostLibraryByBookIdMutation } from '@shared/api/libraryApi.generated';
+import { usePostSwipesMutation } from '@shared/api/swipesApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { nextCard } from '@features/swipe-book/model/swipeSlice';

@@ -3,12 +3,12 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ChevronLeft, Trash2 } from 'lucide-react-native';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useGetBooksByIdQuery } from '@store/api/booksApi.generated';
+import { useGetBooksByIdQuery } from '@shared/api/booksApi.generated';
 import {
   usePostLibraryByBookIdMutation,
   usePatchLibraryByBookIdMutation,
   useDeleteLibraryByBookIdMutation,
-} from '@store/api/libraryApi.generated';
+} from '@shared/api/libraryApi.generated';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { AddToLibraryButton } from '@features/add-to-library/ui/AddToLibraryButton';

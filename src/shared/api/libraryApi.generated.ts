@@ -1,4 +1,4 @@
-import { api } from "./apiSlice";
+import { api } from "../../store/api/apiSlice";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getLibraryStats: build.query<
@@ -6,7 +6,6 @@ const injectedRtkApi = api.injectEndpoints({
       GetLibraryStatsApiArg
     >({
       query: () => ({ url: `/library/stats` }),
-      providesTags: ["Library"],
     }),
     getLibrary: build.query<GetLibraryApiResponse, GetLibraryApiArg>({
       query: (queryArg) => ({
@@ -17,7 +16,6 @@ const injectedRtkApi = api.injectEndpoints({
           status: queryArg.status,
         },
       }),
-      providesTags: ["Library"],
     }),
     postLibraryByBookId: build.mutation<
       PostLibraryByBookIdApiResponse,
@@ -28,7 +26,6 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: { bookId: queryArg.bookId, status: queryArg.status ?? "want" },
       }),
-      invalidatesTags: ["Library", "Feed"],
     }),
     patchLibraryByBookId: build.mutation<
       PatchLibraryByBookIdApiResponse,
@@ -43,7 +40,6 @@ const injectedRtkApi = api.injectEndpoints({
           ...(queryArg.isCurrent !== undefined && { isCurrent: queryArg.isCurrent }),
         },
       }),
-      invalidatesTags: ["Library"],
     }),
     deleteLibraryByBookId: build.mutation<
       DeleteLibraryByBookIdApiResponse,
@@ -53,7 +49,6 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/library/${queryArg.bookId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Library"],
     }),
   }),
   overrideExisting: false,

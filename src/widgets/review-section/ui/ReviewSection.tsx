@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { ReviewCard } from '@entities/review/ui/ReviewCard';
-import { useGetBooksByIdReviewsQuery } from '@store/api/reviewsApi.generated';
+import { useGetBooksByIdReviewsQuery } from '@shared/api/reviewsApi.generated';
 import { colors, fontFamily } from '@shared/theme';
 import { StarRating } from '@shared/ui';
 

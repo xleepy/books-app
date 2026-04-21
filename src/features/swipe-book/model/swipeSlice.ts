@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { booksApi } from "@store/api/booksApi.generated";
+import { booksApi } from "@shared/api/booksApi.generated";
 
 interface SwipeState {
   currentIndex: number;

@@ -1,8 +1,19 @@
-import { api } from "./apiSlice";
+import { api } from "../../store/api/apiSlice";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     getChallenges: build.query<GetChallengesApiResponse, GetChallengesApiArg>({
-      query: () => ({ url: `/challenges` }),
+      query: (queryArg) => ({
+        url: `/challenges`,
+        params: {
+          filter: queryArg.filter,
+        },
+      }),
+    }),
+    getChallengesByIdProgress: build.query<
+      GetChallengesByIdProgressApiResponse,
+      GetChallengesByIdProgressApiArg
+    >({
+      query: (queryArg) => ({ url: `/challenges/${queryArg.id}/progress` }),
     }),
     getChallengesByIdLeaderboard: build.query<
       GetChallengesByIdLeaderboardApiResponse,
@@ -22,7 +33,20 @@ export { injectedRtkApi as challengesApi };
 export type GetChallengesApiResponse = /** status 200 Default Response */ {
   data: Challenge[];
 };
-export type GetChallengesApiArg = void;
+export type GetChallengesApiArg = {
+  filter?: "active" | "monthly" | "yearly";
+};
+export type GetChallengesByIdProgressApiResponse =
+  /** status 200 Default Response */ {
+    challengeId: string;
+    current: number;
+    target: number;
+    completed: boolean;
+    completedAt?: string | null;
+  };
+export type GetChallengesByIdProgressApiArg = {
+  id: string;
+};
 export type GetChallengesByIdLeaderboardApiResponse =
   /** status 200 Default Response */ {
     data: LeaderboardEntry[];
@@ -59,6 +83,8 @@ export type LeaderboardEntry = {
 export const {
   useGetChallengesQuery,
   useLazyGetChallengesQuery,
+  useGetChallengesByIdProgressQuery,
+  useLazyGetChallengesByIdProgressQuery,
   useGetChallengesByIdLeaderboardQuery,
   useLazyGetChallengesByIdLeaderboardQuery,
 } = injectedRtkApi;
