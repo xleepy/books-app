@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGetBooksByIdQuery } from '@shared/api/booksApi.generated';
 import {
+  useGetLibraryQuery,
   usePostLibraryMutation,
   usePatchLibraryByBookIdMutation,
   useDeleteLibraryByBookIdMutation,
@@ -12,6 +13,7 @@ import {
 import { BookCover } from '@entities/book/ui/BookCover';
 import { BookMeta } from '@entities/book/ui/BookMeta';
 import { AddToLibraryButton } from '@features/add-to-library/ui/AddToLibraryButton';
+import { ReadingProgressForm } from '@features/reading-progress';
 import { UserAvatar } from '@features/user-avatar';
 import { ReviewSection } from '@widgets/review-section/ui/ReviewSection';
 import { colors, fontFamily } from '@shared/theme';
@@ -29,13 +31,21 @@ export function BookDetailScreen() {
   const [libraryStatus, setLibraryStatus] = useState(initialLibraryStatus);
 
   const { data: book, isLoading } = useGetBooksByIdQuery(bookId);
+  const { data: libraryData } = useGetLibraryQuery({});
   const [addToLibrary, { isLoading: isAdding }] = usePostLibraryMutation();
   const [patchLibrary, { isLoading: isPatching }] = usePatchLibraryByBookIdMutation();
   const [deleteFromLibrary, { isLoading: isDeleting }] = useDeleteLibraryByBookIdMutation();
 
+  const libraryItem = libraryData?.data.find((b) => b.id === bookId);
+  const pageCount = book?.pageCount ?? libraryItem?.pageCount ?? 300;
+  const initialPage = libraryItem?.currentPage ?? 0;
+
   async function handleMarkStatus(status: 'reading' | 'finished') {
     try {
-      await patchLibrary({ bookId, body: { status } }).unwrap();
+      await patchLibrary({
+        bookId,
+        body: { status },
+      }).unwrap();
       setLibraryStatus(status);
     } catch {
       Alert.alert('Error', 'Failed to update reading status. Please try again.');
@@ -79,6 +89,7 @@ export function BookDetailScreen() {
           paddingTop: insets.top + 8,
           paddingHorizontal: 20,
           paddingBottom: 120,
+          gap: 16,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -101,6 +112,17 @@ export function BookDetailScreen() {
             <Text style={styles.ratingText}>{book.rating.toFixed(1)}/5</Text>
           </View>
         </View>
+
+        {libraryStatus === 'reading' && (
+          <ReadingProgressForm
+            bookId={bookId}
+            title={book.title}
+            coverUrl={book.coverUrl}
+            pageCount={pageCount}
+            initialPage={initialPage}
+            onUpdated={(status) => setLibraryStatus(status)}
+          />
+        )}
 
         <Text style={styles.synopsis}>{book.description}</Text>
 

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BookOpen } from 'lucide-react-native';
 import { BookCover } from '@entities/book/ui/BookCover';
 import { colors, fontFamily } from '@shared/theme';
@@ -10,12 +10,13 @@ interface ReadingCardProps {
   author: string;
   progress: number;
   timeLeft: string;
+  onPress?: () => void;
 }
 
-export function ReadingCard({ coverUrl, title, author, progress, timeLeft }: ReadingCardProps) {
+export function ReadingCard({ coverUrl, title, author, progress, timeLeft, onPress }: ReadingCardProps) {
   const pct = Math.round(progress * 100);
   return (
-    <View style={styles.card}>
+    <Pressable onPress={onPress} style={styles.card}>
       <BookCover coverUrl={coverUrl} width={72} height={108} radius={8} shadow={false} />
       <View style={styles.info}>
         <Text style={styles.title}>{title}</Text>
@@ -31,7 +32,7 @@ export function ReadingCard({ coverUrl, title, author, progress, timeLeft }: Rea
           <Text style={styles.continueText}>Continue Reading</Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

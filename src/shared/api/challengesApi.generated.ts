@@ -8,6 +8,55 @@ const injectedRtkApi = api.injectEndpoints({
           filter: queryArg,
         },
       }),
+      providesTags: ["Challenge"],
+    }),
+    postChallenges: build.mutation<
+      PostChallengesApiResponse,
+      PostChallengesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/challenges`,
+        method: "POST",
+        body: queryArg,
+      }),
+      invalidatesTags: ["Challenge"],
+    }),
+    getChallengesById: build.query<
+      GetChallengesByIdApiResponse,
+      GetChallengesByIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/challenges/${queryArg}` }),
+      providesTags: ["Challenge"],
+    }),
+    deleteChallengesById: build.mutation<
+      DeleteChallengesByIdApiResponse,
+      DeleteChallengesByIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/challenges/${queryArg}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Challenge"],
+    }),
+    postChallengesByIdJoin: build.mutation<
+      PostChallengesByIdJoinApiResponse,
+      PostChallengesByIdJoinApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/challenges/${queryArg}/join`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Challenge"],
+    }),
+    postChallengesByIdLeave: build.mutation<
+      PostChallengesByIdLeaveApiResponse,
+      PostChallengesByIdLeaveApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/challenges/${queryArg}/leave`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Challenge"],
     }),
     getChallengesByIdLeaderboard: build.query<
       GetChallengesByIdLeaderboardApiResponse,
@@ -19,6 +68,7 @@ const injectedRtkApi = api.injectEndpoints({
           limit: queryArg.limit,
         },
       }),
+      providesTags: ["Challenge"],
     }),
   }),
   overrideExisting: false,
@@ -27,7 +77,31 @@ export { injectedRtkApi as challengesApi };
 export type GetChallengesApiResponse = /** status 200 Default Response */ {
   data: Challenge[];
 };
-export type GetChallengesApiArg = ("active" | "monthly" | "yearly") | undefined;
+export type GetChallengesApiArg =
+  | ("active" | "monthly" | "yearly" | "weekly" | "custom")
+  | undefined;
+export type PostChallengesApiResponse = /** status 201 Default Response */ {
+  data: Challenge;
+};
+export type PostChallengesApiArg = CreateChallengeBody;
+export type GetChallengesByIdApiResponse = /** status 200 Default Response */ {
+  data: Challenge;
+};
+export type GetChallengesByIdApiArg = string;
+export type DeleteChallengesByIdApiResponse = unknown;
+export type DeleteChallengesByIdApiArg = string;
+export type PostChallengesByIdJoinApiResponse =
+  /** status 200 Default Response */ {
+    data: {
+      challengeId: string;
+      current: number;
+      completed: boolean;
+      completedAt?: string | null;
+    };
+  };
+export type PostChallengesByIdJoinApiArg = string;
+export type PostChallengesByIdLeaveApiResponse = unknown;
+export type PostChallengesByIdLeaveApiArg = string;
 export type GetChallengesByIdLeaderboardApiResponse =
   /** status 200 Default Response */ {
     data: LeaderboardEntry[];
@@ -38,17 +112,38 @@ export type GetChallengesByIdLeaderboardApiArg = {
 };
 export type Challenge = {
   id: string;
+  slug: string;
   title: string;
-  subtitle: string;
-  goal: string;
-  current: number;
+  subtitle?: string | null;
+  description?: string | null;
+  goal?: string | null;
+  variant: string;
+  metric: string;
   target: number;
-  badgeText: string;
-  variant: "monthly" | "yearly";
+  creatorId?: string | null;
+  creatorName?: string | null;
+  participantCount: number;
+  badgeId?: string | null;
+  badgeText?: string | null;
+  activeFrom?: string | null;
+  activeTo?: string | null;
+  current?: number;
+  isJoined: boolean;
+  isCreator: boolean;
 };
 export type ApiError = {
   error: string;
   message: string;
+};
+export type CreateChallengeBody = {
+  title: string;
+  description?: string;
+  variant: "monthly" | "yearly" | "weekly" | "custom";
+  metric: "books" | "pages" | "hours" | "streak";
+  target: number;
+  activeFrom: string;
+  activeTo: string;
+  badgeId?: string;
 };
 export type LeaderboardEntry = {
   id: string;
@@ -64,6 +159,12 @@ export type LeaderboardEntry = {
 export const {
   useGetChallengesQuery,
   useLazyGetChallengesQuery,
+  usePostChallengesMutation,
+  useGetChallengesByIdQuery,
+  useLazyGetChallengesByIdQuery,
+  useDeleteChallengesByIdMutation,
+  usePostChallengesByIdJoinMutation,
+  usePostChallengesByIdLeaveMutation,
   useGetChallengesByIdLeaderboardQuery,
   useLazyGetChallengesByIdLeaderboardQuery,
 } = injectedRtkApi;

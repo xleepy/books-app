@@ -24,7 +24,7 @@ export function LibraryScreen() {
   const { data: stats } = useGetLibraryStatsQuery();
   const savedBooks = data?.data ?? [];
   const totalBooks = data?.pagination.total ?? 0;
-  const currentBook = savedBooks.find((b) => b.isCurrent) ?? savedBooks.find((b) => b.status === 'reading');
+  const currentBook = savedBooks.find((b) => b.status === 'reading');
 
   return (
     <Screen scroll>
@@ -49,22 +49,14 @@ export function LibraryScreen() {
               <Text style={styles.seeAll}>See all</Text>
             </Pressable>
           </View>
-          <Pressable
-            onPress={() =>
-              navigation.navigate('BookDetail', {
-                bookId: currentBook.id,
-                libraryStatus: currentBook.status,
-              })
-            }
-          >
-            <ReadingCard
-              title={currentBook.title}
-              author={currentBook.author}
-              coverUrl={currentBook.coverUrl}
-              progress={currentBook.progressPct / 100}
-              timeLeft={formatTimeLeft(currentBook.timeLeftMin)}
-            />
-          </Pressable>
+          <ReadingCard
+            title={currentBook.title}
+            author={currentBook.author}
+            coverUrl={currentBook.coverUrl}
+            progress={currentBook.progressPct / 100}
+            timeLeft={formatTimeLeft(currentBook.timeLeftMin)}
+            onPress={() => navigation.navigate('BookDetail', { bookId: currentBook.id, libraryStatus: currentBook.status })}
+          />
         </View>
       )}
 

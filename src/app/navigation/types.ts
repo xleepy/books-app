@@ -6,6 +6,8 @@ export type RootStackParamList = {
   Settings: undefined;
   ThreadDetail: { threadId: string };
   CreateThread: undefined;
+  ChallengeDetail: { challengeId: string };
+  CreateChallenge: undefined;
 };
 
 export type TabParamList = {

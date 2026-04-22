@@ -80,6 +80,7 @@ export type Book = {
   description: string;
   rating: number;
   reviewCount: number;
+  pageCount?: number | null;
 };
 export type Pagination = {
   total: number;

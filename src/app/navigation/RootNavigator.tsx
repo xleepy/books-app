@@ -9,6 +9,8 @@ import { SettingsScreen } from "@pages/settings/ui/SettingsScreen";
 import { LoginScreen } from "@pages/auth/ui/LoginScreen";
 import { ThreadDetailScreen } from "@pages/discussions/ui/ThreadDetailScreen";
 import { CreateThreadScreen } from "@pages/discussions/ui/CreateThreadScreen";
+import { ChallengeDetailScreen } from "@pages/challenge-detail/ui/ChallengeDetailScreen";
+import { CreateChallengeScreen } from "@pages/create-challenge/ui/CreateChallengeScreen";
 import { TabNavigator } from "./TabNavigator";
 import { RootStackParamList } from "./types";
 import { supabase } from "@shared/lib/supabase";
@@ -63,6 +65,12 @@ export function RootNavigator() {
       <Stack.Screen
         name="CreateThread"
         component={CreateThreadScreen}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen name="ChallengeDetail" component={ChallengeDetailScreen} />
+      <Stack.Screen
+        name="CreateChallenge"
+        component={CreateChallengeScreen}
         options={{ presentation: "modal" }}
       />
     </Stack.Navigator>

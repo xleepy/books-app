@@ -64,7 +64,24 @@ const config = {
     },
     "./src/shared/api/challengesApi.generated.ts": {
       exportName: "challengesApi",
-      filterEndpoints: ["getChallenges", "getChallengesByIdLeaderboard"],
+      filterEndpoints: [
+        "getChallenges",
+        "postChallenges",
+        "getChallengesById",
+        "deleteChallengesById",
+        "postChallengesByIdJoin",
+        "postChallengesByIdLeave",
+        "getChallengesByIdLeaderboard",
+      ],
+      endpointOverrides: [
+        { pattern: "getChallenges", providesTags: ["Challenge"] },
+        { pattern: "getChallengesById", providesTags: ["Challenge"] },
+        { pattern: "getChallengesByIdLeaderboard", providesTags: ["Challenge"] },
+        { pattern: "postChallenges", invalidatesTags: ["Challenge"] },
+        { pattern: "deleteChallengesById", invalidatesTags: ["Challenge"] },
+        { pattern: "postChallengesByIdJoin", invalidatesTags: ["Challenge"] },
+        { pattern: "postChallengesByIdLeave", invalidatesTags: ["Challenge"] },
+      ],
     },
   },
 };

@@ -109,6 +109,24 @@ const { data } = useGetBooksQuery(
 
 Use `dispatch(api.util.prefetch)` to warm the cache before navigation.
 
+### Refreshing Stale Data on Screen Focus
+
+When a user navigates back to a screen (e.g. after creating a challenge in a modal), the cached data may be stale. **Do not** trigger refetches manually in `useEffect` or `useFocusEffect`. Instead, use the `refetchOnMountOrArgChange` option on the query hook:
+
+```ts
+// CORRECT — RTK Query handles refetching automatically
+const { data, isLoading } = useGetChallengesQuery(undefined, {
+  refetchOnMountOrArgChange: true,
+});
+
+// WRONG — manual refetch in an effect is unnecessary and error-prone
+useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
+```
+
+Setting `refetchOnMountOrArgChange: true` causes the hook to refetch whenever the component mounts (or when arguments change), ensuring the user sees fresh data after mutations or background navigation. For finer control, pass a number (seconds) to only refetch if cached data is older than that threshold.
+
+See [RTK Query docs — Query Hook Options](https://redux-toolkit.js.org/rtk-query/usage/queries#query-hook-options).
+
 ---
 
 ## Working with Mutations

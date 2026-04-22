@@ -74,8 +74,8 @@ export type PatchLibraryByBookIdApiArg = {
   body: {
     status?: "want" | "reading" | "finished";
     progressPct?: number;
+    currentPage?: number;
     timeLeftMin?: number | null;
-    isCurrent?: boolean;
   };
 };
 export type DeleteLibraryByBookIdApiResponse = unknown;
@@ -99,8 +99,9 @@ export type LibraryBook = {
   rating: number;
   reviewCount: number;
   status: "want" | "reading" | "finished";
-  isCurrent: boolean;
   progressPct: number;
+  currentPage?: number | null;
+  pageCount?: number | null;
   timeLeftMin?: number | null;
 };
 export type Pagination = {

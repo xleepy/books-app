@@ -1,7 +1,7 @@
 # Books App — Implementation Plan
 
-**Status:** Phases 1–12 complete. Backend Phases 5–6 live; all screens driven by real API.
-**Last updated:** 2026-04-21
+**Status:** Phases 1–13 complete. Backend Phases 5–6 live; all screens driven by real API.
+**Last updated:** 2026-04-22
 
 > React Native mobile app built from `design-proposal.pen`, using Expo, TypeScript, Redux Toolkit, and Feature-Sliced Design architecture.
 
@@ -34,6 +34,7 @@ All `package.json` versions are **exact** (no `^` or `~`). TypeScript 6.x and Re
 | 4   | Thread Detail             | `ThreadDetail`    | Full thread body, replies, like toggle, reply input, delete (owner)   |
 | 5   | Create Thread             | `CreateThread`    | Modal form: title, body, optional book link, spoiler toggle           |
 | 6   | My Library                | `Library` (tab)   | Stats tiles, currently reading card, saved books grid                 |
+| 6a  | Reading Detail            | `ReadingDetail`   | Page-level progress editor: direct page input + quick chips           |
 | 7   | Reading Stats & Level     | `Progress`        | XP level card, streak tracker, 2×2 stats, live badges from API        |
 | 8   | Challenges & Competitions | `Compete` (tab)   | Active challenges (month/year), live leaderboard                      |
 | 9   | Settings                  | `Settings`        | Profile card, reading/notification/privacy preferences, Sign Out      |
@@ -193,6 +194,9 @@ src/
     library/
       ui/LibraryScreen.tsx
       ui/LibraryListScreen.tsx        # Full list with All/Reading/Saved/Finished tabs
+    reading-detail/
+      ui/ReadingDetailScreen.tsx      # Data loader: waits for book + library data
+      ui/ReadingProgressForm.tsx      # Pure form: page input, chips, submit
     progress/ui/ProgressScreen.tsx
     challenges/ui/ChallengesScreen.tsx
     settings/ui/SettingsScreen.tsx
@@ -284,6 +288,25 @@ RTK Query code-generated hooks replace all mock data. MSW available in dev via `
 
 Depends on backend Phases 5 (gamification) and 6 (community threads) — both complete.
 
+### Phase 13 — Reading Progress Detail ✅ (2026-04-22)
+
+**New screen + backend field for page-level reading progress.**
+
+- ✅ `ReadingDetailScreen` — new stack screen (`ReadingDetail: { bookId }`) reached by tapping the `ReadingCard` on `Library`
+- ✅ `ReadingProgressForm` — pure form component separated from data loading; manages local page state with `useState`
+- ✅ Direct page number input — tap large page number → numeric keyboard; no `-/+` stepper
+- ✅ Quick chips — `+10`, `+25`, and `Finished` for one-tap updates
+- ✅ `useGetLibraryQuery` pre-fills `initialPage` from server; `key={bookId}` resets form when switching books
+- ✅ `usePatchLibraryByBookIdMutation` sends `{ currentPage, progressPct, status, isCurrent }`
+- ✅ Button text adapts: "Update Progress" or "Mark as Finished" when `currentPage >= pageCount`
+- ✅ Design frame added to `design-proposal.pen`: _Current Reading_
+
+**Backend changes (see backend implementation plan):**
+- `LibraryItem.currentPage` field added to Prisma schema + migration
+- `PATCH /library/:bookId` derives `progressPct` from `currentPage / book.pageCount`
+- `LibraryBook` response now includes `currentPage` and `pageCount`
+- Frontend API regenerated via `npm run codegen`
+
 **Gamification (backend Phase 5 live):**
 - ✅ `ChallengesScreen` — `useGetChallengesQuery` drives live challenge cards; `useGetChallengesByIdLeaderboardQuery` drives leaderboard; both previously stubbed
 - ✅ `ProgressScreen` — `useGetMeBadgesQuery` drives live `BadgesRow`; badge slug → Lucide icon mapping; loading + empty states
@@ -350,3 +373,5 @@ Depends on backend Phases 5 (gamification) and 6 (community threads) — both co
 - [x] Thread delete: only visible to thread owner; confirmation alert before API call
 - [x] Progress badges: live from `GET /me/badges`; empty state shown for new users
 - [x] Challenges: live from `GET /challenges`; leaderboard from `GET /challenges/:id/leaderboard`
+- [x] Reading Detail: page input with numeric keyboard; `+10`/`+25`/`Finished` chips; PATCH sends `currentPage`
+- [x] No `useEffect` for prop→state sync in forms — `key` prop used instead
