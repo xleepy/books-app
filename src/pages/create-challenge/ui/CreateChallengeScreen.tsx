@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -51,6 +52,18 @@ function formatDate(d: Date): string {
   return d.toISOString().split('T')[0];
 }
 
+function parseISODate(s: string): Date | null {
+  const [y, m, d] = s.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const date = new Date(y, m - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+  return date;
+}
+
+function startOfDayUTC(d: Date): Date {
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+}
+
 export function CreateChallengeScreen() {
   const navigation = useNavigation<Nav>();
   const insets = useSafeAreaInsets();
@@ -68,6 +81,8 @@ export function CreateChallengeScreen() {
   const [activeTo, setActiveTo] = useState<string>(formatDate(addDays(today, 30)));
   const [error, setError] = useState<string | null>(null);
 
+  const [pickerMode, setPickerMode] = useState<'from' | 'to' | null>(null);
+
   function applyTemplate(key: string) {
     setSelectedTemplate(key);
     const tpl = templates.find((t) => t.key === key);
@@ -78,30 +93,16 @@ export function CreateChallengeScreen() {
     from.setHours(0, 0, 0, 0);
     setActiveFrom(formatDate(from));
     setActiveTo(formatDate(addDays(from, tpl.days)));
+    setError(null);
   }
 
   function adjustTarget(delta: number) {
     setTarget((prev) => Math.max(1, Math.min(9999, prev + delta)));
   }
 
-  function parseDateInput(input: string): Date | null {
-    const match = input.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!match) return null;
-    const year = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10) - 1;
-    const day = parseInt(match[3], 10);
-    const d = new Date(year, month, day);
-    if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) return null;
-    return d;
-  }
-
-  function startOfDayUTC(d: Date): Date {
-    return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  }
-
   function validateDates(from: string, to: string): string | null {
-    const fromDate = parseDateInput(from);
-    const toDate = parseDateInput(to);
+    const fromDate = parseISODate(from);
+    const toDate = parseISODate(to);
     if (!fromDate) return 'Start date must be in YYYY-MM-DD format';
     if (!toDate) return 'End date must be in YYYY-MM-DD format';
 
@@ -112,6 +113,24 @@ export function CreateChallengeScreen() {
     if (fromUTC < now) return 'Start date must be today or later';
     if (toUTC <= fromUTC) return 'End date must be after start date';
     return null;
+  }
+
+  function handleDateChange(mode: 'from' | 'to', event: any, date?: Date) {
+    if (Platform.OS === 'android') {
+      setPickerMode(null);
+    }
+    if (!date) return;
+
+    const iso = formatDate(date);
+    if (mode === 'from') {
+      setActiveFrom(iso);
+      const err = validateDates(iso, activeTo);
+      setError(err);
+    } else {
+      setActiveTo(iso);
+      const err = validateDates(activeFrom, iso);
+      setError(err);
+    }
   }
 
   const canSubmit =
@@ -156,6 +175,9 @@ export function CreateChallengeScreen() {
       default: return <BookOpen size={size} color={color} />;
     }
   };
+
+  const fromDate = parseISODate(activeFrom) || today;
+  const toDate = parseISODate(activeTo) || addDays(today, 1);
 
   return (
     <KeyboardAvoidingView
@@ -284,39 +306,34 @@ export function CreateChallengeScreen() {
         <View style={styles.field}>
           <Text style={styles.label}>Duration</Text>
           <View style={styles.dateRow}>
-            <View style={styles.dateBox}>
+            <Pressable style={styles.dateBox} onPress={() => setPickerMode('from')}>
               <Text style={styles.dateLabel}>Start Date</Text>
-              <TextInput
-                value={activeFrom}
-                onChangeText={(text) => {
-                  setActiveFrom(text);
-                  const err = validateDates(text, activeTo);
-                  setError(err);
-                }}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor={colors.fontTertiary}
-                style={styles.dateValueInput}
-                keyboardType="numbers-and-punctuation"
-                maxLength={10}
-              />
-            </View>
-            <View style={styles.dateBox}>
+              <Text style={styles.dateValue}>{activeFrom}</Text>
+            </Pressable>
+            <Pressable style={styles.dateBox} onPress={() => setPickerMode('to')}>
               <Text style={styles.dateLabel}>End Date</Text>
-              <TextInput
-                value={activeTo}
-                onChangeText={(text) => {
-                  setActiveTo(text);
-                  const err = validateDates(activeFrom, text);
-                  setError(err);
-                }}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor={colors.fontTertiary}
-                style={styles.dateValueInput}
-                keyboardType="numbers-and-punctuation"
-                maxLength={10}
-              />
-            </View>
+              <Text style={styles.dateValue}>{activeTo}</Text>
+            </Pressable>
           </View>
+
+          {pickerMode === 'from' && (
+            <DateTimePicker
+              value={fromDate}
+              mode="date"
+              minimumDate={today}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(event, date) => handleDateChange('from', event, date)}
+            />
+          )}
+          {pickerMode === 'to' && (
+            <DateTimePicker
+              value={toDate}
+              mode="date"
+              minimumDate={addDays(fromDate, 1)}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(event, date) => handleDateChange('to', event, date)}
+            />
+          )}
         </View>
       </ScrollView>
 
@@ -499,12 +516,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semibold,
     fontSize: 14,
     color: colors.fontPrimary,
-  },
-  dateValueInput: {
-    fontFamily: fontFamily.semibold,
-    fontSize: 14,
-    color: colors.fontPrimary,
-    padding: 0,
   },
   actionBar: {
     paddingHorizontal: 20,
