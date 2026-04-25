@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Modal,
   View,
@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Search, X } from "lucide-react-native";
+import { DismissibleOverlay, useDismissibleOverlay } from "@shared/ui";
 import { colors, fontFamily } from "@shared/theme";
 import { useGetSubjectsQuery } from "@shared/api/booksApi.generated";
 
@@ -26,14 +27,17 @@ export function GenrePickerModal({
   onSave,
   onClose,
 }: GenrePickerModalProps) {
+  const overlay = useDismissibleOverlay();
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      onShow={() => overlay.ignore()}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <DismissibleOverlay controller={overlay} onPress={onClose}>
         {visible && (
           <GenrePickerBody
             initialSelected={selectedGenres}
@@ -41,7 +45,7 @@ export function GenrePickerModal({
             onClose={onClose}
           />
         )}
-      </Pressable>
+      </DismissibleOverlay>
     </Modal>
   );
 }
@@ -202,13 +206,6 @@ function GenrePickerBody({
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(26, 22, 20, 0.45)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
   card: {
     backgroundColor: colors.bgCard,
     borderRadius: 20,

@@ -32,6 +32,7 @@ import {
   useGetMePreferencesQuery,
   usePutMePreferencesMutation,
 } from "@shared/api/meApi.generated";
+import { usePatchMeMutation } from "@shared/api/meApi";
 import type { Preferences } from "@entities/user/model/types";
 import { usePushToken } from "@features/push-notifications/model/usePushToken";
 import {
@@ -47,6 +48,7 @@ import { ToggleRow } from "./components/ToggleRow";
 import { SignOutButton } from "./components/SignOutButton";
 import { TimePickerModal } from "./components/TimePickerModal";
 import { GenrePickerModal } from "./components/GenrePickerModal";
+import { GoalPickerModal } from "./components/GoalPickerModal";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -68,9 +70,11 @@ export function SettingsScreen() {
   const { data: prefs, isLoading: prefsLoading } = useGetMePreferencesQuery();
   const [putPreferences, { isLoading: isSaving }] =
     usePutMePreferencesMutation();
+  const [patchMe, { isLoading: isPatchingMe }] = usePatchMeMutation();
   const { clearToken } = usePushToken();
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const [genrePickerVisible, setGenrePickerVisible] = useState(false);
+  const [goalPickerVisible, setGoalPickerVisible] = useState(false);
 
   // Sync local reminders when server preferences load
   useEffect(() => {
@@ -154,6 +158,21 @@ export function SettingsScreen() {
     }
   }
 
+  async function handleSetGoal(minutes: number) {
+    const patchResult = dispatch(
+      meApi.util.updateQueryData("getMe", undefined, (draft) => {
+        draft.readingGoal = minutes;
+      }),
+    );
+
+    try {
+      await patchMe({ readingGoal: minutes }).unwrap();
+    } catch {
+      patchResult.undo?.();
+      Alert.alert("Error", "Failed to update goal. Please try again.");
+    }
+  }
+
   async function handleSignOut() {
     await cancelReadingReminder();
     await clearToken();
@@ -211,13 +230,15 @@ export function SettingsScreen() {
         {/* Reading */}
         <SectionLabel text="READING" />
         <View style={styles.card}>
-          <ChevronRow
-            icon={<Target size={16} color={colors.accent} />}
-            iconBg={colors.accentLight}
-            title="Daily Reading Goal"
-            subtitle={`${prefs?.readingGoalMinutes ?? 30} minutes`}
-            value={`${prefs?.readingGoalMinutes ?? 30} min`}
-          />
+          <Pressable onPress={() => setGoalPickerVisible(true)}>
+            <ChevronRow
+              icon={<Target size={16} color={colors.accent} />}
+              iconBg={colors.accentLight}
+              title="Daily Reading Goal"
+              subtitle={`${user.readingGoal ?? 30} minutes`}
+              value={`${user.readingGoal ?? 30} min`}
+            />
+          </Pressable>
           <Divider />
           <Pressable onPress={() => setTimePickerVisible(true)}>
             <ChevronRow
@@ -316,6 +337,13 @@ export function SettingsScreen() {
         selectedGenres={prefs?.preferredGenres ?? []}
         onSave={handleSetGenres}
         onClose={() => setGenrePickerVisible(false)}
+      />
+
+      <GoalPickerModal
+        visible={goalPickerVisible}
+        initialMinutes={user.readingGoal ?? 30}
+        onSelect={handleSetGoal}
+        onClose={() => setGoalPickerVisible(false)}
       />
     </View>
   );

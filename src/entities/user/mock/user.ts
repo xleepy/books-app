@@ -1,13 +1,14 @@
-import { ReadingStats, User } from '../model/types';
+import { ReadingStats, User } from "../model/types";
 
 export const mockUser: User = {
-  id: 'user-1',
-  name: 'Jane Doe',
+  id: "user-1",
+  name: "Jane Doe",
   avatarHue: 280,
   level: 12,
-  levelTitle: 'Bookworm',
+  levelTitle: "Bookworm",
   xpCurrent: 2450,
   xpRequired: 3000,
+  readingGoal: 30,
 };
 
 export const mockStats: ReadingStats = {

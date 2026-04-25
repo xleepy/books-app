@@ -46,7 +46,7 @@ const config = {
         },
         {
           pattern: "patchLibraryByBookId",
-          invalidatesTags: ["Library", "User"],
+          invalidatesTags: ["Library", "User", "Challenge"],
         },
         {
           pattern: "deleteLibraryByBookId",

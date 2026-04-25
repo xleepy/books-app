@@ -36,7 +36,7 @@ const injectedRtkApi = api.injectEndpoints({
         method: "PATCH",
         body: queryArg.body,
       }),
-      invalidatesTags: ["Library", "User"],
+      invalidatesTags: ["Library", "User", "Challenge"],
     }),
     deleteLibraryByBookId: build.mutation<
       DeleteLibraryByBookIdApiResponse,

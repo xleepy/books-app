@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { DismissibleOverlay, useDismissibleOverlay } from "@shared/ui";
 import { colors, fontFamily } from "@shared/theme";
 
 interface TimePickerModalProps {
@@ -33,6 +34,7 @@ export function TimePickerModal({
 }: TimePickerModalProps) {
   const [hour, setHour] = useState(21);
   const [minute, setMinute] = useState(0);
+  const overlay = useDismissibleOverlay();
 
   useEffect(() => {
     if (visible) {
@@ -64,8 +66,9 @@ export function TimePickerModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      onShow={() => overlay.ignore()}
     >
-      <Pressable testID="time-picker-overlay" style={styles.overlay} onPress={onClose}>
+      <DismissibleOverlay controller={overlay} onPress={onClose}>
         <View style={styles.card}>
           <Text style={styles.title}>Reading Reminder</Text>
 
@@ -184,7 +187,7 @@ export function TimePickerModal({
             </Pressable>
           </View>
         </View>
-      </Pressable>
+      </DismissibleOverlay>
     </Modal>
   );
 }
@@ -192,13 +195,6 @@ export function TimePickerModal({
 const WHEEL_ITEM_HEIGHT = 40;
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(26, 22, 20, 0.45)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
   card: {
     backgroundColor: colors.bgCard,
     borderRadius: 20,

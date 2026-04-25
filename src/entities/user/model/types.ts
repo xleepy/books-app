@@ -6,6 +6,7 @@ export interface User {
   levelTitle: string;
   xpCurrent: number;
   xpRequired: number;
+  readingGoal: number;
 }
 
 export interface ReadingStats {
