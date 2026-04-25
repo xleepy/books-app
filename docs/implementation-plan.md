@@ -26,18 +26,21 @@ All `package.json` versions are **exact** (no `^` or `~`). TypeScript 6.x and Re
 
 ## Screens
 
-| #   | Screen                    | Tab / Route       | Description                                                           |
-| --- | ------------------------- | ----------------- | --------------------------------------------------------------------- |
-| 1   | Discover - Swipe          | `Discover` (tab)  | Swipeable book cards with pass/bookmark/like actions                  |
-| 2   | Book Detail - Reviews     | `BookDetail`      | Cover, metadata, synopsis, reviews, library CTA                       |
-| 3   | Discussion Threads        | `Discussions`     | Live thread list with search, filter chips, create thread             |
-| 4   | Thread Detail             | `ThreadDetail`    | Full thread body, replies, like toggle, reply input, delete (owner)   |
-| 5   | Create Thread             | `CreateThread`    | Modal form: title, body, optional book link, spoiler toggle           |
-| 6   | My Library                | `Library` (tab)   | Stats tiles, currently reading card, saved books grid                 |
-| 6a  | Reading Detail            | `ReadingDetail`   | Page-level progress editor: direct page input + quick chips           |
-| 7   | Reading Stats & Level     | `Progress`        | XP level card, streak tracker, 2×2 stats, live badges from API        |
-| 8   | Challenges & Competitions | `Compete` (tab)   | Active challenges (month/year), live leaderboard                      |
-| 9   | Settings                  | `Settings`        | Profile card, reading/notification/privacy preferences, Sign Out      |
+| #    | Screen                    | Tab / Route            | Description                                                           |
+| ---- | ------------------------- | ---------------------- | --------------------------------------------------------------------- |
+| 1    | Discover - Swipe          | `Discover` (tab)       | Swipeable book cards with pass/bookmark/like actions                  |
+| 2    | Book Detail - Reviews     | `BookDetail`           | Cover, metadata, synopsis, reviews, library CTA                       |
+| 3    | Discussion Threads        | `Discussions`          | Live thread list with search, filter chips, create thread             |
+| 4    | Thread Detail             | `ThreadDetail`         | Full thread body, replies, like toggle, reply input, delete (owner)   |
+| 5    | Create Thread             | `CreateThread`         | Modal form: title, body, optional book link, spoiler toggle           |
+| 6    | My Library                | `Library` (tab)        | Stats tiles, currently reading card, saved books grid                 |
+| 6a   | Reading Detail            | `ReadingDetail`        | Page-level progress editor: direct page input + quick chips           |
+| 7    | Reading Stats & Level     | `Progress`             | XP level card, streak tracker, 2×2 stats, live badges from API        |
+| 8    | Challenges & Competitions | `Compete` (tab)        | Active challenges (month/year), live leaderboard                      |
+| 8a   | Challenge Detail          | `ChallengeDetail`      | Hero card, user progress, inline leaderboard, join/leave/cancel CTA   |
+| 8b   | Create Challenge          | `CreateChallenge`      | Modal: template picker + form for user-created challenges             |
+| 9    | Settings                  | `Settings`             | Profile card, reading/notification/privacy preferences, Sign Out      |
+| 9a   | Genre Picker              | `GenrePicker` (modal)  | Multi-select genre list for onboarding and settings                   |
 
 ## Bottom Tab Bar
 
@@ -199,7 +202,10 @@ src/
       ui/ReadingProgressForm.tsx      # Pure form: page input, chips, submit
     progress/ui/ProgressScreen.tsx
     challenges/ui/ChallengesScreen.tsx
+    challenge-detail/ui/ChallengeDetailScreen.tsx
+    create-challenge/ui/CreateChallengeScreen.tsx
     settings/ui/SettingsScreen.tsx
+    genre-picker/ui/GenrePickerScreen.tsx
 
   store/                              # Redux store config
     store.ts                          # configureStore — auth + swipe + user + RTK Query
@@ -320,6 +326,19 @@ Depends on backend Phases 5 (gamification) and 6 (community threads) — both co
 - ✅ `CreateThreadScreen` — modal with title, body, **book picker** (debounced `GET /books?q=` search, inline results list, selected book card), spoiler toggle; `usePostThreadsMutation`
 - ✅ Navigation: `ThreadDetail: { threadId }` + `CreateThread` (modal presentation) added to `RootStackParamList`
 - ✅ `discussionsApi.generated.ts` — all 6 hooks: `useGetThreadsQuery`, `useGetThreadsByIdQuery`, `usePostThreadsMutation`, `usePostThreadsByIdRepliesMutation`, `usePostThreadsByIdLikeMutation`, `useDeleteThreadsByIdMutation`
+
+### Phase 14 — User-Created Challenges + Genre Picker ⏳ not started
+
+**New screens for user-created challenges and genre selection.**
+
+- ⏳ `ChallengeDetailScreen` — hero card with variant-colored accent, progress bar, inline leaderboard (top 10), sticky bottom CTA (Join / Leave / Cancel)
+- ⏳ `CreateChallengeScreen` — modal presentation; template picker (Monthly Sprint, Yearly Goal, Weekly Blitz, Streak Keeper, Pages Marathon, Custom), metric picker (books/pages/hours/streak), target stepper, date range, optional badge picker
+- ⏳ `GenrePickerScreen` — modal multi-select genre list; used from Settings and future onboarding
+- ⏳ `challengesApi.generated.ts` — new hooks: `useGetChallengesByIdQuery`, `usePostChallengesMutation`, `usePostChallengesByIdJoinMutation`, `usePostChallengesByIdLeaveMutation`, `useDeleteChallengesByIdMutation`
+- ⏳ `ChallengeCard` updates — participant count, creator badge, tappable navigation to detail
+- ⏳ Design frames in `design-proposal.pen`: `rpCyx` (Challenge Detail), `1Utr4` (Create Challenge), `xmzte` (Genre Picker)
+
+**Depends on backend:** `POST /challenges`, `GET /challenges/:id`, `DELETE /challenges/:id`, `POST /challenges/:id/join`, `POST /challenges/:id/leave` (see `backend/docs/challenges-spec.md`).
 
 ## FSD Import Rules
 
