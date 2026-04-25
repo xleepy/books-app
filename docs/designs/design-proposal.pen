@@ -10371,7 +10371,7 @@
                       "type": "text",
                       "id": "FmnY6",
                       "fill": "$font-secondary",
-                      "content": "Select genres you enjoy",
+                      "content": "Search and select genres you enjoy",
                       "fontFamily": "Inter",
                       "fontSize": 13
                     }
@@ -10379,307 +10379,253 @@
                 },
                 {
                   "type": "frame",
-                  "id": "xi78b",
-                  "name": "genreList",
+                  "id": "G7Q1j",
                   "width": "fill_container",
                   "height": "fill_container",
                   "layout": "vertical",
-                  "gap": 6,
+                  "gap": 12,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "ilUyt",
-                      "name": "row1",
+                      "id": "WzvzP",
                       "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
+                      "height": 42,
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$border"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        10,
+                        12
+                      ],
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "DMcXv",
-                          "fill": "$font-primary",
-                          "content": "Fiction",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
+                          "type": "icon_font",
+                          "id": "0eRVJ",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "search",
+                          "iconFontFamily": "lucide",
+                          "fill": "$font-secondary"
                         },
                         {
-                          "type": "frame",
-                          "id": "9MITV",
-                          "name": "check1",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
+                          "type": "text",
+                          "id": "rLKkn",
+                          "fill": "$font-secondary",
+                          "content": "Search genres...",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
                     {
                       "type": "frame",
-                      "id": "a0s2D",
-                      "name": "row2",
+                      "id": "MHsPo",
                       "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
+                      "layout": "vertical",
+                      "padding": [
+                        8,
+                        0
+                      ],
                       "children": [
                         {
-                          "type": "text",
-                          "id": "3eXnR",
-                          "fill": "$font-primary",
-                          "content": "Non-Fiction",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
+                          "type": "frame",
+                          "id": "7QQmv",
+                          "width": "fill_container",
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pM0nH",
+                              "fill": "$font-primary",
+                              "content": "Adventure",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         },
                         {
                           "type": "frame",
-                          "id": "RBPdN",
-                          "name": "check2",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
+                          "id": "4yQpg",
+                          "width": "fill_container",
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wASVz",
+                              "fill": "$font-primary",
+                              "content": "Adventure stories",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "stDI5",
+                          "width": "fill_container",
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "RVH0e",
+                              "fill": "$font-primary",
+                              "content": "Adventurers",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     },
                     {
                       "type": "frame",
-                      "id": "IU2MD",
-                      "name": "row3",
+                      "id": "DZ6ou",
                       "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
                       "children": [
                         {
                           "type": "text",
-                          "id": "85GI2",
-                          "fill": "$font-primary",
-                          "content": "Mystery",
+                          "id": "Opkbm",
+                          "fill": "$font-secondary",
+                          "content": "3 selected",
                           "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
-                          "id": "fvoAO",
-                          "name": "check3",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "8Wd1S",
-                      "name": "row4",
-                      "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "8yOBT",
-                          "fill": "$font-primary",
-                          "content": "Science Fiction",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "l6foZ",
-                          "name": "check4",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "6oWWH",
-                      "name": "row5",
-                      "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "xChVO",
-                          "fill": "$font-primary",
-                          "content": "Fantasy",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "xuuXp",
-                          "name": "check5",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "AdeoF",
-                      "name": "row6",
-                      "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "vM34j",
-                          "fill": "$font-primary",
-                          "content": "Romance",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "ZWg7X",
-                          "name": "check6",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "D07Ke",
-                      "name": "row7",
-                      "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Ko97n",
-                          "fill": "$font-primary",
-                          "content": "Thriller",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "z7x9C",
-                          "name": "check7",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "flgRZ",
-                      "name": "row8",
-                      "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "8aYTV",
-                          "fill": "$font-primary",
-                          "content": "Horror",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "zAxmd",
-                          "name": "check8",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "vwMOJ",
-                      "name": "row9",
-                      "width": "fill_container",
-                      "cornerRadius": 10,
-                      "padding": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "lVlE9",
-                          "fill": "$font-primary",
-                          "content": "Biography",
-                          "fontFamily": "Inter",
-                          "fontSize": 15,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "inbnr",
-                          "name": "check9",
-                          "width": 22,
-                          "height": 22,
-                          "cornerRadius": 11,
-                          "stroke": {
-                            "thickness": 1.5,
-                            "fill": "$border"
-                          }
+                          "id": "ig86Q",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "CFiUB",
+                              "height": 32,
+                              "fill": "$accent-light",
+                              "cornerRadius": 16,
+                              "gap": 4,
+                              "padding": [
+                                6,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "y0wy8",
+                                  "fill": "$accent",
+                                  "content": "Fiction",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "icon_font",
+                                  "id": "zr2Ta",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "x",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$accent"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "T44Q0",
+                              "height": 32,
+                              "fill": "$accent-light",
+                              "cornerRadius": 16,
+                              "gap": 4,
+                              "padding": [
+                                6,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "fQU90",
+                                  "fill": "$accent",
+                                  "content": "Fantasy",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "icon_font",
+                                  "id": "4fKmW",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "x",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$accent"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "t8sjl",
+                              "height": 32,
+                              "fill": "$accent-light",
+                              "cornerRadius": 16,
+                              "gap": 4,
+                              "padding": [
+                                6,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "4OaVJ",
+                                  "fill": "$accent",
+                                  "content": "Mystery",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "icon_font",
+                                  "id": "nkD9K",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "x",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$accent"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
