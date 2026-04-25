@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Modal,
   View,
@@ -26,23 +26,20 @@ function formatTime(hour: number, minute: number): string {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-export function TimePickerModal({
-  visible,
+type TimePickerBodyProps = {
+  initialTime: string;
+  onSelect: (time: string) => void;
+  onClose: () => void;
+};
+
+function TimePickerBody({
   initialTime,
   onSelect,
   onClose,
-}: TimePickerModalProps) {
-  const [hour, setHour] = useState(21);
-  const [minute, setMinute] = useState(0);
-  const overlay = useDismissibleOverlay();
-
-  useEffect(() => {
-    if (visible) {
-      const [h, m] = parseTime(initialTime);
-      setHour(h);
-      setMinute(m);
-    }
-  }, [visible, initialTime]);
+}: TimePickerBodyProps) {
+  const [h, m] = parseTime(initialTime);
+  const [hour, setHour] = useState(h);
+  const [minute, setMinute] = useState(m);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 12 }, (_, i) => i * 5); // 0, 5, 10, ..., 55
@@ -61,6 +58,133 @@ export function TimePickerModal({
   };
 
   return (
+    <View style={styles.card}>
+      <Text style={styles.title}>Reading Reminder</Text>
+
+      <View style={styles.displayRow}>
+        <View style={styles.displayBlock}>
+          <Text style={styles.displayValue}>
+            {String(hour).padStart(2, "0")}
+          </Text>
+          <Text style={styles.displayLabel}>Hour</Text>
+        </View>
+        <Text style={styles.colon}>:</Text>
+        <View style={styles.displayBlock}>
+          <Text style={styles.displayValue}>
+            {String(minute).padStart(2, "0")}
+          </Text>
+          <Text style={styles.displayLabel}>Minute</Text>
+        </View>
+      </View>
+
+      <View style={styles.pickerRow}>
+        {/* Hour picker */}
+        <View style={styles.pickerColumn}>
+          <Pressable style={styles.stepBtn} onPress={() => handleHourChange(1)}>
+            <Text style={styles.stepBtnText}>+</Text>
+          </Pressable>
+          <ScrollView
+            style={styles.wheel}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.wheelContent}
+          >
+            {hours.map((h) => {
+              const selected = h === hour;
+              return (
+                <Pressable
+                  key={h}
+                  onPress={() => setHour(h)}
+                  style={[
+                    styles.wheelItem,
+                    selected && styles.wheelItemSelected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.wheelItemText,
+                      selected && styles.wheelItemTextSelected,
+                    ]}
+                  >
+                    {String(h).padStart(2, "0")}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          <Pressable
+            style={styles.stepBtn}
+            onPress={() => handleHourChange(-1)}
+          >
+            <Text style={styles.stepBtnText}>-</Text>
+          </Pressable>
+        </View>
+
+        {/* Minute picker */}
+        <View style={styles.pickerColumn}>
+          <Pressable
+            style={styles.stepBtn}
+            onPress={() => handleMinuteChange(5)}
+          >
+            <Text style={styles.stepBtnText}>+</Text>
+          </Pressable>
+          <ScrollView
+            style={styles.wheel}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.wheelContent}
+          >
+            {minutes.map((m) => {
+              const selected = m === minute;
+              return (
+                <Pressable
+                  key={m}
+                  onPress={() => setMinute(m)}
+                  style={[
+                    styles.wheelItem,
+                    selected && styles.wheelItemSelected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.wheelItemText,
+                      selected && styles.wheelItemTextSelected,
+                    ]}
+                  >
+                    {String(m).padStart(2, "0")}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          <Pressable
+            style={styles.stepBtn}
+            onPress={() => handleMinuteChange(-5)}
+          >
+            <Text style={styles.stepBtnText}>-</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.actions}>
+        <Pressable style={styles.cancelBtn} onPress={onClose}>
+          <Text style={styles.cancelBtnText}>Cancel</Text>
+        </Pressable>
+        <Pressable style={styles.confirmBtn} onPress={handleConfirm}>
+          <Text style={styles.confirmBtnText}>Set Reminder</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+export function TimePickerModal({
+  visible,
+  initialTime,
+  onSelect,
+  onClose,
+}: TimePickerModalProps) {
+  const overlay = useDismissibleOverlay();
+
+  return (
     <Modal
       visible={visible}
       transparent
@@ -69,124 +193,13 @@ export function TimePickerModal({
       onShow={() => overlay.ignore()}
     >
       <DismissibleOverlay controller={overlay} onPress={onClose}>
-        <View style={styles.card}>
-          <Text style={styles.title}>Reading Reminder</Text>
-
-          <View style={styles.displayRow}>
-            <View style={styles.displayBlock}>
-              <Text style={styles.displayValue}>
-                {String(hour).padStart(2, "0")}
-              </Text>
-              <Text style={styles.displayLabel}>Hour</Text>
-            </View>
-            <Text style={styles.colon}>:</Text>
-            <View style={styles.displayBlock}>
-              <Text style={styles.displayValue}>
-                {String(minute).padStart(2, "0")}
-              </Text>
-              <Text style={styles.displayLabel}>Minute</Text>
-            </View>
-          </View>
-
-          <View style={styles.pickerRow}>
-            {/* Hour picker */}
-            <View style={styles.pickerColumn}>
-              <Pressable
-                style={styles.stepBtn}
-                onPress={() => handleHourChange(1)}
-              >
-                <Text style={styles.stepBtnText}>+</Text>
-              </Pressable>
-              <ScrollView
-                style={styles.wheel}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.wheelContent}
-              >
-                {hours.map((h) => {
-                  const selected = h === hour;
-                  return (
-                    <Pressable
-                      key={h}
-                      onPress={() => setHour(h)}
-                      style={[
-                        styles.wheelItem,
-                        selected && styles.wheelItemSelected,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.wheelItemText,
-                          selected && styles.wheelItemTextSelected,
-                        ]}
-                      >
-                        {String(h).padStart(2, "0")}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-              <Pressable
-                style={styles.stepBtn}
-                onPress={() => handleHourChange(-1)}
-              >
-                <Text style={styles.stepBtnText}>-</Text>
-              </Pressable>
-            </View>
-
-            {/* Minute picker */}
-            <View style={styles.pickerColumn}>
-              <Pressable
-                style={styles.stepBtn}
-                onPress={() => handleMinuteChange(5)}
-              >
-                <Text style={styles.stepBtnText}>+</Text>
-              </Pressable>
-              <ScrollView
-                style={styles.wheel}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.wheelContent}
-              >
-                {minutes.map((m) => {
-                  const selected = m === minute;
-                  return (
-                    <Pressable
-                      key={m}
-                      onPress={() => setMinute(m)}
-                      style={[
-                        styles.wheelItem,
-                        selected && styles.wheelItemSelected,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.wheelItemText,
-                          selected && styles.wheelItemTextSelected,
-                        ]}
-                      >
-                        {String(m).padStart(2, "0")}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-              <Pressable
-                style={styles.stepBtn}
-                onPress={() => handleMinuteChange(-5)}
-              >
-                <Text style={styles.stepBtnText}>-</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={styles.actions}>
-            <Pressable style={styles.cancelBtn} onPress={onClose}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
-            </Pressable>
-            <Pressable style={styles.confirmBtn} onPress={handleConfirm}>
-              <Text style={styles.confirmBtnText}>Set Reminder</Text>
-            </Pressable>
-          </View>
-        </View>
+        {visible && (
+          <TimePickerBody
+            initialTime={initialTime}
+            onSelect={onSelect}
+            onClose={onClose}
+          />
+        )}
       </DismissibleOverlay>
     </Modal>
   );

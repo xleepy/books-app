@@ -1,13 +1,7 @@
-import { useEffect, useState } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { colors, fontFamily } from '@shared/theme';
+import { useState } from "react";
+import { Modal, View, Text, Pressable, StyleSheet } from "react-native";
+import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import { colors, fontFamily } from "@shared/theme";
 
 type CalendarPickerProps = {
   visible: boolean;
@@ -18,11 +12,21 @@ type CalendarPickerProps = {
 };
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
-const WEEK_DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const WEEK_DAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -32,22 +36,21 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-export function CalendarPicker({
-  visible,
+type CalendarPickerBodyProps = {
+  selectedDate: Date;
+  onSelect: (date: Date) => void;
+  onClose: () => void;
+  minimumDate?: Date;
+};
+
+function CalendarPickerBody({
   selectedDate,
   onSelect,
   onClose,
   minimumDate,
-}: CalendarPickerProps) {
+}: CalendarPickerBodyProps) {
   const [viewYear, setViewYear] = useState(selectedDate.getFullYear());
   const [viewMonth, setViewMonth] = useState(selectedDate.getMonth());
-
-  useEffect(() => {
-    if (visible) {
-      setViewYear(selectedDate.getFullYear());
-      setViewMonth(selectedDate.getMonth());
-    }
-  }, [visible, selectedDate]);
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
@@ -77,7 +80,7 @@ export function CalendarPicker({
       const min = new Date(
         minimumDate.getFullYear(),
         minimumDate.getMonth(),
-        minimumDate.getDate()
+        minimumDate.getDate(),
       );
       if (date < min) return;
     }
@@ -99,11 +102,77 @@ export function CalendarPicker({
     const min = new Date(
       minimumDate.getFullYear(),
       minimumDate.getMonth(),
-      minimumDate.getDate()
+      minimumDate.getDate(),
     );
     return date < min;
   };
 
+  return (
+    <Pressable
+      testID="calendar-overlay"
+      style={styles.overlay}
+      onPress={onClose}
+    >
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <Pressable onPress={prevMonth} style={styles.arrowBtn}>
+            <ChevronLeft size={20} color={colors.fontSecondary} />
+          </Pressable>
+          <Text style={styles.monthText}>
+            {MONTH_NAMES[viewMonth]} {viewYear}
+          </Text>
+          <Pressable onPress={nextMonth} style={styles.arrowBtn}>
+            <ChevronRight size={20} color={colors.fontSecondary} />
+          </Pressable>
+        </View>
+
+        <View style={styles.weekRow}>
+          {WEEK_DAYS.map((d, i) => (
+            <Text key={i} style={styles.weekDay}>
+              {d}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.daysGrid}>
+          {Array.from({ length: firstDay }).map((_, i) => (
+            <View key={`empty-${i}`} style={styles.dayCell} />
+          ))}
+          {days.map((day) => {
+            const selected = isSelected(day);
+            const disabled = isDisabled(day);
+            return (
+              <Pressable
+                key={day}
+                style={[styles.dayCell, selected && styles.dayCellSelected]}
+                onPress={() => handleDayPress(day)}
+                disabled={disabled}
+              >
+                <Text
+                  style={[
+                    styles.dayText,
+                    selected && styles.dayTextSelected,
+                    disabled && styles.dayTextDisabled,
+                  ]}
+                >
+                  {day}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
+export function CalendarPicker({
+  visible,
+  selectedDate,
+  onSelect,
+  onClose,
+  minimumDate,
+}: CalendarPickerProps) {
   return (
     <Modal
       visible={visible}
@@ -111,57 +180,14 @@ export function CalendarPicker({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable testID="calendar-overlay" style={styles.overlay} onPress={onClose}>
-        <View style={styles.card}>
-          <View style={styles.header}>
-            <Pressable onPress={prevMonth} style={styles.arrowBtn}>
-              <ChevronLeft size={20} color={colors.fontSecondary} />
-            </Pressable>
-            <Text style={styles.monthText}>
-              {MONTH_NAMES[viewMonth]} {viewYear}
-            </Text>
-            <Pressable onPress={nextMonth} style={styles.arrowBtn}>
-              <ChevronRight size={20} color={colors.fontSecondary} />
-            </Pressable>
-          </View>
-
-          <View style={styles.weekRow}>
-            {WEEK_DAYS.map((d, i) => (
-              <Text key={i} style={styles.weekDay}>
-                {d}
-              </Text>
-            ))}
-          </View>
-
-          <View style={styles.daysGrid}>
-            {Array.from({ length: firstDay }).map((_, i) => (
-              <View key={`empty-${i}`} style={styles.dayCell} />
-            ))}
-            {days.map((day) => {
-              const selected = isSelected(day);
-              const disabled = isDisabled(day);
-              return (
-                <Pressable
-                  key={day}
-                  style={[styles.dayCell, selected && styles.dayCellSelected]}
-                  onPress={() => handleDayPress(day)}
-                  disabled={disabled}
-                >
-                  <Text
-                    style={[
-                      styles.dayText,
-                      selected && styles.dayTextSelected,
-                      disabled && styles.dayTextDisabled,
-                    ]}
-                  >
-                    {day}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
-      </Pressable>
+      {visible && (
+        <CalendarPickerBody
+          selectedDate={selectedDate}
+          onSelect={onSelect}
+          onClose={onClose}
+          minimumDate={minimumDate}
+        />
+      )}
     </Modal>
   );
 }
@@ -172,9 +198,9 @@ const DAY_MARGIN = 2;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(26, 22, 20, 0.45)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(26, 22, 20, 0.45)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
   card: {
@@ -186,9 +212,9 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
   },
   arrowBtn: {
@@ -200,8 +226,8 @@ const styles = StyleSheet.create({
     color: colors.fontPrimary,
   },
   weekRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: 8,
   },
   weekDay: {
@@ -209,17 +235,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.fontTertiary,
     width: DAY_CELL_SIZE,
-    textAlign: 'center',
+    textAlign: "center",
   },
   daysGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   dayCell: {
     width: DAY_CELL_SIZE,
     height: DAY_CELL_SIZE,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     margin: DAY_MARGIN,
     borderRadius: DAY_CELL_SIZE / 2,
   },
