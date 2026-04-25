@@ -60,10 +60,8 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as discussionsApi };
-export type GetThreadsApiResponse = /** status 200 Default Response */ {
-  data: Thread[];
-  pagination: Pagination;
-};
+export type GetThreadsApiResponse =
+  /** status 200 Default Response */ PaginatedThreads;
 export type GetThreadsApiArg = {
   filter?: "all" | "popular" | "recent" | "mine";
   search?: string;
@@ -91,10 +89,7 @@ export type PostThreadsByIdRepliesApiArg = {
   };
 };
 export type PostThreadsByIdLikeApiResponse =
-  /** status 200 Default Response */ {
-    liked: boolean;
-    likes: number;
-  };
+  /** status 200 Default Response */ LikeResult;
 export type PostThreadsByIdLikeApiArg = string;
 export type Thread = {
   id: string;
@@ -114,6 +109,10 @@ export type Pagination = {
   total: number;
   page: number;
   limit: number;
+};
+export type PaginatedThreads = {
+  data: Thread[];
+  pagination: Pagination;
 };
 export type ApiError = {
   error: string;
@@ -140,6 +139,10 @@ export type ThreadDetail = {
   creatorAvatarHue: number;
   isOwner: boolean;
   replies: ThreadReply[];
+};
+export type LikeResult = {
+  liked: boolean;
+  likes: number;
 };
 export const {
   useGetThreadsQuery,

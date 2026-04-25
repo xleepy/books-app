@@ -101,6 +101,7 @@ docs/designs/design-proposal.pen
 | `uyE9s` | Reading Stats & Level | Draft |
 | `Wg9V3` | Challenges & Competitions | Draft |
 | `ur9RF` | User Settings | Draft |
+| `xmzte` | Genre Picker | **NEW — multi-select genre list** |
 | `rpCyx` | Challenge Detail | **NEW — with leaderboard** |
 | `1Utr4` | Create Challenge | **NEW — template picker + form** |
 
@@ -114,6 +115,33 @@ docs/designs/design-proposal.pen
 4. **Don't use `useEffect` to sync props → state** — pass initial values as props, use `key` prop to reset
 5. **Wait for all data before rendering** — show `ActivityIndicator` while any required query is loading
 6. **Import rules** follow the FSD layer hierarchy; check the FSD Guide table
+7. **Keep tests up-to-date** — When you modify code that already has test coverage, check the existing tests first. Update or add tests to cover the new behaviour, and run `npm test` to verify they pass. Never silently break existing tests.
+8. **Split page components into separate files** — Complex screens should decompose into page-specific sub-components under `pages/{feature}/ui/components/`. The screen file orchestrates data loading and composition; presentation components handle their own styles. See existing examples: `pages/discussions/ui/components/`, `pages/settings/ui/components/`.
+9. **Reset modal state without `useEffect`** — When a modal needs to reinitialize local state on open, wrap the inner content in a conditionally rendered nested component inside the `Modal`. This preserves `animationType` while letting React mount/unmount the body naturally. See the React Patterns Guide for the full pattern.
+
+---
+
+## Page Component Splitting Convention
+
+When a screen grows beyond ~150 lines or contains multiple distinct UI sections, extract page-specific components into `pages/{feature}/ui/components/`.
+
+### Rules
+- **Screen file** (`{Page}Screen.tsx`) handles data loading, mutations, navigation, and composes sub-components
+- **Component files** are pure presentation: props in, UI out
+- Each component owns its `StyleSheet` — no shared styles across components
+- Components are **not** exported from `shared/` or `widgets/` — they are page-private
+
+### Example
+```
+pages/settings/ui/
+  SettingsScreen.tsx          # data loading + composition
+  components/
+    SettingsHeader.tsx        # header with back button + avatar
+    ProfileCard.tsx           # user profile card
+    ToggleRow.tsx             # reusable within this page
+    ChevronRow.tsx            # reusable within this page
+    SignOutButton.tsx         # sign out CTA
+```
 
 ---
 

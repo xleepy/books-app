@@ -52,10 +52,8 @@ export { injectedRtkApi as libraryApi };
 export type GetLibraryStatsApiResponse =
   /** status 200 Default Response */ LibraryStats;
 export type GetLibraryStatsApiArg = void;
-export type GetLibraryApiResponse = /** status 200 Default Response */ {
-  data: LibraryBook[];
-  pagination: Pagination;
-};
+export type GetLibraryApiResponse =
+  /** status 200 Default Response */ PaginatedLibraryBooks;
 export type GetLibraryApiArg = {
   page?: number;
   limit?: number;
@@ -108,6 +106,10 @@ export type Pagination = {
   total: number;
   page: number;
   limit: number;
+};
+export type PaginatedLibraryBooks = {
+  data: LibraryBook[];
+  pagination: Pagination;
 };
 export const {
   useGetLibraryStatsQuery,

@@ -108,6 +108,38 @@ export function ReadingProgressForm({ initialPage, pageCount }) {
 
 Using `key={bookId}` tells React to **unmount and remount** the component when the book changes. The new instance gets fresh props and fresh state. No synchronization logic required.
 
+### ✅ Modals: conditionally render the body component inside the Modal
+
+`Modal` needs to stay mounted to drive `animationType` (fade / slide), but its inner content should only render when visible so state reinitializes naturally. Extract the body into a nested component and conditionally render it inside the `Modal`:
+
+```tsx
+// Parent
+<GenrePickerModal visible={isVisible} selectedGenres={genres} ... />
+
+// Modal shell — stays mounted so animation works
+export function GenrePickerModal({ visible, selectedGenres, onSave, onClose }) {
+  return (
+    <Modal visible={visible} animationType="fade">
+      {visible && (
+        <GenrePickerBody
+          initialSelected={selectedGenres}
+          onSave={onSave}
+          onClose={onClose}
+        />
+      )}
+    </Modal>
+  );
+}
+
+// Inner body — only mounts when visible opens; no useEffect needed
+function GenrePickerBody({ initialSelected, onSave, onClose }) {
+  const [localSelected, setLocalSelected] = useState(new Set(initialSelected));
+  // ...
+}
+```
+
+This gives you both the animation behavior (Modal tracks `visible`) and the reset behavior (inner component mounts/unmounts with `visible`).
+
 ### When you DO need useEffect
 
 ```tsx
@@ -361,6 +393,7 @@ Nesting a scrolling container inside another scrolling container breaks windowin
 |---------|---------|---------------|
 | `useState` | Single-screen form, toggle flags, counters | Server data caching |
 | `useEffect` | Sync with external systems (APIs, subscriptions) | Transforming data, syncing props→state, handling clicks |
+| Conditional inner component inside `Modal` | Reset local state when a modal opens without `useEffect` | When the Modal itself can unmount (no animation needed) |
 | `key` prop | Reset component state when data identity changes | Force re-render for arbitrary reasons |
 | `useMemo` | Expensive calculations derived from state/props | Premature optimization of cheap operations |
 | `useCallback` | Passing callbacks to optimized child components | Every callback "just in case" |

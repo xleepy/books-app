@@ -36,23 +36,22 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getSubjects: build.query<GetSubjectsApiResponse, GetSubjectsApiArg>({
+      query: () => ({ url: `/subjects` }),
+    }),
   }),
   overrideExisting: false,
 });
 export { injectedRtkApi as booksApi };
-export type GetBooksFeedApiResponse = /** status 200 Default Response */ {
-  data: Book[];
-  nextCursor?: string | null;
-};
+export type GetBooksFeedApiResponse =
+  /** status 200 Default Response */ BookList;
 export type GetBooksFeedApiArg = {
   /** Opaque pagination cursor */
   cursor?: string;
   limit?: number;
 };
-export type GetBooksApiResponse = /** status 200 Default Response */ {
-  data: Book[];
-  pagination: Pagination;
-};
+export type GetBooksApiResponse =
+  /** status 200 Default Response */ PaginatedBooks;
 export type GetBooksApiArg = {
   page?: number;
   limit?: number;
@@ -64,13 +63,14 @@ export type GetBooksApiArg = {
 export type GetBooksByIdApiResponse = /** status 200 Default Response */ Book;
 export type GetBooksByIdApiArg = string;
 export type GetBooksByIdRecommendationsApiResponse =
-  /** status 200 Default Response */ {
-    data: Book[];
-  };
+  /** status 200 Default Response */ BookList;
 export type GetBooksByIdRecommendationsApiArg = {
   limit?: number;
   id: string;
 };
+export type GetSubjectsApiResponse =
+  /** status 200 Default Response */ SubjectList;
+export type GetSubjectsApiArg = void;
 export type Book = {
   id: string;
   title: string;
@@ -82,14 +82,29 @@ export type Book = {
   reviewCount: number;
   pageCount?: number | null;
 };
+export type BookList = {
+  data: Book[];
+  nextCursor?: string | null;
+};
 export type Pagination = {
   total: number;
   page: number;
   limit: number;
 };
+export type PaginatedBooks = {
+  data: Book[];
+  pagination: Pagination;
+};
 export type ApiError = {
   error: string;
   message: string;
+};
+export type SubjectList = {
+  data: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
 };
 export const {
   useGetBooksFeedQuery,
@@ -100,4 +115,6 @@ export const {
   useLazyGetBooksByIdQuery,
   useGetBooksByIdRecommendationsQuery,
   useLazyGetBooksByIdRecommendationsQuery,
+  useGetSubjectsQuery,
+  useLazyGetSubjectsQuery,
 } = injectedRtkApi;

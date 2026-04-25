@@ -74,38 +74,26 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as challengesApi };
-export type GetChallengesApiResponse = /** status 200 Default Response */ {
-  data: Challenge[];
-};
+export type GetChallengesApiResponse =
+  /** status 200 Default Response */ ChallengeList;
 export type GetChallengesApiArg =
   | ("active" | "monthly" | "yearly" | "weekly" | "custom")
   | undefined;
-export type PostChallengesApiResponse = /** status 201 Default Response */ {
-  data: Challenge;
-};
+export type PostChallengesApiResponse =
+  /** status 201 Default Response */ ChallengeDetail;
 export type PostChallengesApiArg = CreateChallengeBody;
-export type GetChallengesByIdApiResponse = /** status 200 Default Response */ {
-  data: Challenge;
-};
+export type GetChallengesByIdApiResponse =
+  /** status 200 Default Response */ ChallengeDetail;
 export type GetChallengesByIdApiArg = string;
 export type DeleteChallengesByIdApiResponse = unknown;
 export type DeleteChallengesByIdApiArg = string;
 export type PostChallengesByIdJoinApiResponse =
-  /** status 200 Default Response */ {
-    data: {
-      challengeId: string;
-      current: number;
-      completed: boolean;
-      completedAt?: string | null;
-    };
-  };
+  /** status 200 Default Response */ ChallengeProgress;
 export type PostChallengesByIdJoinApiArg = string;
 export type PostChallengesByIdLeaveApiResponse = unknown;
 export type PostChallengesByIdLeaveApiArg = string;
 export type GetChallengesByIdLeaderboardApiResponse =
-  /** status 200 Default Response */ {
-    data: LeaderboardEntry[];
-  };
+  /** status 200 Default Response */ LeaderboardList;
 export type GetChallengesByIdLeaderboardApiArg = {
   limit?: number;
   id: string;
@@ -131,9 +119,15 @@ export type Challenge = {
   isJoined: boolean;
   isCreator: boolean;
 };
+export type ChallengeList = {
+  data: Challenge[];
+};
 export type ApiError = {
   error: string;
   message: string;
+};
+export type ChallengeDetail = {
+  data: Challenge;
 };
 export type CreateChallengeBody = {
   title: string;
@@ -145,6 +139,13 @@ export type CreateChallengeBody = {
   activeTo: string;
   badgeId?: string;
 };
+export type ChallengeProgress = {
+  challengeId: string;
+  current: number;
+  target: number;
+  completed: boolean;
+  completedAt?: string | null;
+};
 export type LeaderboardEntry = {
   id: string;
   rank: number;
@@ -155,6 +156,9 @@ export type LeaderboardEntry = {
   xp: number;
   isYou?: boolean;
   avatarHue: number;
+};
+export type LeaderboardList = {
+  data: LeaderboardEntry[];
 };
 export const {
   useGetChallengesQuery,

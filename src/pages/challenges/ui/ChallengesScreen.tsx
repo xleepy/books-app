@@ -1,14 +1,21 @@
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Trophy, Plus } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useGetChallengesQuery } from '@shared/api/challengesApi.generated';
-import { ChallengeCard } from '@entities/challenge/ui/ChallengeCard';
-import { FilterRow } from '@features/filter-list/ui/FilterRow';
-import { Screen } from '@shared/ui/Screen';
-import { ScreenHeader } from '@shared/ui/ScreenHeader';
-import { colors, fontFamily } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Trophy, Plus } from "lucide-react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useGetChallengesQuery } from "@shared/api/challengesApi.generated";
+import { ChallengeCard } from "@entities/challenge/ui/ChallengeCard";
+import { FilterRow } from "@features/filter-list/ui/FilterRow";
+import { Screen } from "@shared/ui/Screen";
+import { ScreenHeader } from "@shared/ui/ScreenHeader";
+import { colors, fontFamily } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -32,7 +39,7 @@ export function ChallengesScreen() {
             <View style={styles.headerActions}>
               <Pressable
                 style={styles.createBtn}
-                onPress={() => navigation.navigate('CreateChallenge')}
+                onPress={() => navigation.navigate("CreateChallenge")}
               >
                 <Plus size={20} color={colors.accent} />
               </Pressable>
@@ -46,7 +53,9 @@ export function ChallengesScreen() {
 
       {/* Fixed filter chips */}
       <View style={styles.filterWrap}>
-        <FilterRow filters={['Active', 'Monthly', 'Yearly', 'Weekly', 'Custom']} />
+        <FilterRow
+          filters={["Active", "Monthly", "Yearly", "Weekly", "Custom"]}
+        />
       </View>
       <Text style={styles.sectionTitle}>Active Challenges</Text>
       {/* Scrollable challenge list with pull-to-refresh */}
@@ -57,14 +66,21 @@ export function ChallengesScreen() {
         renderItem={({ item }) => (
           <ChallengeCard
             challenge={item}
-            onPress={() => navigation.navigate('ChallengeDetail', { challengeId: item.id })}
+            onPress={() =>
+              navigation.navigate("ChallengeDetail", { challengeId: item.id })
+            }
           />
         )}
         ListEmptyComponent={
           challengesLoading ? (
-            <ActivityIndicator color={colors.accent} style={styles.emptySpinner} />
+            <ActivityIndicator
+              color={colors.accent}
+              style={styles.emptySpinner}
+            />
           ) : (
-            <Text style={styles.emptyText}>No active challenges right now.</Text>
+            <Text style={styles.emptyText}>
+              No active challenges right now.
+            </Text>
           )
         }
         refreshing={isFetching}
@@ -77,12 +93,15 @@ export function ChallengesScreen() {
 }
 
 const styles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
   headerWrap: {
     marginBottom: 20,
   },
   headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   createBtn: {
@@ -90,16 +109,16 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.accentLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   trophyBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.badgeGoldLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   filterWrap: {
     marginBottom: 20,
@@ -121,7 +140,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: 14,
     color: colors.fontSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 40,
   },
 });

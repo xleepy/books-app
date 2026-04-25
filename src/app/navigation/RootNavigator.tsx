@@ -16,6 +16,7 @@ import { RootStackParamList } from "./types";
 import { supabase } from "@shared/lib/supabase";
 import { setSession } from "@features/auth/model/authSlice";
 import { useGetMeQuery } from "@shared/api/meApi.generated";
+import { usePushToken } from "@features/push-notifications/model/usePushToken";
 import type { RootState, AppDispatch } from "@store/store";
 import { colors } from "@shared/theme";
 
@@ -25,6 +26,7 @@ export function RootNavigator() {
   const dispatch = useDispatch<AppDispatch>();
   const { session, isLoading } = useSelector((state: RootState) => state.auth);
   useGetMeQuery(undefined, { skip: !session });
+  usePushToken();
 
   useEffect(() => {
     // Restore existing session on mount
@@ -33,11 +35,11 @@ export function RootNavigator() {
     });
 
     // Listen for auth state changes (sign in, sign out, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        dispatch(setSession(session));
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      dispatch(setSession(session));
+    });
 
     return () => subscription.unsubscribe();
   }, [dispatch]);

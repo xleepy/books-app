@@ -30,10 +30,7 @@ const injectedRtkApi = api.injectEndpoints({
 });
 export { injectedRtkApi as reviewsApi };
 export type GetBooksByIdReviewsApiResponse =
-  /** status 200 Default Response */ {
-    data: Review[];
-    pagination: Pagination;
-  };
+  /** status 200 Default Response */ PaginatedReviews;
 export type GetBooksByIdReviewsApiArg = {
   page?: number;
   limit?: number;
@@ -60,6 +57,10 @@ export type Pagination = {
   total: number;
   page: number;
   limit: number;
+};
+export type PaginatedReviews = {
+  data: Review[];
+  pagination: Pagination;
 };
 export type ApiError = {
   error: string;

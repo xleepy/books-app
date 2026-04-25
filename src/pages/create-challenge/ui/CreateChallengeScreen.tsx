@@ -11,7 +11,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,6 +18,7 @@ import { X, Calendar, Award, Flame, BookOpen, ChevronUp, ChevronDown } from 'luc
 import { usePostChallengesMutation } from '@shared/api/challengesApi.generated';
 import { colors, fontFamily } from '@shared/theme';
 import { RootStackParamList } from '@app/navigation/types';
+import { CalendarPicker } from './CalendarPicker';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -42,17 +42,20 @@ const templateColors: Record<string, { bg: string; icon: string }> = {
   custom: { bg: colors.bgSecondary, icon: colors.fontSecondary },
 };
 
-function addDays(date: Date, days: number): Date {
+export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
 }
 
-function formatDate(d: Date): string {
-  return d.toISOString().split('T')[0];
+export function formatDate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-function parseISODate(s: string): Date | null {
+export function parseISODate(s: string): Date | null {
   const [y, m, d] = s.split('-').map(Number);
   if (!y || !m || !d) return null;
   const date = new Date(y, m - 1, d);
@@ -60,7 +63,7 @@ function parseISODate(s: string): Date | null {
   return date;
 }
 
-function startOfDayUTC(d: Date): Date {
+export function startOfDayUTC(d: Date): Date {
   return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
 }
 
@@ -113,24 +116,6 @@ export function CreateChallengeScreen() {
     if (fromUTC < now) return 'Start date must be today or later';
     if (toUTC <= fromUTC) return 'End date must be after start date';
     return null;
-  }
-
-  function handleDateChange(mode: 'from' | 'to', event: any, date?: Date) {
-    if (Platform.OS === 'android') {
-      setPickerMode(null);
-    }
-    if (!date) return;
-
-    const iso = formatDate(date);
-    if (mode === 'from') {
-      setActiveFrom(iso);
-      const err = validateDates(iso, activeTo);
-      setError(err);
-    } else {
-      setActiveTo(iso);
-      const err = validateDates(activeFrom, iso);
-      setError(err);
-    }
   }
 
   const canSubmit =
@@ -316,24 +301,32 @@ export function CreateChallengeScreen() {
             </Pressable>
           </View>
 
-          {pickerMode === 'from' && (
-            <DateTimePicker
-              value={fromDate}
-              mode="date"
-              minimumDate={today}
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, date) => handleDateChange('from', event, date)}
-            />
-          )}
-          {pickerMode === 'to' && (
-            <DateTimePicker
-              value={toDate}
-              mode="date"
-              minimumDate={addDays(fromDate, 1)}
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, date) => handleDateChange('to', event, date)}
-            />
-          )}
+          <CalendarPicker
+            visible={pickerMode === 'from'}
+            selectedDate={fromDate}
+            onSelect={(date) => {
+              const iso = formatDate(date);
+              setActiveFrom(iso);
+              const err = validateDates(iso, activeTo);
+              setError(err);
+              setPickerMode(null);
+            }}
+            onClose={() => setPickerMode(null)}
+            minimumDate={today}
+          />
+          <CalendarPicker
+            visible={pickerMode === 'to'}
+            selectedDate={toDate}
+            onSelect={(date) => {
+              const iso = formatDate(date);
+              setActiveTo(iso);
+              const err = validateDates(activeFrom, iso);
+              setError(err);
+              setPickerMode(null);
+            }}
+            onClose={() => setPickerMode(null)}
+            minimumDate={addDays(fromDate, 1)}
+          />
         </View>
       </ScrollView>
 

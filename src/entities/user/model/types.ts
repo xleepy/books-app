@@ -17,3 +17,14 @@ export interface ReadingStats {
   bestStreak: number;
   weekDays: boolean[];
 }
+
+export interface Preferences {
+  readingGoalMinutes: number;
+  reminderTime?: string | null;
+  reminderEnabled: boolean;
+  preferredGenres: string[];
+  notifyPush: boolean;
+  notifyWeeklyDigest: boolean;
+  notifyChallenge: boolean;
+  profileVisibility: "public" | "friends" | "private";
+}
