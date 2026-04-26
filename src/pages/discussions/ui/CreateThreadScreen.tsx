@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -10,16 +10,16 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BookOpen, Search, X } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePostThreadsMutation } from '@shared/api/discussionsApi.generated';
-import { useGetBooksQuery, Book } from '@shared/api/booksApi.generated';
-import { BookCover } from '@entities/book/ui/BookCover';
-import { colors, fontFamily } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { BookOpen, Search, X } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePostThreadsMutation } from "@shared/api/discussionsApi.generated";
+import { useGetBooksQuery, Book } from "@shared/api/booksApi.generated";
+import { BookCover } from "@entities/book/ui/BookCover";
+import { colors, fontFamily } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -28,15 +28,15 @@ export function CreateThreadScreen() {
   const insets = useSafeAreaInsets();
   const [postThread, { isLoading }] = usePostThreadsMutation();
 
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
   const [spoiler, setSpoiler] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // ─── Book picker state ────────────────────────────────────────────────────
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [bookSearch, setBookSearch] = useState('');
-  const [debouncedQ, setDebouncedQ] = useState('');
+  const [bookSearch, setBookSearch] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -50,26 +50,27 @@ export function CreateThreadScreen() {
 
   const { data: booksData, isFetching: booksLoading } = useGetBooksQuery(
     { q: debouncedQ, limit: 6 },
-    { skip: debouncedQ.trim().length < 2 }
+    { skip: debouncedQ.trim().length < 2 },
   );
   const bookResults = booksData?.data ?? [];
 
   function handleSelectBook(book: Book) {
     setSelectedBook(book);
     setPickerOpen(false);
-    setBookSearch('');
-    setDebouncedQ('');
+    setBookSearch("");
+    setDebouncedQ("");
   }
 
   function handleClearBook() {
     setSelectedBook(null);
     setPickerOpen(false);
-    setBookSearch('');
-    setDebouncedQ('');
+    setBookSearch("");
+    setDebouncedQ("");
   }
 
   // ─── Submit ───────────────────────────────────────────────────────────────
-  const canSubmit = title.trim().length > 0 && body.trim().length > 0 && !isLoading;
+  const canSubmit =
+    title.trim().length > 0 && body.trim().length > 0 && !isLoading;
 
   async function handleCreate() {
     if (!canSubmit) return;
@@ -83,14 +84,14 @@ export function CreateThreadScreen() {
       }).unwrap();
       navigation.goBack();
     } catch {
-      setError('Failed to create thread. Please try again.');
+      setError("Failed to create thread. Please try again.");
     }
   }
 
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
@@ -155,17 +156,33 @@ export function CreateThreadScreen() {
 
         {/* Book picker */}
         <View style={styles.field}>
-          <Text style={styles.label}>Link a Book <Text style={styles.optional}>(optional)</Text></Text>
+          <Text style={styles.label}>
+            Link a Book <Text style={styles.optional}>(optional)</Text>
+          </Text>
 
           {/* Selected book card */}
           {selectedBook && !pickerOpen && (
             <View style={styles.selectedCard}>
-              <BookCover coverUrl={selectedBook.coverUrl} width={44} height={60} radius={6} shadow={false} />
+              <BookCover
+                coverUrl={selectedBook.coverUrl}
+                width={44}
+                height={60}
+                radius={6}
+                shadow={false}
+              />
               <View style={styles.selectedInfo}>
-                <Text style={styles.selectedTitle} numberOfLines={2}>{selectedBook.title}</Text>
-                <Text style={styles.selectedAuthor} numberOfLines={1}>{selectedBook.author}</Text>
+                <Text style={styles.selectedTitle} numberOfLines={2}>
+                  {selectedBook.title}
+                </Text>
+                <Text style={styles.selectedAuthor} numberOfLines={1}>
+                  {selectedBook.author}
+                </Text>
               </View>
-              <Pressable style={styles.clearBookBtn} onPress={handleClearBook} accessibilityLabel="Remove book">
+              <Pressable
+                style={styles.clearBookBtn}
+                onPress={handleClearBook}
+                accessibilityLabel="Remove book"
+              >
                 <X size={16} color={colors.fontSecondary} />
               </Pressable>
             </View>
@@ -179,7 +196,7 @@ export function CreateThreadScreen() {
             >
               <BookOpen size={16} color={colors.accent} />
               <Text style={styles.addBookText}>
-                {selectedBook ? 'Change book' : 'Search for a book'}
+                {selectedBook ? "Change book" : "Search for a book"}
               </Text>
             </Pressable>
           )}
@@ -214,15 +231,21 @@ export function CreateThreadScreen() {
 
               {!booksLoading && debouncedQ.trim().length < 2 && (
                 <View style={styles.pickerCenter}>
-                  <Text style={styles.hintText}>Type at least 2 characters to search</Text>
+                  <Text style={styles.hintText}>
+                    Type at least 2 characters to search
+                  </Text>
                 </View>
               )}
 
-              {!booksLoading && debouncedQ.trim().length >= 2 && bookResults.length === 0 && (
-                <View style={styles.pickerCenter}>
-                  <Text style={styles.hintText}>No books found for "{debouncedQ}"</Text>
-                </View>
-              )}
+              {!booksLoading &&
+                debouncedQ.trim().length >= 2 &&
+                bookResults.length === 0 && (
+                  <View style={styles.pickerCenter}>
+                    <Text style={styles.hintText}>
+                      No books found for &quot;{debouncedQ}&quot;
+                    </Text>
+                  </View>
+                )}
 
               {!booksLoading && bookResults.length > 0 && (
                 <View style={styles.resultsList}>
@@ -231,14 +254,25 @@ export function CreateThreadScreen() {
                       key={book.id}
                       style={[
                         styles.resultRow,
-                        selectedBook?.id === book.id && styles.resultRowSelected,
+                        selectedBook?.id === book.id &&
+                          styles.resultRowSelected,
                       ]}
                       onPress={() => handleSelectBook(book)}
                     >
-                      <BookCover coverUrl={book.coverUrl} width={36} height={50} radius={4} shadow={false} />
+                      <BookCover
+                        coverUrl={book.coverUrl}
+                        width={36}
+                        height={50}
+                        radius={4}
+                        shadow={false}
+                      />
                       <View style={styles.resultInfo}>
-                        <Text style={styles.resultTitle} numberOfLines={2}>{book.title}</Text>
-                        <Text style={styles.resultAuthor} numberOfLines={1}>{book.author}</Text>
+                        <Text style={styles.resultTitle} numberOfLines={2}>
+                          {book.title}
+                        </Text>
+                        <Text style={styles.resultAuthor} numberOfLines={1}>
+                          {book.author}
+                        </Text>
                       </View>
                       {selectedBook?.id === book.id && (
                         <View style={styles.checkDot} />
@@ -277,9 +311,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgPrimary,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
@@ -299,7 +333,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     minWidth: 60,
-    alignItems: 'center',
+    alignItems: "center",
   },
   postBtnDisabled: {
     opacity: 0.4,
@@ -317,14 +351,14 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   errorBanner: {
-    backgroundColor: '#FDECEA',
+    backgroundColor: "#FDECEA",
     borderRadius: 10,
     padding: 12,
   },
   errorText: {
     fontFamily: fontFamily.regular,
     fontSize: 13,
-    color: '#C62828',
+    color: "#C62828",
   },
   field: {
     gap: 8,
@@ -362,12 +396,12 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: 11,
     color: colors.fontTertiary,
-    textAlign: 'right',
+    textAlign: "right",
   },
   // ─── Selected book ──────────────────────────────────────────────────────────
   selectedCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     backgroundColor: colors.bgCard,
     borderRadius: 12,
@@ -394,8 +428,8 @@ const styles = StyleSheet.create({
   },
   // ─── Add book row ───────────────────────────────────────────────────────────
   addBookRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     paddingVertical: 10,
   },
@@ -410,11 +444,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
     backgroundColor: colors.bgCard,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -435,7 +469,7 @@ const styles = StyleSheet.create({
   },
   pickerCenter: {
     paddingVertical: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   hintText: {
     fontFamily: fontFamily.regular,
@@ -446,8 +480,8 @@ const styles = StyleSheet.create({
     gap: 0,
   },
   resultRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -479,9 +513,9 @@ const styles = StyleSheet.create({
   },
   // ─── Spoiler ─────────────────────────────────────────────────────────────────
   spoilerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: colors.bgCard,
     borderRadius: 12,
     padding: 16,

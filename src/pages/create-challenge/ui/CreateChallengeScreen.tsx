@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -10,28 +10,77 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { X, Calendar, Award, Flame, BookOpen, ChevronUp, ChevronDown } from 'lucide-react-native';
-import { usePostChallengesMutation } from '@shared/api/challengesApi.generated';
-import { colors, fontFamily } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
-import { CalendarPicker } from './CalendarPicker';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  X,
+  Calendar,
+  Flame,
+  BookOpen,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react-native";
+import { usePostChallengesMutation } from "@shared/api/challengesApi.generated";
+import { colors, fontFamily } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
+import { CalendarPicker } from "./CalendarPicker";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const templates = [
-  { key: 'monthly', label: 'Monthly Sprint', variant: 'monthly', metric: 'books', target: 5, days: 30 },
-  { key: 'yearly', label: 'Yearly Goal', variant: 'yearly', metric: 'books', target: 24, days: 365 },
-  { key: 'weekly', label: 'Weekly Blitz', variant: 'weekly', metric: 'books', target: 2, days: 7 },
-  { key: 'streak', label: 'Streak Keeper', variant: 'custom', metric: 'streak', target: 7, days: 30 },
-  { key: 'pages', label: 'Pages Marathon', variant: 'custom', metric: 'pages', target: 1000, days: 30 },
-  { key: 'custom', label: 'Custom', variant: 'custom', metric: 'books', target: 5, days: 30 },
+  {
+    key: "monthly",
+    label: "Monthly Sprint",
+    variant: "monthly",
+    metric: "books",
+    target: 5,
+    days: 30,
+  },
+  {
+    key: "yearly",
+    label: "Yearly Goal",
+    variant: "yearly",
+    metric: "books",
+    target: 24,
+    days: 365,
+  },
+  {
+    key: "weekly",
+    label: "Weekly Blitz",
+    variant: "weekly",
+    metric: "books",
+    target: 2,
+    days: 7,
+  },
+  {
+    key: "streak",
+    label: "Streak Keeper",
+    variant: "custom",
+    metric: "streak",
+    target: 7,
+    days: 30,
+  },
+  {
+    key: "pages",
+    label: "Pages Marathon",
+    variant: "custom",
+    metric: "pages",
+    target: 1000,
+    days: 30,
+  },
+  {
+    key: "custom",
+    label: "Custom",
+    variant: "custom",
+    metric: "books",
+    target: 5,
+    days: 30,
+  },
 ];
 
-const metrics = ['books', 'pages', 'hours', 'streak'] as const;
+const metrics = ["books", "pages", "hours", "streak"] as const;
 
 const templateColors: Record<string, { bg: string; icon: string }> = {
   monthly: { bg: colors.challengeBlueLight, icon: colors.challengeBlue },
@@ -50,16 +99,21 @@ export function addDays(date: Date, days: number): Date {
 
 export function formatDate(d: Date): string {
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
 export function parseISODate(s: string): Date | null {
-  const [y, m, d] = s.split('-').map(Number);
+  const [y, m, d] = s.split("-").map(Number);
   if (!y || !m || !d) return null;
   const date = new Date(y, m - 1, d);
-  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+  if (
+    date.getFullYear() !== y ||
+    date.getMonth() !== m - 1 ||
+    date.getDate() !== d
+  )
+    return null;
   return date;
 }
 
@@ -75,16 +129,18 @@ export function CreateChallengeScreen() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('monthly');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [metric, setMetric] = useState<string>('books');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("monthly");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [metric, setMetric] = useState<string>("books");
   const [target, setTarget] = useState<number>(5);
   const [activeFrom, setActiveFrom] = useState<string>(formatDate(today));
-  const [activeTo, setActiveTo] = useState<string>(formatDate(addDays(today, 30)));
+  const [activeTo, setActiveTo] = useState<string>(
+    formatDate(addDays(today, 30)),
+  );
   const [error, setError] = useState<string | null>(null);
 
-  const [pickerMode, setPickerMode] = useState<'from' | 'to' | null>(null);
+  const [pickerMode, setPickerMode] = useState<"from" | "to" | null>(null);
 
   function applyTemplate(key: string) {
     setSelectedTemplate(key);
@@ -106,15 +162,15 @@ export function CreateChallengeScreen() {
   function validateDates(from: string, to: string): string | null {
     const fromDate = parseISODate(from);
     const toDate = parseISODate(to);
-    if (!fromDate) return 'Start date must be in YYYY-MM-DD format';
-    if (!toDate) return 'End date must be in YYYY-MM-DD format';
+    if (!fromDate) return "Start date must be in YYYY-MM-DD format";
+    if (!toDate) return "End date must be in YYYY-MM-DD format";
 
     const fromUTC = startOfDayUTC(fromDate);
     const toUTC = startOfDayUTC(toDate);
     const now = startOfDayUTC(new Date());
 
-    if (fromUTC < now) return 'Start date must be today or later';
-    if (toUTC <= fromUTC) return 'End date must be after start date';
+    if (fromUTC < now) return "Start date must be today or later";
+    if (toUTC <= fromUTC) return "End date must be after start date";
     return null;
   }
 
@@ -137,27 +193,51 @@ export function CreateChallengeScreen() {
       await postChallenge({
         title: title.trim(),
         description: description.trim() || undefined,
-        variant: (template?.variant ?? 'custom') as 'monthly' | 'yearly' | 'weekly' | 'custom',
-        metric: metric as 'books' | 'pages' | 'hours' | 'streak',
+        variant: (template?.variant ?? "custom") as
+          | "monthly"
+          | "yearly"
+          | "weekly"
+          | "custom",
+        metric: metric as "books" | "pages" | "hours" | "streak",
         target,
         activeFrom,
         activeTo,
       }).unwrap();
-      Alert.alert('Challenge Created', `${title.trim()} has been created successfully.`);
+      Alert.alert(
+        "Challenge Created",
+        `${title.trim()} has been created successfully.`,
+      );
       navigation.goBack();
-    } catch (err: any) {
-      const message = err?.data?.message || err?.error || 'Failed to create challenge. Please try again.';
+    } catch (err: unknown) {
+      const message =
+        (err as { data?: { message?: string }; error?: string })?.data
+          ?.message ||
+        (err as { data?: { message?: string }; error?: string })?.error ||
+        "Failed to create challenge. Please try again.";
       setError(message);
     }
   }
 
-  const MetricIcon = ({ name, size = 16, color }: { name: string; size?: number; color: string }) => {
+  const MetricIcon = ({
+    name,
+    size = 16,
+    color,
+  }: {
+    name: string;
+    size?: number;
+    color: string;
+  }) => {
     switch (name) {
-      case 'books': return <BookOpen size={size} color={color} />;
-      case 'pages': return <BookOpen size={size} color={color} />;
-      case 'hours': return <Calendar size={size} color={color} />;
-      case 'streak': return <Flame size={size} color={color} />;
-      default: return <BookOpen size={size} color={color} />;
+      case "books":
+        return <BookOpen size={size} color={color} />;
+      case "pages":
+        return <BookOpen size={size} color={color} />;
+      case "hours":
+        return <Calendar size={size} color={color} />;
+      case "streak":
+        return <Flame size={size} color={color} />;
+      default:
+        return <BookOpen size={size} color={color} />;
     }
   };
 
@@ -167,7 +247,7 @@ export function CreateChallengeScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
@@ -193,7 +273,11 @@ export function CreateChallengeScreen() {
         {/* Templates */}
         <View style={styles.field}>
           <Text style={styles.label}>Choose a Template</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tplRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.tplRow}
+          >
             {templates.map((tpl) => {
               const colorset = templateColors[tpl.key] ?? templateColors.custom;
               const active = selectedTemplate === tpl.key;
@@ -207,8 +291,14 @@ export function CreateChallengeScreen() {
                   ]}
                   onPress={() => applyTemplate(tpl.key)}
                 >
-                  <MetricIcon name={tpl.metric} size={28} color={colorset.icon} />
-                  <Text style={[styles.tplLabel, { color: colorset.icon }]}>{tpl.label}</Text>
+                  <MetricIcon
+                    name={tpl.metric}
+                    size={28}
+                    color={colorset.icon}
+                  />
+                  <Text style={[styles.tplLabel, { color: colorset.icon }]}>
+                    {tpl.label}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -254,7 +344,12 @@ export function CreateChallengeScreen() {
                 style={[styles.pill, metric === m && styles.pillActive]}
                 onPress={() => setMetric(m)}
               >
-                <Text style={[styles.pillText, metric === m && styles.pillTextActive]}>
+                <Text
+                  style={[
+                    styles.pillText,
+                    metric === m && styles.pillTextActive,
+                  ]}
+                >
                   {m.charAt(0).toUpperCase() + m.slice(1)}
                 </Text>
               </Pressable>
@@ -271,16 +366,22 @@ export function CreateChallengeScreen() {
               onChangeText={(text) => {
                 const num = parseInt(text, 10);
                 if (!isNaN(num)) setTarget(Math.max(1, Math.min(9999, num)));
-                else if (text === '') setTarget(1);
+                else if (text === "") setTarget(1);
               }}
               keyboardType="number-pad"
               style={styles.targetInput}
             />
             <View style={styles.stepper}>
-              <Pressable onPress={() => adjustTarget(1)} style={styles.stepperBtn}>
+              <Pressable
+                onPress={() => adjustTarget(1)}
+                style={styles.stepperBtn}
+              >
                 <ChevronUp size={16} color={colors.fontSecondary} />
               </Pressable>
-              <Pressable onPress={() => adjustTarget(-1)} style={styles.stepperBtn}>
+              <Pressable
+                onPress={() => adjustTarget(-1)}
+                style={styles.stepperBtn}
+              >
                 <ChevronDown size={16} color={colors.fontSecondary} />
               </Pressable>
             </View>
@@ -291,18 +392,24 @@ export function CreateChallengeScreen() {
         <View style={styles.field}>
           <Text style={styles.label}>Duration</Text>
           <View style={styles.dateRow}>
-            <Pressable style={styles.dateBox} onPress={() => setPickerMode('from')}>
+            <Pressable
+              style={styles.dateBox}
+              onPress={() => setPickerMode("from")}
+            >
               <Text style={styles.dateLabel}>Start Date</Text>
               <Text style={styles.dateValue}>{activeFrom}</Text>
             </Pressable>
-            <Pressable style={styles.dateBox} onPress={() => setPickerMode('to')}>
+            <Pressable
+              style={styles.dateBox}
+              onPress={() => setPickerMode("to")}
+            >
               <Text style={styles.dateLabel}>End Date</Text>
               <Text style={styles.dateValue}>{activeTo}</Text>
             </Pressable>
           </View>
 
           <CalendarPicker
-            visible={pickerMode === 'from'}
+            visible={pickerMode === "from"}
             selectedDate={fromDate}
             onSelect={(date) => {
               const iso = formatDate(date);
@@ -315,7 +422,7 @@ export function CreateChallengeScreen() {
             minimumDate={today}
           />
           <CalendarPicker
-            visible={pickerMode === 'to'}
+            visible={pickerMode === "to"}
             selectedDate={toDate}
             onSelect={(date) => {
               const iso = formatDate(date);
@@ -331,7 +438,12 @@ export function CreateChallengeScreen() {
       </ScrollView>
 
       {/* Bottom CTA */}
-      <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+      <View
+        style={[
+          styles.actionBar,
+          { paddingBottom: Math.max(insets.bottom, 12) },
+        ]}
+      >
         <Pressable
           style={[styles.createBtn, !canSubmit && styles.createBtnDisabled]}
           onPress={handleCreate}
@@ -354,9 +466,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgPrimary,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
@@ -381,14 +493,14 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   errorBanner: {
-    backgroundColor: '#FDECEA',
+    backgroundColor: "#FDECEA",
     borderRadius: 10,
     padding: 12,
   },
   errorText: {
     fontFamily: fontFamily.regular,
     fontSize: 13,
-    color: '#C62828',
+    color: "#C62828",
   },
   field: {
     gap: 8,
@@ -414,7 +526,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
   },
   tplRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
     paddingRight: 20,
   },
@@ -424,10 +536,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     gap: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   tplCardActive: {
     borderColor: colors.accent,
@@ -435,10 +547,10 @@ const styles = StyleSheet.create({
   tplLabel: {
     fontFamily: fontFamily.semibold,
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   pillRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   pill: {
@@ -460,8 +572,8 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semibold,
   },
   targetRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   targetInput: {
@@ -484,11 +596,11 @@ const styles = StyleSheet.create({
     height: 22,
     backgroundColor: colors.bgSecondary,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   dateRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   dateBox: {
@@ -521,8 +633,8 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 16,
     backgroundColor: colors.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   createBtnDisabled: {
     opacity: 0.4,

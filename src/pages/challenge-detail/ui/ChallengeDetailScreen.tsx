@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -7,33 +7,31 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ChevronLeft,
   Share2,
   Calendar,
-  Award,
   Flame,
   BookOpen,
-  Users,
-} from 'lucide-react-native';
+} from "lucide-react-native";
 import {
   useGetChallengesByIdQuery,
   useGetChallengesByIdLeaderboardQuery,
   usePostChallengesByIdJoinMutation,
   usePostChallengesByIdLeaveMutation,
   useDeleteChallengesByIdMutation,
-} from '@shared/api/challengesApi.generated';
-import { ProgressBar } from '@shared/ui';
-import { colors, fontFamily } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
-import { LeaderboardSection } from '@widgets/leaderboard/ui/LeaderboardSection';
+} from "@shared/api/challengesApi.generated";
+import { ProgressBar } from "@shared/ui";
+import { colors, fontFamily } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
+import { LeaderboardSection } from "@widgets/leaderboard/ui/LeaderboardSection";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-type Route = RouteProp<RootStackParamList, 'ChallengeDetail'>;
+type Route = RouteProp<RootStackParamList, "ChallengeDetail">;
 
 const metricIcons: Record<string, typeof Calendar> = {
   books: BookOpen,
@@ -59,17 +57,24 @@ export function ChallengeDetailScreen() {
     data: challengeData,
     isLoading: challengeLoading,
     refetch: refetchChallenge,
-  } = useGetChallengesByIdQuery(params.challengeId, { refetchOnMountOrArgChange: true });
+  } = useGetChallengesByIdQuery(params.challengeId, {
+    refetchOnMountOrArgChange: true,
+  });
   const {
     data: leaderboardData,
     isLoading: leaderboardLoading,
     refetch: refetchLeaderboard,
-  } = useGetChallengesByIdLeaderboardQuery({ id: params.challengeId }, { refetchOnMountOrArgChange: true });
+  } = useGetChallengesByIdLeaderboardQuery(
+    { id: params.challengeId },
+    { refetchOnMountOrArgChange: true },
+  );
 
-
-  const [joinChallenge, { isLoading: isJoining }] = usePostChallengesByIdJoinMutation();
-  const [leaveChallenge, { isLoading: isLeaving }] = usePostChallengesByIdLeaveMutation();
-  const [deleteChallenge, { isLoading: isDeleting }] = useDeleteChallengesByIdMutation();
+  const [joinChallenge, { isLoading: isJoining }] =
+    usePostChallengesByIdJoinMutation();
+  const [leaveChallenge, { isLoading: isLeaving }] =
+    usePostChallengesByIdLeaveMutation();
+  const [deleteChallenge, { isLoading: isDeleting }] =
+    useDeleteChallengesByIdMutation();
 
   const challenge = challengeData?.data;
   const leaderboard = leaderboardData?.data ?? [];
@@ -83,7 +88,7 @@ export function ChallengeDetailScreen() {
       refetchChallenge();
       refetchLeaderboard();
     } catch {
-      Alert.alert('Error', 'Failed to join challenge. Please try again.');
+      Alert.alert("Error", "Failed to join challenge. Please try again.");
     }
   }
 
@@ -94,30 +99,33 @@ export function ChallengeDetailScreen() {
       refetchChallenge();
       refetchLeaderboard();
     } catch {
-      Alert.alert('Error', 'Failed to leave challenge. Please try again.');
+      Alert.alert("Error", "Failed to leave challenge. Please try again.");
     }
   }
 
   function handleCancel() {
     if (!challenge) return;
     Alert.alert(
-      'Cancel Challenge',
-      'Are you sure you want to cancel this challenge? All participants will be removed.',
+      "Cancel Challenge",
+      "Are you sure you want to cancel this challenge? All participants will be removed.",
       [
-        { text: 'No', style: 'cancel' },
+        { text: "No", style: "cancel" },
         {
-          text: 'Cancel Challenge',
-          style: 'destructive',
+          text: "Cancel Challenge",
+          style: "destructive",
           onPress: async () => {
             try {
               await deleteChallenge(challenge.id).unwrap();
               navigation.goBack();
             } catch {
-              Alert.alert('Error', 'Failed to cancel challenge. Please try again.');
+              Alert.alert(
+                "Error",
+                "Failed to cancel challenge. Please try again.",
+              );
             }
           },
         },
-      ]
+      ],
     );
   }
 
@@ -131,7 +139,7 @@ export function ChallengeDetailScreen() {
           disabled={isDeleting}
         >
           <Text style={styles.actionBtnText}>
-            {isDeleting ? 'Cancelling...' : 'Cancel Challenge'}
+            {isDeleting ? "Cancelling..." : "Cancel Challenge"}
           </Text>
         </Pressable>
       );
@@ -144,7 +152,7 @@ export function ChallengeDetailScreen() {
           disabled={isLeaving}
         >
           <Text style={styles.actionBtnText}>
-            {isLeaving ? 'Leaving...' : 'Leave Challenge'}
+            {isLeaving ? "Leaving..." : "Leave Challenge"}
           </Text>
         </Pressable>
       );
@@ -156,7 +164,7 @@ export function ChallengeDetailScreen() {
         disabled={isJoining}
       >
         <Text style={styles.actionBtnText}>
-          {isJoining ? 'Joining...' : 'Join Challenge'}
+          {isJoining ? "Joining..." : "Join Challenge"}
         </Text>
       </Pressable>
     );
@@ -172,7 +180,8 @@ export function ChallengeDetailScreen() {
 
   const cardColor = variantColors[challenge.variant] ?? colors.challengeBlue;
   const MetricIcon = metricIcons[challenge.metric] ?? BookOpen;
-  const progress = challenge.target > 0 ? (challenge.current ?? 0) / challenge.target : 0;
+  const progress =
+    challenge.target > 0 ? (challenge.current ?? 0) / challenge.target : 0;
 
   return (
     <View style={styles.root}>
@@ -196,13 +205,20 @@ export function ChallengeDetailScreen() {
         <View style={[styles.heroCard, { backgroundColor: cardColor }]}>
           <View style={styles.heroTop}>
             <View style={styles.heroLeft}>
-              <View style={[styles.heroIconWrap, { backgroundColor: 'rgba(0,0,0,0.2)' }]}>
+              <View
+                style={[
+                  styles.heroIconWrap,
+                  { backgroundColor: "rgba(0,0,0,0.2)" },
+                ]}
+              >
                 <MetricIcon size={24} color={colors.fontInverse} />
               </View>
               <View style={styles.heroTitleWrap}>
                 <Text style={styles.heroTitle}>{challenge.title}</Text>
                 <Text style={styles.heroSubtitle}>
-                  {challenge.variant.charAt(0).toUpperCase() + challenge.variant.slice(1)} Challenge
+                  {challenge.variant.charAt(0).toUpperCase() +
+                    challenge.variant.slice(1)}{" "}
+                  Challenge
                 </Text>
               </View>
             </View>
@@ -216,16 +232,25 @@ export function ChallengeDetailScreen() {
           <View style={styles.heroMeta}>
             <View style={styles.metaItem}>
               <Text style={styles.metaLabel}>Creator</Text>
-              <Text style={styles.metaValue}>{challenge.creatorName ?? 'Books App'}</Text>
+              <Text style={styles.metaValue}>
+                {challenge.creatorName ?? "Books App"}
+              </Text>
             </View>
             <View style={styles.metaItem}>
               <Text style={styles.metaLabel}>Participants</Text>
-              <Text style={styles.metaValue}>{challenge.participantCount.toLocaleString()}</Text>
+              <Text style={styles.metaValue}>
+                {challenge.participantCount.toLocaleString()}
+              </Text>
             </View>
             <View style={styles.metaItem}>
               <Text style={styles.metaLabel}>Ends</Text>
               <Text style={styles.metaValue}>
-                {challenge.activeTo ? new Date(challenge.activeTo).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                {challenge.activeTo
+                  ? new Date(challenge.activeTo).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  : "—"}
               </Text>
             </View>
           </View>
@@ -248,9 +273,13 @@ export function ChallengeDetailScreen() {
             />
             <View style={styles.progressMeta}>
               <Text style={styles.progressMetaText}>
-                {challenge.activeFrom ? `Started ${new Date(challenge.activeFrom).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}
+                {challenge.activeFrom
+                  ? `Started ${new Date(challenge.activeFrom).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                  : ""}
               </Text>
-              <Text style={styles.progressMetaText}>{Math.round(progress * 100)}% complete</Text>
+              <Text style={styles.progressMetaText}>
+                {Math.round(progress * 100)}% complete
+              </Text>
             </View>
           </View>
         )}
@@ -260,7 +289,12 @@ export function ChallengeDetailScreen() {
       </ScrollView>
 
       {/* Bottom Action */}
-      <View style={[styles.actionBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+      <View
+        style={[
+          styles.actionBar,
+          { paddingBottom: Math.max(insets.bottom, 12) },
+        ]}
+      >
         {getActionButton()}
       </View>
     </View>
@@ -274,14 +308,14 @@ const styles = StyleSheet.create({
   },
   loadingWrap: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.bgPrimary,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 12,
     backgroundColor: colors.bgPrimary,
@@ -289,8 +323,8 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerTitle: {
     fontFamily: fontFamily.semibold,
@@ -300,8 +334,8 @@ const styles = StyleSheet.create({
   shareBtn: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   scroll: {
     flex: 1,
@@ -317,13 +351,13 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   heroTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   heroLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     flex: 1,
   },
@@ -331,8 +365,8 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   heroTitleWrap: {
     gap: 2,
@@ -345,7 +379,7 @@ const styles = StyleSheet.create({
   heroSubtitle: {
     fontFamily: fontFamily.medium,
     fontSize: 12,
-    color: 'rgba(255,255,255,0.7)',
+    color: "rgba(255,255,255,0.7)",
   },
   heroBadge: {
     fontFamily: fontFamily.semibold,
@@ -355,11 +389,11 @@ const styles = StyleSheet.create({
   heroDesc: {
     fontFamily: fontFamily.regular,
     fontSize: 13,
-    color: 'rgba(255,255,255,0.9)',
+    color: "rgba(255,255,255,0.9)",
     lineHeight: 20,
   },
   heroMeta: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
   },
   metaItem: {
@@ -368,7 +402,7 @@ const styles = StyleSheet.create({
   metaLabel: {
     fontFamily: fontFamily.medium,
     fontSize: 11,
-    color: 'rgba(255,255,255,0.5)',
+    color: "rgba(255,255,255,0.5)",
   },
   metaValue: {
     fontFamily: fontFamily.semibold,
@@ -384,9 +418,9 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
   },
   progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   progressTitle: {
     fontFamily: fontFamily.bold,
@@ -399,8 +433,8 @@ const styles = StyleSheet.create({
     color: colors.accent,
   },
   progressMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   progressMetaText: {
     fontFamily: fontFamily.regular,
@@ -415,8 +449,8 @@ const styles = StyleSheet.create({
   actionBtn: {
     height: 52,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   actionBtnText: {
     fontFamily: fontFamily.semibold,

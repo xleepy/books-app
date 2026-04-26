@@ -1,15 +1,20 @@
-import { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, fontFamily } from '@shared/theme';
-import { UserAvatar } from '@features/user-avatar';
+import { ReactNode } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { colors, fontFamily } from "@shared/theme";
 
 interface ScreenHeaderProps {
   title: string;
   subtitle?: string;
   rightAction?: ReactNode;
+  avatar?: ReactNode;
 }
 
-export function ScreenHeader({ title, subtitle, rightAction }: ScreenHeaderProps) {
+export function ScreenHeader({
+  title,
+  subtitle,
+  rightAction,
+  avatar,
+}: ScreenHeaderProps) {
   return (
     <View style={styles.header}>
       <View style={styles.left}>
@@ -18,7 +23,7 @@ export function ScreenHeader({ title, subtitle, rightAction }: ScreenHeaderProps
       </View>
       <View style={styles.right}>
         {rightAction}
-        <UserAvatar size={40} />
+        {avatar}
       </View>
     </View>
   );
@@ -26,9 +31,9 @@ export function ScreenHeader({ title, subtitle, rightAction }: ScreenHeaderProps
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   left: {
     gap: 4,
@@ -44,8 +49,8 @@ const styles = StyleSheet.create({
     color: colors.fontSecondary,
   },
   right: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
 });

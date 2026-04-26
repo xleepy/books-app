@@ -1,16 +1,16 @@
-import { useCallback, useEffect } from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { Book, useGetBooksFeedQuery } from '@shared/api/booksApi.generated';
-import { usePostLibraryMutation } from '@shared/api/libraryApi.generated';
-import { usePostSwipesMutation } from '@shared/api/swipesApi.generated';
-import { BookCover } from '@entities/book/ui/BookCover';
-import { BookMeta } from '@entities/book/ui/BookMeta';
-import { nextCard } from '@features/swipe-book/model/swipeSlice';
-import { SwipeableCard } from '@features/swipe-book/ui/SwipeableCard';
-import { SwipeActions } from '@features/swipe-book/ui/SwipeActions';
-import { colors, fontFamily } from '@shared/theme';
-import { RootState } from '@store/store';
+import { useCallback, useEffect, useMemo } from "react";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { Book, useGetBooksFeedQuery } from "@shared/api/booksApi.generated";
+import { usePostLibraryMutation } from "@shared/api/libraryApi.generated";
+import { usePostSwipesMutation } from "@shared/api/swipesApi.generated";
+import { BookCover } from "@entities/book/ui/BookCover";
+import { BookMeta } from "@entities/book/ui/BookMeta";
+import { nextCard } from "@features/swipe-book/model/swipeSlice";
+import { SwipeableCard } from "@features/swipe-book/ui/SwipeableCard";
+import { SwipeActions } from "@features/swipe-book/ui/SwipeActions";
+import { colors, fontFamily } from "@shared/theme";
+import { RootState } from "@store/store";
 
 interface BookSwipeStackProps {
   onCardTap?: (book: Book) => void;
@@ -18,11 +18,13 @@ interface BookSwipeStackProps {
 
 export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
   const dispatch = useDispatch();
-  const currentIndex = useSelector((state: RootState) => state.swipe.currentIndex);
+  const currentIndex = useSelector(
+    (state: RootState) => state.swipe.currentIndex,
+  );
   const { data, isLoading } = useGetBooksFeedQuery({});
   const [addToLibrary] = usePostLibraryMutation();
   const [recordSwipe] = usePostSwipesMutation();
-  const books = data?.data ?? [];
+  const books = useMemo(() => data?.data ?? [], [data]);
 
   const currentBook = books[currentIndex];
   const nextBook = books[(currentIndex + 1) % Math.max(books.length, 1)];
@@ -37,7 +39,7 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
     if (!currentBook) return;
     dispatch(nextCard());
     try {
-      await recordSwipe({ bookId: currentBook.id, direction: 'left' }).unwrap();
+      await recordSwipe({ bookId: currentBook.id, direction: "left" }).unwrap();
     } catch {}
   }, [dispatch, currentBook, recordSwipe]);
 
@@ -45,7 +47,7 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
     if (!currentBook) return;
     dispatch(nextCard());
     try {
-      await addToLibrary({ bookId: currentBook.id, status: 'want' }).unwrap();
+      await addToLibrary({ bookId: currentBook.id, status: "want" }).unwrap();
     } catch {}
   }, [addToLibrary, dispatch, currentBook]);
 
@@ -53,7 +55,7 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
     if (!currentBook) return;
     dispatch(nextCard());
     try {
-      await addToLibrary({ bookId: currentBook.id, status: 'want' }).unwrap();
+      await addToLibrary({ bookId: currentBook.id, status: "want" }).unwrap();
     } catch {}
   }, [addToLibrary, dispatch, currentBook]);
 
@@ -91,7 +93,11 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
           </SwipeableCard>
         </View>
       </View>
-      <SwipeActions onPass={handlePass} onBookmark={handleBookmark} onLike={handleLike} />
+      <SwipeActions
+        onPass={handlePass}
+        onBookmark={handleBookmark}
+        onLike={handleLike}
+      />
     </View>
   );
 }
@@ -99,7 +105,13 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
 function BookCardContent({ book }: { book: Book }) {
   return (
     <View style={styles.card}>
-      <BookCover coverUrl={book.coverUrl} height={260} radius={0} shadow={false} resizeMode="contain" />
+      <BookCover
+        coverUrl={book.coverUrl}
+        height={260}
+        radius={0}
+        shadow={false}
+        resizeMode="contain"
+      />
       <View style={styles.cardBody}>
         <BookMeta book={book} />
         <Text style={styles.description}>{book.description}</Text>
@@ -111,8 +123,8 @@ function BookCardContent({ book }: { book: Book }) {
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyText: {
     fontFamily: fontFamily.medium,
@@ -138,10 +150,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bgCard,
     borderRadius: 20,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: colors.borderLight,
-    shadowColor: '#1A161418',
+    shadowColor: "#1A161418",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 1,
     shadowRadius: 32,

@@ -1,17 +1,14 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Send } from 'lucide-react-native';
-import { colors, fontFamily } from '@shared/theme';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Send } from "lucide-react-native";
+import { colors, fontFamily } from "@shared/theme";
 
 interface ReplyBarProps {
   onSubmit: (text: string) => Promise<void>;
@@ -20,12 +17,12 @@ interface ReplyBarProps {
 
 export function ReplyBar({ onSubmit, isPosting }: ReplyBarProps) {
   const insets = useSafeAreaInsets();
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
 
   async function handleSend() {
     if (!text.trim() || isPosting) return;
     await onSubmit(text.trim());
-    setText('');
+    setText("");
   }
 
   return (
@@ -59,8 +56,8 @@ export function ReplyBar({ onSubmit, isPosting }: ReplyBarProps) {
 
 const styles = StyleSheet.create({
   replyBar: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    alignItems: "flex-end",
     gap: 10,
     paddingHorizontal: 16,
     paddingTop: 10,
@@ -85,8 +82,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendBtnDisabled: {
     opacity: 0.4,

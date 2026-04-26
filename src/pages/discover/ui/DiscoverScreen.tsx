@@ -1,12 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SlidersHorizontal } from 'lucide-react-native';
-import { StyleSheet, View } from 'react-native';
-import { BookSwipeStack } from '@widgets/book-swipe-stack/ui/BookSwipeStack';
-import { ScreenHeader } from '@shared/ui/ScreenHeader';
-import { Screen } from '@shared/ui/Screen';
-import { colors } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { SlidersHorizontal } from "lucide-react-native";
+import { StyleSheet, View } from "react-native";
+import { UserAvatar } from "@features/user-avatar";
+import { BookSwipeStack } from "@widgets/book-swipe-stack/ui/BookSwipeStack";
+import { ScreenHeader } from "@shared/ui/ScreenHeader";
+import { Screen } from "@shared/ui/Screen";
+import { colors } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -17,11 +18,18 @@ export function DiscoverScreen() {
       <View style={styles.headerWrap}>
         <ScreenHeader
           title="Discover"
-          rightAction={<SlidersHorizontal size={24} color={colors.fontSecondary} />}
+          rightAction={
+            <SlidersHorizontal size={24} color={colors.fontSecondary} />
+          }
+          avatar={<UserAvatar size={40} />}
         />
       </View>
       <View style={styles.stackArea}>
-        <BookSwipeStack onCardTap={(book) => navigation.navigate('BookDetail', { bookId: book.id })} />
+        <BookSwipeStack
+          onCardTap={(book) =>
+            navigation.navigate("BookDetail", { bookId: book.id })
+          }
+        />
       </View>
     </Screen>
   );

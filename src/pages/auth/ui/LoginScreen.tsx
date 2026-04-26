@@ -47,9 +47,10 @@ export function LoginScreen() {
         token: credential.identityToken,
       });
       if (error) Alert.alert("Error", error.message);
-    } catch (e: any) {
-      if (e.code !== "ERR_REQUEST_CANCELED") {
-        Alert.alert("Error", e.message ?? "Apple sign-in failed");
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string };
+      if (err.code !== "ERR_REQUEST_CANCELED") {
+        Alert.alert("Error", err.message ?? "Apple sign-in failed");
       }
     }
   }
@@ -68,8 +69,9 @@ export function LoginScreen() {
     }
     const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
     if (result.type === "success" && result.url) {
-      const { error: sessionErr } =
-        await supabase.auth.exchangeCodeForSession(result.url);
+      const { error: sessionErr } = await supabase.auth.exchangeCodeForSession(
+        result.url,
+      );
       if (sessionErr) Alert.alert("Error", sessionErr.message);
     }
     setLoading(false);
@@ -94,8 +96,12 @@ export function LoginScreen() {
 
         {Platform.OS === "ios" && (
           <AppleAuthentication.AppleAuthenticationButton
-            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            buttonType={
+              AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+            }
+            buttonStyle={
+              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+            }
             cornerRadius={12}
             style={styles.appleButton}
             onPress={handleAppleSignIn}

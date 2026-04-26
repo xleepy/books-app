@@ -1,19 +1,29 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Star } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useGetLibraryQuery, useGetLibraryStatsQuery } from '@shared/api/libraryApi.generated';
-import { BookCover } from '@entities/book/ui/BookCover';
-import { ReadingCard } from '@widgets/reading-card/ui/ReadingCard';
-import { ScreenHeader } from '@shared/ui/ScreenHeader';
-import { Screen } from '@shared/ui/Screen';
-import { colors, fontFamily } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Star } from "lucide-react-native";
+import { UserAvatar } from "@features/user-avatar";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import {
+  useGetLibraryQuery,
+  useGetLibraryStatsQuery,
+} from "@shared/api/libraryApi.generated";
+import { BookCover } from "@entities/book/ui/BookCover";
+import { ReadingCard } from "@widgets/reading-card/ui/ReadingCard";
+import { ScreenHeader } from "@shared/ui/ScreenHeader";
+import { Screen } from "@shared/ui/Screen";
+import { colors, fontFamily } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 function formatTimeLeft(minutes: number | null | undefined): string {
-  if (!minutes) return '—';
+  if (!minutes) return "—";
   if (minutes < 60) return `${minutes}m left`;
   return `${Math.round(minutes / 60)}h left`;
 }
@@ -24,28 +34,39 @@ export function LibraryScreen() {
   const { data: stats } = useGetLibraryStatsQuery();
   const savedBooks = data?.data ?? [];
   const totalBooks = data?.pagination.total ?? 0;
-  const currentBook = savedBooks.find((b) => b.status === 'reading');
+  const currentBook = savedBooks.find((b) => b.status === "reading");
 
   return (
     <Screen scroll>
       <View style={styles.headerWrap}>
         <ScreenHeader
           title="My Library"
-          subtitle={totalBooks ? `${totalBooks} books collected` : 'Your collection'}
+          subtitle={
+            totalBooks ? `${totalBooks} books collected` : "Your collection"
+          }
+          avatar={<UserAvatar size={40} />}
         />
       </View>
 
       <View style={styles.statsRow}>
-        <StatTile value={stats ? String(stats.finished) : '—'} label="Finished" highlight />
-        <StatTile value={stats ? String(stats.reading) : '—'} label="Reading" />
-        <StatTile value={stats ? String(stats.saved) : '—'} label="Saved" />
+        <StatTile
+          value={stats ? String(stats.finished) : "—"}
+          label="Finished"
+          highlight
+        />
+        <StatTile value={stats ? String(stats.reading) : "—"} label="Reading" />
+        <StatTile value={stats ? String(stats.saved) : "—"} label="Saved" />
       </View>
 
       {currentBook && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Currently Reading</Text>
-            <Pressable onPress={() => navigation.navigate('LibraryList', { initialStatus: 'reading' })}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate("LibraryList", { initialStatus: "reading" })
+              }
+            >
               <Text style={styles.seeAll}>See all</Text>
             </Pressable>
           </View>
@@ -55,7 +76,12 @@ export function LibraryScreen() {
             coverUrl={currentBook.coverUrl}
             progress={currentBook.progressPct / 100}
             timeLeft={formatTimeLeft(currentBook.timeLeftMin)}
-            onPress={() => navigation.navigate('BookDetail', { bookId: currentBook.id, libraryStatus: currentBook.status })}
+            onPress={() =>
+              navigation.navigate("BookDetail", {
+                bookId: currentBook.id,
+                libraryStatus: currentBook.status,
+              })
+            }
           />
         </View>
       )}
@@ -63,7 +89,7 @@ export function LibraryScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Saved Books</Text>
-          <Pressable onPress={() => navigation.navigate('LibraryList', {})}>
+          <Pressable onPress={() => navigation.navigate("LibraryList", {})}>
             <Text style={styles.seeAll}>See all</Text>
           </Pressable>
         </View>
@@ -76,7 +102,7 @@ export function LibraryScreen() {
                 key={book.id}
                 style={styles.bookTile}
                 onPress={() =>
-                  navigation.navigate('BookDetail', {
+                  navigation.navigate("BookDetail", {
                     bookId: book.id,
                     libraryStatus: book.status,
                   })
@@ -88,7 +114,11 @@ export function LibraryScreen() {
                 </Text>
                 <Text style={styles.bookAuthor}>{book.author}</Text>
                 <View style={styles.bookRating}>
-                  <Star size={12} color={colors.starGold} fill={colors.starGold} />
+                  <Star
+                    size={12}
+                    color={colors.starGold}
+                    fill={colors.starGold}
+                  />
                   <Text style={styles.ratingText}>{book.rating}</Text>
                 </View>
               </Pressable>
@@ -111,8 +141,12 @@ function StatTile({
 }) {
   return (
     <View style={[styles.tile, highlight && styles.tileHighlight]}>
-      <Text style={[styles.tileValue, highlight && styles.tileValueLight]}>{value}</Text>
-      <Text style={[styles.tileLabel, highlight && styles.tileLabelLight]}>{label}</Text>
+      <Text style={[styles.tileValue, highlight && styles.tileValueLight]}>
+        {value}
+      </Text>
+      <Text style={[styles.tileLabel, highlight && styles.tileLabelLight]}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -122,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   statsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginBottom: 24,
   },
@@ -150,16 +184,16 @@ const styles = StyleSheet.create({
     color: colors.fontSecondary,
   },
   tileLabelLight: {
-    color: '#FFFFFFCC',
+    color: "#FFFFFFCC",
   },
   section: {
     gap: 14,
     marginBottom: 24,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   sectionTitle: {
     fontFamily: fontFamily.bold,
@@ -172,12 +206,12 @@ const styles = StyleSheet.create({
     color: colors.accent,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
   },
   bookTile: {
-    width: '47.5%',
+    width: "47.5%",
     gap: 6,
   },
   bookTitle: {
@@ -192,8 +226,8 @@ const styles = StyleSheet.create({
     color: colors.fontSecondary,
   },
   bookRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   ratingText: {

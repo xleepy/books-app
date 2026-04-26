@@ -31,8 +31,10 @@ const swipeSlice = createSlice({
       booksApi.endpoints.getBooksFeed.matchFulfilled,
       (state, action) => {
         state.totalCards = action.payload.data.length;
-        state.currentIndex = 0;
-      }
+        if (state.currentIndex >= state.totalCards) {
+          state.currentIndex = 0;
+        }
+      },
     );
   },
 });

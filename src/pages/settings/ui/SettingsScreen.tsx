@@ -70,7 +70,7 @@ export function SettingsScreen() {
   const { data: prefs, isLoading: prefsLoading } = useGetMePreferencesQuery();
   const [putPreferences, { isLoading: isSaving }] =
     usePutMePreferencesMutation();
-  const [patchMe, { isLoading: isPatchingMe }] = usePatchMeMutation();
+  const [patchMe] = usePatchMeMutation();
   const { clearToken } = usePushToken();
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const [genrePickerVisible, setGenrePickerVisible] = useState(false);
@@ -83,7 +83,7 @@ export function SettingsScreen() {
       prefs.reminderTime ?? "21:00",
       prefs.reminderEnabled,
     ).catch(() => {});
-  }, [prefs?.reminderEnabled, prefs?.reminderTime]);
+  }, [prefs]);
 
   async function handleToggle<K extends keyof Preferences>(
     key: K,

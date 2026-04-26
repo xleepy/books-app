@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useGetChallengesQuery } from "@shared/api/challengesApi.generated";
 import { ChallengeCard } from "@entities/challenge/ui/ChallengeCard";
 import { FilterRow } from "@features/filter-list/ui/FilterRow";
+import { UserAvatar } from "@features/user-avatar";
 import { Screen } from "@shared/ui/Screen";
 import { ScreenHeader } from "@shared/ui/ScreenHeader";
 import { colors, fontFamily } from "@shared/theme";
@@ -48,6 +49,7 @@ export function ChallengesScreen() {
               </Pressable>
             </View>
           }
+          avatar={<UserAvatar size={40} />}
         />
       </View>
 

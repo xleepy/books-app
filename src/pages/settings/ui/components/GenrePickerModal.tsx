@@ -67,15 +67,14 @@ function GenrePickerBody({
   const [query, setQuery] = useState("");
   const { data: subjectsData, isLoading, error } = useGetSubjectsQuery();
 
-  const genres = subjectsData?.data ?? [];
-
   const suggestions = useMemo(() => {
     if (!query.trim()) return [];
+    const genres = subjectsData?.data ?? [];
     const q = query.toLowerCase();
     return genres.filter(
       (g) => g.name.toLowerCase().includes(q) && !localSelected.has(g.name),
     );
-  }, [query, genres, localSelected]);
+  }, [query, subjectsData, localSelected]);
 
   const addGenre = (name: string) => {
     setLocalSelected((prev) => new Set(prev).add(name));

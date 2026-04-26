@@ -1,26 +1,41 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Award, Calendar, Flame, BookOpen, Users } from 'lucide-react-native';
-import { colors, fontFamily } from '@shared/theme';
-import { ProgressBar } from '@shared/ui';
-import { Challenge } from '../model/types';
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Calendar, Flame, BookOpen, Users } from "lucide-react-native";
+import { colors, fontFamily } from "@shared/theme";
+import { ProgressBar } from "@shared/ui";
+import { Challenge } from "../model/types";
 
 interface ChallengeCardProps {
   challenge: Challenge;
   onPress?: () => void;
 }
 
-const variantConfig: Record<string, { bg: string; iconBg: string; iconColor: string; badgeBg: string; badgeText: string; track: string; fill: string; title: string; subtitle: string; goal: string; counter: string }> = {
+const variantConfig: Record<
+  string,
+  {
+    bg: string;
+    iconBg: string;
+    iconColor: string;
+    badgeBg: string;
+    badgeText: string;
+    track: string;
+    fill: string;
+    title: string;
+    subtitle: string;
+    goal: string;
+    counter: string;
+  }
+> = {
   monthly: {
     bg: colors.challengeBlue,
-    iconBg: '#3D6E9E',
+    iconBg: "#3D6E9E",
     iconColor: colors.fontInverse,
-    badgeBg: '#3D6E9E',
+    badgeBg: "#3D6E9E",
     badgeText: colors.fontInverse,
-    track: '#3D6E9E',
+    track: "#3D6E9E",
     fill: colors.fontInverse,
     title: colors.fontInverse,
-    subtitle: '#FFFFFFB3',
-    goal: '#FFFFFFE6',
+    subtitle: "#FFFFFFB3",
+    goal: "#FFFFFFE6",
     counter: colors.fontInverse,
   },
   yearly: {
@@ -74,14 +89,15 @@ const metricIcons: Record<string, typeof Calendar> = {
 export function ChallengeCard({ challenge, onPress }: ChallengeCardProps) {
   const config = variantConfig[challenge.variant] ?? variantConfig.custom;
   const Icon = metricIcons[challenge.metric] ?? BookOpen;
-  const progress = challenge.target > 0 ? (challenge.current ?? 0) / challenge.target : 0;
+  const progress =
+    challenge.target > 0 ? (challenge.current ?? 0) / challenge.target : 0;
 
   const cardContent = (
     <View
       style={[
         styles.card,
         { backgroundColor: config.bg },
-        challenge.variant !== 'monthly' && styles.cardBorder,
+        challenge.variant !== "monthly" && styles.cardBorder,
       ]}
     >
       <View style={styles.top}>
@@ -90,15 +106,23 @@ export function ChallengeCard({ challenge, onPress }: ChallengeCardProps) {
             <Icon size={20} color={config.iconColor} />
           </View>
           <View style={styles.titleWrap}>
-            <Text style={[styles.title, { color: config.title }]}>{challenge.title}</Text>
+            <Text style={[styles.title, { color: config.title }]}>
+              {challenge.title}
+            </Text>
             <Text style={[styles.subtitle, { color: config.subtitle }]}>
-              {challenge.variant.charAt(0).toUpperCase() + challenge.variant.slice(1)} Challenge
-              {challenge.metric !== 'books' ? ` • ${challenge.metric.charAt(0).toUpperCase() + challenge.metric.slice(1)}` : ''}
+              {challenge.variant.charAt(0).toUpperCase() +
+                challenge.variant.slice(1)}{" "}
+              Challenge
+              {challenge.metric !== "books"
+                ? ` • ${challenge.metric.charAt(0).toUpperCase() + challenge.metric.slice(1)}`
+                : ""}
             </Text>
           </View>
         </View>
         <View style={[styles.badge, { backgroundColor: config.badgeBg }]}>
-          <Text style={[styles.badgeText, { color: config.badgeText }]}>{challenge.badgeText}</Text>
+          <Text style={[styles.badgeText, { color: config.badgeText }]}>
+            {challenge.badgeText}
+          </Text>
         </View>
       </View>
       <View style={styles.goalWrap}>
@@ -125,7 +149,9 @@ export function ChallengeCard({ challenge, onPress }: ChallengeCardProps) {
           </Text>
         </View>
         {challenge.isCreator && (
-          <Text style={[styles.creatorBadge, { color: config.counter }]}>Created by you</Text>
+          <Text style={[styles.creatorBadge, { color: config.counter }]}>
+            Created by you
+          </Text>
         )}
       </View>
     </View>
@@ -133,7 +159,10 @@ export function ChallengeCard({ challenge, onPress }: ChallengeCardProps) {
 
   if (onPress) {
     return (
-      <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}>
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+      >
         {cardContent}
       </Pressable>
     );
@@ -153,13 +182,13 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
   },
   top: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   left: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     flex: 1,
   },
@@ -167,8 +196,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   titleWrap: {
     gap: 2,
@@ -185,8 +214,8 @@ const styles = StyleSheet.create({
     height: 24,
     paddingHorizontal: 10,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   badgeText: {
     fontFamily: fontFamily.semibold,
@@ -196,9 +225,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   goalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   goalText: {
     fontFamily: fontFamily.regular,
@@ -209,13 +238,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   participants: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   participantsText: {
