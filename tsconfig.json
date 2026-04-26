@@ -9,10 +9,9 @@
       "@widgets/*": ["./src/widgets/*"],
       "@features/*": ["./src/features/*"],
       "@entities/*": ["./src/entities/*"],
-      "@shared/*": ["./src/shared/*"],
       "@store/*": ["./src/store/*"],
-      "@shared/*": ["./src/shared/*"]
-    }
+      "@shared/*": ["./src/shared/*"],
+    },
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx"],
 }
