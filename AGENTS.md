@@ -33,7 +33,7 @@ The `docs/` folder contains implementation specs and design references beyond th
 
 | Document | Purpose |
 |----------|---------|
-| [Implementation Plan](./docs/implementation-plan.md) | Phased milestones, screen inventory, tech stack, verification checklist |
+| [Implementation Plan](./docs/PLAN.md) | Phased milestones, screen inventory, tech stack, verification checklist |
 | [Challenges Spec](./docs/challenges-spec.md) | User-created challenges: API contract, UI spec, component breakdown |
 | [Design Proposal](./docs/designs/design-proposal.pen) | Pencil design frames for all screens (code-native JSON) |
 
