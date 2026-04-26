@@ -131,6 +131,7 @@ docs/designs/design-proposal.pen
 7. **Keep tests up-to-date** — When you modify code that already has test coverage, check the existing tests first. Update or add tests to cover the new behaviour, and run `npm test` to verify they pass. Never silently break existing tests.
 8. **Split page components into separate files** — Complex screens should decompose into page-specific sub-components under `pages/{feature}/ui/components/`. The screen file orchestrates data loading and composition; presentation components handle their own styles. See existing examples: `pages/discussions/ui/components/`, `pages/settings/ui/components/`.
 9. **Reset modal state without `useEffect`** — When a modal needs to reinitialize local state on open, wrap the inner content in a conditionally rendered nested component inside the `Modal`. This preserves `animationType` while letting React mount/unmount the body naturally. See the React Patterns Guide for the full pattern.
+10. **When in doubt, ask the user** — If you are uncertain about requirements, trade-offs, or the best approach to a problem, pause and ask the user before proceeding. Present the options or ambiguities you see, discuss possible solutions, and agree on a direction rather than making assumptions.
 
 ---
 
