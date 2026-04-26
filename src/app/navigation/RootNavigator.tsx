@@ -9,8 +9,10 @@ import { SettingsScreen } from "@pages/settings/ui/SettingsScreen";
 import { LoginScreen } from "@pages/auth/ui/LoginScreen";
 import { ThreadDetailScreen } from "@pages/discussions/ui/ThreadDetailScreen";
 import { CreateThreadScreen } from "@pages/discussions/ui/CreateThreadScreen";
+import { EditThreadScreen } from "@pages/discussions/ui/EditThreadScreen";
 import { ChallengeDetailScreen } from "@pages/challenge-detail/ui/ChallengeDetailScreen";
 import { CreateChallengeScreen } from "@pages/create-challenge/ui/CreateChallengeScreen";
+import { EditChallengeScreen } from "@pages/create-challenge/ui/EditChallengeScreen";
 import { TabNavigator } from "./TabNavigator";
 import { RootStackParamList } from "./types";
 import { supabase } from "@shared/lib/supabase";
@@ -73,6 +75,16 @@ export function RootNavigator() {
       <Stack.Screen
         name="CreateChallenge"
         component={CreateChallengeScreen}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="EditThread"
+        component={EditThreadScreen}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="EditChallenge"
+        component={EditChallengeScreen}
         options={{ presentation: "modal" }}
       />
     </Stack.Navigator>

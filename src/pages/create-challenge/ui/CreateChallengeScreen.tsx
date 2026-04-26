@@ -22,7 +22,7 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react-native";
-import { usePostChallengesMutation } from "@shared/api/challengesApi.generated";
+import { useCreateChallengeMutation } from "@shared/api/challengesApi.generated";
 import { colors, fontFamily } from "@shared/theme";
 import { RootStackParamList } from "@app/navigation/types";
 import { CalendarPicker } from "./CalendarPicker";
@@ -124,7 +124,7 @@ export function startOfDayUTC(d: Date): Date {
 export function CreateChallengeScreen() {
   const navigation = useNavigation<Nav>();
   const insets = useSafeAreaInsets();
-  const [postChallenge, { isLoading }] = usePostChallengesMutation();
+  const [postChallenge, { isLoading }] = useCreateChallengeMutation();
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);

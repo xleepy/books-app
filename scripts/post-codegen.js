@@ -27,7 +27,7 @@ function patch(file, patches) {
 
 console.log("Post-codegen fixes...");
 
-// No patches currently needed — flattenArg handles body wrapping.
+// No patches currently needed — operationId-based filtering handles all endpoints.
 // Keep this script for future renames or fixes that codegen config cannot express.
 
 console.log("Done.");

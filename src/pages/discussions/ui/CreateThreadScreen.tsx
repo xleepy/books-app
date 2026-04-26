@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BookOpen, Search, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { usePostThreadsMutation } from "@shared/api/discussionsApi.generated";
+import { useCreateThreadMutation } from "@shared/api/discussionsApi.generated";
 import { useGetBooksQuery, Book } from "@shared/api/booksApi.generated";
 import { BookCover } from "@entities/book/ui/BookCover";
 import { colors, fontFamily } from "@shared/theme";
@@ -26,7 +26,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 export function CreateThreadScreen() {
   const navigation = useNavigation<Nav>();
   const insets = useSafeAreaInsets();
-  const [postThread, { isLoading }] = usePostThreadsMutation();
+  const [postThread, { isLoading }] = useCreateThreadMutation();
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");

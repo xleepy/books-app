@@ -1,17 +1,21 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronLeft, Trash2 } from 'lucide-react-native';
-import { colors, fontFamily } from '@shared/theme';
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ChevronLeft, EllipsisVertical } from "lucide-react-native";
+import { colors, fontFamily } from "@shared/theme";
 
 interface ThreadHeaderProps {
   title: string;
   isOwner: boolean;
-  isDeleting: boolean;
   onBack: () => void;
-  onDelete: () => void;
+  onMenuPress: () => void;
 }
 
-export function ThreadHeader({ title, isOwner, isDeleting, onBack, onDelete }: ThreadHeaderProps) {
+export function ThreadHeader({
+  title,
+  isOwner,
+  onBack,
+  onMenuPress,
+}: ThreadHeaderProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -24,15 +28,11 @@ export function ThreadHeader({ title, isOwner, isDeleting, onBack, onDelete }: T
       </Text>
       {isOwner && (
         <Pressable
-          style={styles.deleteBtn}
-          onPress={onDelete}
-          disabled={isDeleting}
-          accessibilityLabel="Delete thread"
+          style={styles.menuBtn}
+          onPress={onMenuPress}
+          accessibilityLabel="Thread options"
         >
-          {isDeleting
-            ? <ActivityIndicator size="small" color={colors.accentRed} />
-            : <Trash2 size={20} color={colors.accentRed} />
-          }
+          <EllipsisVertical size={22} color={colors.fontPrimary} />
         </Pressable>
       )}
     </View>
@@ -41,8 +41,8 @@ export function ThreadHeader({ title, isOwner, isDeleting, onBack, onDelete }: T
 
 const styles = StyleSheet.create({
   topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingBottom: 12,
     backgroundColor: colors.bgPrimary,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   backBtn: {
     padding: 4,
   },
-  deleteBtn: {
+  menuBtn: {
     padding: 4,
   },
   topBarTitle: {

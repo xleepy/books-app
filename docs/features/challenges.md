@@ -303,7 +303,7 @@ ChallengesScreen (existing)
 
 | File | Purpose |
 |---|---|
-| `backend-spec.md` | Backend API and schema specification |
+| `../books-app-backend/docs/features/challenges.md` | Backend feature specification |
 | `docs/designs/design-proposal.pen` | Pencil designs for Detail + Create screens |
 | `src/shared/api/challengesApi.generated.ts` | Generated RTK Query API (regenerate after backend) |
 | `src/entities/challenge/model/types.ts` | Challenge domain types |

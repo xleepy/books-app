@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { Plus, Search } from 'lucide-react-native';
+import { useCallback, useState } from "react";
+import { Plus, Search } from "lucide-react-native";
 import {
   ActivityIndicator,
   Pressable,
@@ -7,39 +7,42 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ThreadCard } from '@entities/discussion/ui/ThreadCard';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ThreadCard } from "@entities/discussion/ui/ThreadCard";
 import {
-  useGetThreadsQuery,
-  GetThreadsApiArg,
-} from '@shared/api/discussionsApi.generated';
-import { FilterRow } from '@features/filter-list/ui/FilterRow';
-import { Screen } from '@shared/ui/Screen';
-import { colors, fontFamily } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
+  useListThreadsQuery,
+  ListThreadsApiArg,
+} from "@shared/api/discussionsApi.generated";
+import { FilterRow } from "@features/filter-list/ui/FilterRow";
+import { Screen } from "@shared/ui/Screen";
+import { colors, fontFamily } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-const FILTER_LABELS = ['All', 'Popular', 'Recent', 'My Threads'] as const;
-const FILTER_MAP: Record<string, GetThreadsApiArg['filter']> = {
-  All: 'all',
-  Popular: 'popular',
-  Recent: 'recent',
-  'My Threads': 'mine',
+const FILTER_LABELS = ["All", "Popular", "Recent", "My Threads"] as const;
+const FILTER_MAP: Record<string, ListThreadsApiArg["filter"]> = {
+  All: "all",
+  Popular: "popular",
+  Recent: "recent",
+  "My Threads": "mine",
 };
 
 export function DiscussionsScreen() {
   const navigation = useNavigation<Nav>();
-  const [filter, setFilter] = useState<GetThreadsApiArg['filter']>('recent');
-  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<ListThreadsApiArg["filter"]>("recent");
+  const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useGetThreadsQuery({ filter, search: search || undefined });
+  const { data, isLoading } = useListThreadsQuery({
+    filter,
+    search: search || undefined,
+  });
   const threads = data?.data ?? [];
 
   const handleFilterChange = useCallback((label: string) => {
-    setFilter(FILTER_MAP[label] ?? 'all');
+    setFilter(FILTER_MAP[label] ?? "all");
   }, []);
 
   return (
@@ -48,7 +51,7 @@ export function DiscussionsScreen() {
         <Text style={styles.title}>Discussions</Text>
         <Pressable
           style={styles.addBtn}
-          onPress={() => navigation.navigate('CreateThread')}
+          onPress={() => navigation.navigate("CreateThread")}
           accessibilityLabel="Create thread"
         >
           <Plus size={20} color={colors.fontInverse} />
@@ -81,7 +84,9 @@ export function DiscussionsScreen() {
       ) : threads.length === 0 ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyText}>
-            {search ? 'No threads match your search.' : 'No threads yet — start one!'}
+            {search
+              ? "No threads match your search."
+              : "No threads yet — start one!"}
           </Text>
         </View>
       ) : (
@@ -90,7 +95,9 @@ export function DiscussionsScreen() {
             <ThreadCard
               key={thread.id}
               thread={thread}
-              onPress={() => navigation.navigate('ThreadDetail', { threadId: thread.id })}
+              onPress={() =>
+                navigation.navigate("ThreadDetail", { threadId: thread.id })
+              }
             />
           ))}
         </View>
@@ -101,9 +108,9 @@ export function DiscussionsScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   title: {
@@ -116,12 +123,12 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   search: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     height: 44,
     backgroundColor: colors.bgSecondary,
@@ -146,12 +153,12 @@ const styles = StyleSheet.create({
   },
   emptyWrap: {
     marginTop: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontFamily: fontFamily.regular,
     fontSize: 14,
     color: colors.fontSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

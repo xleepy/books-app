@@ -1,24 +1,41 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { Avatar } from '@shared/ui';
-import { colors, fontFamily } from '@shared/theme';
-import type { ThreadReply } from '@shared/api/discussionsApi.generated';
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { EllipsisVertical } from "lucide-react-native";
+import { Avatar } from "@shared/ui";
+import { colors, fontFamily } from "@shared/theme";
+import type { ThreadReply } from "@shared/api/discussionsApi.generated";
 
 interface ReplyItemProps {
   reply: ThreadReply;
+  onMenuPress?: (replyId: string) => void;
 }
 
-export function ReplyItem({ reply }: ReplyItemProps) {
+export function ReplyItem({ reply, onMenuPress }: ReplyItemProps) {
   return (
     <View style={styles.replyItem}>
       <Avatar
-        initials={reply.creatorName.split(' ').filter(Boolean).map((p) => p[0]).join('')}
+        initials={reply.creatorName
+          .split(" ")
+          .filter(Boolean)
+          .map((p) => p[0])
+          .join("")}
         size={32}
         hue={reply.creatorAvatarHue}
       />
       <View style={styles.replyContent}>
         <View style={styles.replyHeader}>
           <Text style={styles.replyAuthor}>{reply.creatorName}</Text>
-          <Text style={styles.replyTime}>{reply.timeAgo}</Text>
+          <View style={styles.replyMeta}>
+            <Text style={styles.replyTime}>{reply.timeAgo}</Text>
+            {reply.isOwner && onMenuPress && (
+              <Pressable
+                onPress={() => onMenuPress(reply.id)}
+                accessibilityLabel="Reply options"
+                style={styles.menuBtn}
+              >
+                <EllipsisVertical size={16} color={colors.fontTertiary} />
+              </Pressable>
+            )}
+          </View>
         </View>
         <Text style={styles.replyBody}>{reply.body}</Text>
       </View>
@@ -28,7 +45,7 @@ export function ReplyItem({ reply }: ReplyItemProps) {
 
 const styles = StyleSheet.create({
   replyItem: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
     backgroundColor: colors.bgCard,
     borderRadius: 12,
@@ -41,9 +58,18 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   replyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 8,
+  },
+  replyMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  menuBtn: {
+    padding: 2,
   },
   replyAuthor: {
     fontFamily: fontFamily.semibold,

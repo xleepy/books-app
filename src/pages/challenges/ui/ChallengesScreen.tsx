@@ -9,7 +9,7 @@ import {
 import { Trophy, Plus } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useGetChallengesQuery } from "@shared/api/challengesApi.generated";
+import { useListChallengesQuery } from "@shared/api/challengesApi.generated";
 import { ChallengeCard } from "@entities/challenge/ui/ChallengeCard";
 import { FilterRow } from "@features/filter-list/ui/FilterRow";
 import { UserAvatar } from "@features/user-avatar";
@@ -27,7 +27,7 @@ export function ChallengesScreen() {
     isLoading: challengesLoading,
     isFetching,
     refetch,
-  } = useGetChallengesQuery(undefined);
+  } = useListChallengesQuery(undefined);
   const challenges = challengesData?.data ?? [];
 
   return (

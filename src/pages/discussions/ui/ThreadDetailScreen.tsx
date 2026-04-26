@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -7,25 +7,26 @@ import {
   ScrollView,
   StyleSheet,
   View,
-} from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  useGetThreadsByIdQuery,
-  usePostThreadsByIdLikeMutation,
-  usePostThreadsByIdRepliesMutation,
-  useDeleteThreadsByIdMutation,
-} from '@shared/api/discussionsApi.generated';
-import { colors } from '@shared/theme';
-import { RootStackParamList } from '@app/navigation/types';
-import { ThreadHeader } from './components/ThreadHeader';
-import { ThreadContent } from './components/ThreadContent';
-import { ReplyList } from './components/ReplyList';
-import { ReplyBar } from './components/ReplyBar';
+  useGetThreadQuery,
+  useToggleLikeMutation,
+  usePostReplyMutation,
+  useDeleteThreadMutation,
+  useDeleteReplyMutation,
+} from "@shared/api/discussionsApi.generated";
+import { colors } from "@shared/theme";
+import { RootStackParamList } from "@app/navigation/types";
+import { ThreadHeader } from "./components/ThreadHeader";
+import { ThreadContent } from "./components/ThreadContent";
+import { ReplyList } from "./components/ReplyList";
+import { ReplyBar } from "./components/ReplyBar";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-type Route = RouteProp<RootStackParamList, 'ThreadDetail'>;
+type Route = RouteProp<RootStackParamList, "ThreadDetail">;
 
 export function ThreadDetailScreen() {
   const navigation = useNavigation<Nav>();
@@ -33,10 +34,15 @@ export function ThreadDetailScreen() {
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
-  const { data: thread, isLoading, refetch } = useGetThreadsByIdQuery(params.threadId);
-  const [likeThread, { isLoading: isLiking }] = usePostThreadsByIdLikeMutation();
-  const [postReply, { isLoading: isPosting }] = usePostThreadsByIdRepliesMutation();
-  const [deleteThread, { isLoading: isDeleting }] = useDeleteThreadsByIdMutation();
+  const {
+    data: thread,
+    isLoading,
+    refetch,
+  } = useGetThreadQuery(params.threadId);
+  const [likeThread, { isLoading: isLiking }] = useToggleLikeMutation();
+  const [postReply, { isLoading: isPosting }] = usePostReplyMutation();
+  const [deleteThread] = useDeleteThreadMutation();
+  const [deleteReply] = useDeleteReplyMutation();
 
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
   const [localLikes, setLocalLikes] = useState<number | undefined>(undefined);
@@ -62,27 +68,72 @@ export function ThreadDetailScreen() {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
   }
 
-  function handleDeletePress() {
+  function handleThreadMenuPress() {
+    if (!thread) return;
+    Alert.alert("Thread Options", undefined, [
+      {
+        text: "Edit Thread",
+        onPress: () =>
+          navigation.navigate("EditThread", {
+            threadId: thread.id,
+            title: thread.title,
+            body: thread.body,
+          }),
+      },
+      {
+        text: "Delete Thread",
+        style: "destructive",
+        onPress: handleDeleteThread,
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  }
+
+  function handleDeleteThread() {
     if (!thread) return;
     Alert.alert(
-      'Delete Thread',
-      'Are you sure you want to delete this thread? This cannot be undone.',
+      "Delete Thread",
+      "Are you sure you want to delete this thread? This cannot be undone.",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             try {
               await deleteThread(thread.id).unwrap();
               navigation.goBack();
             } catch {
-              Alert.alert('Error', 'Failed to delete the thread. Please try again.');
+              Alert.alert(
+                "Error",
+                "Failed to delete the thread. Please try again.",
+              );
             }
           },
         },
-      ]
+      ],
     );
+  }
+
+  function handleReplyMenuPress(replyId: string) {
+    Alert.alert("Delete Reply", "Are you sure you want to delete this reply?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteReply({ id: params.threadId, replyId }).unwrap();
+            await refetch();
+          } catch {
+            Alert.alert(
+              "Error",
+              "Failed to delete the reply. Please try again.",
+            );
+          }
+        },
+      },
+    ]);
   }
 
   if (isLoading || !thread) {
@@ -96,15 +147,14 @@ export function ThreadDetailScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={insets.bottom + 8}
     >
       <ThreadHeader
         title={thread.title}
         isOwner={thread.isOwner}
-        isDeleting={isDeleting}
         onBack={() => navigation.goBack()}
-        onDelete={handleDeletePress}
+        onMenuPress={handleThreadMenuPress}
       />
 
       <ScrollView
@@ -120,7 +170,10 @@ export function ThreadDetailScreen() {
           onLike={handleLike}
           isLiking={isLiking}
         />
-        <ReplyList replies={thread.replies} />
+        <ReplyList
+          replies={thread.replies}
+          onReplyMenuPress={handleReplyMenuPress}
+        />
       </ScrollView>
 
       <ReplyBar onSubmit={handleReply} isPosting={isPosting} />
@@ -135,8 +188,8 @@ const styles = StyleSheet.create({
   },
   loadingWrap: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.bgPrimary,
   },
   scroll: {

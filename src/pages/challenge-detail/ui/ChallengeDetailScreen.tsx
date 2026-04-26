@@ -14,16 +14,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ChevronLeft,
   Share2,
+  EllipsisVertical,
   Calendar,
   Flame,
   BookOpen,
 } from "lucide-react-native";
 import {
-  useGetChallengesByIdQuery,
-  useGetChallengesByIdLeaderboardQuery,
-  usePostChallengesByIdJoinMutation,
-  usePostChallengesByIdLeaveMutation,
-  useDeleteChallengesByIdMutation,
+  useGetChallengeQuery,
+  useGetChallengeLeaderboardQuery,
+  useJoinChallengeMutation,
+  useLeaveChallengeMutation,
+  useDeleteChallengeMutation,
 } from "@shared/api/challengesApi.generated";
 import { ProgressBar } from "@shared/ui";
 import { colors, fontFamily } from "@shared/theme";
@@ -57,24 +58,22 @@ export function ChallengeDetailScreen() {
     data: challengeData,
     isLoading: challengeLoading,
     refetch: refetchChallenge,
-  } = useGetChallengesByIdQuery(params.challengeId, {
+  } = useGetChallengeQuery(params.challengeId, {
     refetchOnMountOrArgChange: true,
   });
   const {
     data: leaderboardData,
     isLoading: leaderboardLoading,
     refetch: refetchLeaderboard,
-  } = useGetChallengesByIdLeaderboardQuery(
+  } = useGetChallengeLeaderboardQuery(
     { id: params.challengeId },
     { refetchOnMountOrArgChange: true },
   );
 
-  const [joinChallenge, { isLoading: isJoining }] =
-    usePostChallengesByIdJoinMutation();
+  const [joinChallenge, { isLoading: isJoining }] = useJoinChallengeMutation();
   const [leaveChallenge, { isLoading: isLeaving }] =
-    usePostChallengesByIdLeaveMutation();
-  const [deleteChallenge, { isLoading: isDeleting }] =
-    useDeleteChallengesByIdMutation();
+    useLeaveChallengeMutation();
+  const [deleteChallenge] = useDeleteChallengeMutation();
 
   const challenge = challengeData?.data;
   const leaderboard = leaderboardData?.data ?? [];
@@ -103,7 +102,28 @@ export function ChallengeDetailScreen() {
     }
   }
 
-  function handleCancel() {
+  function handleMenuPress() {
+    if (!challenge) return;
+    Alert.alert("Challenge Options", undefined, [
+      {
+        text: "Edit Challenge",
+        onPress: () =>
+          navigation.navigate("EditChallenge", {
+            challengeId: challenge.id,
+            title: challenge.title,
+            description: challenge.description ?? "",
+          }),
+      },
+      {
+        text: "Cancel Challenge",
+        style: "destructive",
+        onPress: handleCancelConfirm,
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  }
+
+  function handleCancelConfirm() {
     if (!challenge) return;
     Alert.alert(
       "Cancel Challenge",
@@ -132,17 +152,7 @@ export function ChallengeDetailScreen() {
   function getActionButton() {
     if (!challenge) return null;
     if (challenge.isCreator) {
-      return (
-        <Pressable
-          style={[styles.actionBtn, { backgroundColor: colors.accentRed }]}
-          onPress={handleCancel}
-          disabled={isDeleting}
-        >
-          <Text style={styles.actionBtnText}>
-            {isDeleting ? "Cancelling..." : "Cancel Challenge"}
-          </Text>
-        </Pressable>
-      );
+      return null;
     }
     if (challenge.isJoined) {
       return (
@@ -190,9 +200,19 @@ export function ChallengeDetailScreen() {
           <ChevronLeft size={24} color={colors.fontPrimary} />
         </Pressable>
         <Text style={styles.headerTitle}>Challenge Details</Text>
-        <Pressable style={styles.shareBtn}>
-          <Share2 size={20} color={colors.fontPrimary} />
-        </Pressable>
+        {challenge.isCreator ? (
+          <Pressable
+            style={styles.menuBtn}
+            onPress={handleMenuPress}
+            accessibilityLabel="Challenge options"
+          >
+            <EllipsisVertical size={22} color={colors.fontPrimary} />
+          </Pressable>
+        ) : (
+          <Pressable style={styles.shareBtn}>
+            <Share2 size={20} color={colors.fontPrimary} />
+          </Pressable>
+        )}
       </View>
 
       <ScrollView
@@ -332,6 +352,12 @@ const styles = StyleSheet.create({
     color: colors.fontPrimary,
   },
   shareBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  menuBtn: {
     width: 40,
     height: 40,
     justifyContent: "center",

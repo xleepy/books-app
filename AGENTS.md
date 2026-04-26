@@ -37,7 +37,28 @@ The `docs/` folder contains implementation specs and design references beyond th
 | [Challenges Spec](./docs/challenges-spec.md) | User-created challenges: API contract, UI spec, component breakdown |
 | [Design Proposal](./docs/designs/design-proposal.pen) | Pencil design frames for all screens (code-native JSON) |
 
+## Feature Documentation
+
+Each major feature is documented in `docs/features/<feature-name>.md`. These files capture:
+
+- **Purpose** — what the feature does and why
+- **Design decisions** — approaches considered and the one chosen
+- **API contract** — backend routes, request/response shapes
+- **UI/UX flow** — screen navigation, user interactions, error states
+- **Notification behavior** — push/in-app notifications triggered
+- **Status** — draft / in-progress / completed
+
+When a feature is **completed**, update its doc to reflect the final implementation and refine any earlier design notes that changed during development.
+
+When updating any feature doc, **revisit all other feature docs** that reference it (by name, file path, API route, or shared component) and keep those cross-references accurate. This includes both frontend `docs/features/*.md` and backend `../books-app-backend/docs/features/*.md`.
+
+| Feature | Doc |
+|---------|-----|
+| Thread & Challenge Management | [docs/features/thread-challenge-management.md](./docs/features/thread-challenge-management.md) |
+| User-Created Challenges | [docs/features/challenges.md](./docs/features/challenges.md) |
+
 ---
+
 
 ## Quick Commands
 
