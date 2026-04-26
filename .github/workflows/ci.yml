@@ -23,6 +23,8 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+      - name: lint
+        run: npm run lint
 
   test:
     runs-on: ubuntu-latest
