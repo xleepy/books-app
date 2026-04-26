@@ -46,6 +46,7 @@ npm start              # Expo dev server
 npm run start:mock     # Expo with MSW mocks (no backend needed)
 npm test               # Jest tests
 npm run typecheck      # TypeScript check
+npm run lint           # ESLint check
 npm run codegen        # Regenerate RTK Query APIs from backend OpenAPI
 ```
 

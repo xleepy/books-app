@@ -10758,7 +10758,8 @@
                   "content": "How many minutes do you want to read each day?",
                   "textAlign": "center",
                   "fontFamily": "Inter",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
