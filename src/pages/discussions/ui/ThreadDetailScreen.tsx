@@ -63,9 +63,13 @@ export function ThreadDetailScreen() {
 
   async function handleReply(text: string) {
     if (!thread) return;
-    await postReply({ id: thread.id, body: { body: text } }).unwrap();
-    await refetch();
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
+    try {
+      await postReply({ id: thread.id, body: { body: text } }).unwrap();
+      await refetch();
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
+    } catch {
+      Alert.alert("Error", "Failed to post the reply. Please try again.");
+    }
   }
 
   function handleThreadMenuPress() {

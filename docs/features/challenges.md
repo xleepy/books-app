@@ -59,7 +59,12 @@ type Challenge = {
 
 // ChallengeDetail (NEW)
 type ChallengeDetail = Challenge & {
-  leaderboard: LeaderboardEntry[];
+  progress: {
+    challengeId: string;
+    current: number;
+    completed: boolean;
+    completedAt?: string;
+  };
 };
 
 // CreateChallengePayload (NEW)

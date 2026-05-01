@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SlidersHorizontal } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
 import { UserAvatar } from "@features/user-avatar";
-import { BookSwipeStack } from "@widgets/book-swipe-stack/ui/BookSwipeStack";
+import { BookSwipeStack } from "@features/swipe-book/ui/BookSwipeStack";
 import { ScreenHeader } from "@shared/ui/ScreenHeader";
 import { Screen } from "@shared/ui/Screen";
 import { colors } from "@shared/theme";
