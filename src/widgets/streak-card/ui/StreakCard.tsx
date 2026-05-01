@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { Flame } from 'lucide-react-native';
-import { colors, fontFamily } from '@shared/theme';
+import { StyleSheet, Text, View } from "react-native";
+import { Flame } from "lucide-react-native";
+import { colors, fontFamily } from "@shared/theme";
 
 interface StreakCardProps {
   streak: number;
@@ -8,14 +8,25 @@ interface StreakCardProps {
   weekDays: boolean[];
 }
 
-const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
+
+function getIsoWeekday(): number {
+  const day = new Date().getDay();
+  return day === 0 ? 6 : day - 1; // Mon=0, Tue=1, ... Sun=6
+}
 
 export function StreakCard({ streak, bestStreak, weekDays }: StreakCardProps) {
+  const todayIso = getIsoWeekday();
+
   return (
     <View style={styles.card}>
       <View style={styles.top}>
         <View style={styles.left}>
-          <Flame size={20} color={colors.streakOrange} fill={colors.streakOrange} />
+          <Flame
+            size={20}
+            color={colors.streakOrange}
+            fill={colors.streakOrange}
+          />
           <Text style={styles.title}>{streak} Day Streak</Text>
         </View>
         <View style={styles.badge}>
@@ -25,7 +36,7 @@ export function StreakCard({ streak, bestStreak, weekDays }: StreakCardProps) {
       <View style={styles.daysRow}>
         {DAY_LABELS.map((label, i) => {
           const isFilled = weekDays[i];
-          const isToday = i === weekDays.findIndex((v) => !v);
+          const isToday = i === todayIso;
           return (
             <View key={i} style={styles.dayCol}>
               <View
@@ -55,13 +66,13 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
   },
   top: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   left: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   title: {
@@ -74,7 +85,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 10,
     height: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   badgeText: {
     fontFamily: fontFamily.semibold,
@@ -82,11 +93,11 @@ const styles = StyleSheet.create({
     color: colors.streakOrange,
   },
   daysRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   dayCol: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 6,
     flex: 1,
   },
