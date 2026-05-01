@@ -1,15 +1,15 @@
-import { swipeReducer, nextCard, resetDeck } from "./swipeSlice";
+import { swipeReducer, nextCard, resetDeck, markSwiped } from "./swipeSlice";
 
-// Use explicit state so tests are independent of the real mockBooks initial state
-const state = (currentIndex: number, totalCards: number) => ({
-  currentIndex,
-  totalCards,
-});
+const state = (
+  currentIndex: number,
+  totalCards: number,
+  swipedBookIds: string[] = [],
+) => ({ currentIndex, totalCards, swipedBookIds });
 
-/** Build a fake getBooksFeed fulfilled action that the extraReducer matcher will accept. */
-const feedFulfilled = (dataLength: number) => ({
+/** Build a fake getBooksFeed fulfilled action with specific book IDs. */
+const feedFulfilled = (ids: string[]) => ({
   type: "api/executeQuery/fulfilled",
-  payload: { data: Array(dataLength).fill({ id: "mock" }) },
+  payload: { data: ids.map((id) => ({ id })) },
   meta: {
     requestId: "test-request",
     arg: { endpointName: "getBooksFeed", originalArgs: {} },
@@ -17,6 +17,10 @@ const feedFulfilled = (dataLength: number) => ({
     baseQueryMeta: undefined,
   },
 });
+
+/** Convenience: feed with `count` anonymous books (all id = "mock"). */
+const feedWithCount = (count: number) =>
+  feedFulfilled(Array(count).fill("mock"));
 
 describe("swipeSlice", () => {
   describe("nextCard", () => {
@@ -40,6 +44,27 @@ describe("swipeSlice", () => {
       const result = swipeReducer(state(1, 4), nextCard());
       expect(result.totalCards).toBe(4);
     });
+
+    it("does not change swipedBookIds", () => {
+      const result = swipeReducer(state(1, 4, ["A", "B"]), nextCard());
+      expect(result.swipedBookIds).toEqual(["A", "B"]);
+    });
+  });
+
+  describe("markSwiped", () => {
+    it("adds the book ID to swipedBookIds", () => {
+      const result = swipeReducer(
+        state(0, 4, ["A"]),
+        markSwiped("B"),
+      );
+      expect(result.swipedBookIds).toEqual(["A", "B"]);
+    });
+
+    it("does not change currentIndex or totalCards", () => {
+      const result = swipeReducer(state(2, 4, []), markSwiped("X"));
+      expect(result.currentIndex).toBe(2);
+      expect(result.totalCards).toBe(4);
+    });
   });
 
   describe("resetDeck", () => {
@@ -55,47 +80,77 @@ describe("swipeSlice", () => {
       const result = swipeReducer(state(2, 6), resetDeck());
       expect(result.totalCards).toBe(6);
     });
+
+    it("clears swipedBookIds", () => {
+      const result = swipeReducer(state(0, 4, ["A", "B"]), resetDeck());
+      expect(result.swipedBookIds).toEqual([]);
+    });
   });
 
   describe("getBooksFeed.matchFulfilled", () => {
-    it("preserves currentIndex when feed refetches with same length", () => {
-      // User is on card 3 of 10, feed refetches — should stay on card 3
-      const result = swipeReducer(state(3, 10), feedFulfilled(10) as any);
-      expect(result.currentIndex).toBe(3);
+    it("resets currentIndex to 0 when no swiped books are tracked", () => {
+      const result = swipeReducer(state(3, 10), feedWithCount(10) as any);
+      expect(result.currentIndex).toBe(0);
       expect(result.totalCards).toBe(10);
     });
 
-    it("preserves currentIndex when feed refetches with more cards", () => {
-      // User is on card 3 of 10, feed returns 15 cards — should stay on card 3
-      const result = swipeReducer(state(3, 10), feedFulfilled(15) as any);
-      expect(result.currentIndex).toBe(3);
-      expect(result.totalCards).toBe(15);
+    it("resets currentIndex to 0 when feed refetches with more cards", () => {
+      const result = swipeReducer(state(3, 10), feedWithCount(15) as any);
+      expect(result.currentIndex).toBe(0);
     });
 
     it("resets currentIndex to 0 when feed shrinks below current index", () => {
-      // User is on card 7 of 10, feed returns only 5 cards — index is out of bounds
-      const result = swipeReducer(state(7, 10), feedFulfilled(5) as any);
+      const result = swipeReducer(state(7, 10), feedWithCount(5) as any);
       expect(result.currentIndex).toBe(0);
-      expect(result.totalCards).toBe(5);
     });
 
     it("resets currentIndex to 0 when feed is empty", () => {
-      const result = swipeReducer(state(3, 10), feedFulfilled(0) as any);
+      const result = swipeReducer(state(3, 10), feedFulfilled([]) as any);
       expect(result.currentIndex).toBe(0);
       expect(result.totalCards).toBe(0);
     });
 
     it("keeps currentIndex at 0 on initial load", () => {
-      const result = swipeReducer(state(0, 0), feedFulfilled(10) as any);
+      const result = swipeReducer(state(0, 0), feedWithCount(10) as any);
       expect(result.currentIndex).toBe(0);
-      expect(result.totalCards).toBe(10);
     });
 
-    it("does not reset currentIndex when at the last valid index", () => {
-      // User is on card 9 (index 9) of 10, feed returns 10 — should stay
-      const result = swipeReducer(state(9, 10), feedFulfilled(10) as any);
-      expect(result.currentIndex).toBe(9);
-      expect(result.totalCards).toBe(10);
+    it("skips past a swiped book that is still in the feed", () => {
+      // User swiped "A", feed refetches with [A, B, C] — A should be skipped
+      const result = swipeReducer(
+        state(0, 3, ["A"]),
+        feedFulfilled(["A", "B", "C"]) as any,
+      );
+      expect(result.currentIndex).toBe(1);
+      expect(result.totalCards).toBe(3);
+    });
+
+    it("skips past multiple swiped books still in the feed", () => {
+      // User swiped A and B rapidly, first refetch only removes A
+      const result = swipeReducer(
+        state(1, 4, ["A", "B"]),
+        feedFulfilled(["B", "C", "D"]) as any,
+      );
+      expect(result.currentIndex).toBe(1); // skipped B → lands on C
+      // A cleaned up (no longer in feed), B kept (still in feed)
+      expect(result.swipedBookIds).toEqual(["B"]);
+    });
+
+    it("cleans up swiped books that have been removed from the feed", () => {
+      const result = swipeReducer(
+        state(0, 4, ["A", "B"]),
+        feedFulfilled(["C", "D"]) as any,
+      );
+      expect(result.currentIndex).toBe(0);
+      expect(result.swipedBookIds).toEqual([]);
+    });
+
+    it("falls back to index 0 when all books are swiped", () => {
+      const result = swipeReducer(
+        state(0, 3, ["A", "B", "C"]),
+        feedFulfilled(["A", "B", "C"]) as any,
+      );
+      expect(result.currentIndex).toBe(0);
     });
   });
 });

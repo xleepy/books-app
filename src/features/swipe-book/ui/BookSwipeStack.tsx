@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Book, useGetBooksFeedQuery } from "@shared/api/booksApi.generated";
@@ -6,7 +6,7 @@ import { usePostLibraryMutation } from "@shared/api/libraryApi.generated";
 import { usePostSwipesMutation } from "@shared/api/swipesApi.generated";
 import { BookCover } from "@entities/book/ui/BookCover";
 import { BookMeta } from "@entities/book/ui/BookMeta";
-import { nextCard } from "@features/swipe-book/model/swipeSlice";
+import { markSwiped, nextCard } from "@features/swipe-book/model/swipeSlice";
 import { SwipeableCard } from "@features/swipe-book/ui/SwipeableCard";
 import { SwipeActions } from "@features/swipe-book/ui/SwipeActions";
 import { colors, fontFamily } from "@shared/theme";
@@ -14,6 +14,18 @@ import { RootState } from "@store/store";
 
 interface BookSwipeStackProps {
   onCardTap?: (book: Book) => void;
+}
+
+function resolveIndex(
+  books: Book[],
+  desiredId: string | null,
+  fallbackIndex: number,
+) {
+  if (desiredId && books.length > 0) {
+    const idx = books.findIndex((b) => b.id === desiredId);
+    if (idx >= 0) return idx;
+  }
+  return fallbackIndex < books.length ? fallbackIndex : 0;
 }
 
 export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
@@ -26,38 +38,57 @@ export function BookSwipeStack({ onCardTap }: BookSwipeStackProps) {
   const [recordSwipe] = usePostSwipesMutation();
   const books = useMemo(() => data?.data ?? [], [data]);
 
-  const currentBook = books[currentIndex];
-  const nextBook = books[(currentIndex + 1) % Math.max(books.length, 1)];
+  const desiredBookIdRef = useRef<string | null>(null);
+
+  const displayIndex = useMemo(
+    () => resolveIndex(books, desiredBookIdRef.current, currentIndex),
+    [books, currentIndex],
+  );
+
+  const currentBook = books[displayIndex];
+  const nextBook = books[(displayIndex + 1) % Math.max(books.length, 1)];
 
   useEffect(() => {
-    books.slice(currentIndex + 1, currentIndex + 4).forEach((book) => {
+    books.slice(displayIndex + 1, displayIndex + 4).forEach((book) => {
       if (book.coverUrl) Image.prefetch(book.coverUrl);
     });
-  }, [currentIndex, books]);
+  }, [displayIndex, books]);
 
   const handlePass = useCallback(async () => {
-    if (!currentBook) return;
+    if (!currentBook || books.length === 0) return;
+    const idx = books.findIndex((b) => b.id === currentBook.id);
+    const nextIdx = (idx + 1) % books.length;
+    desiredBookIdRef.current = books[nextIdx]?.id ?? null;
+    dispatch(markSwiped(currentBook.id));
     dispatch(nextCard());
     try {
       await recordSwipe({ bookId: currentBook.id, direction: "left" }).unwrap();
     } catch {}
-  }, [dispatch, currentBook, recordSwipe]);
+  }, [dispatch, currentBook, books, recordSwipe]);
 
   const handleBookmark = useCallback(async () => {
-    if (!currentBook) return;
+    if (!currentBook || books.length === 0) return;
+    const idx = books.findIndex((b) => b.id === currentBook.id);
+    const nextIdx = (idx + 1) % books.length;
+    desiredBookIdRef.current = books[nextIdx]?.id ?? null;
+    dispatch(markSwiped(currentBook.id));
     dispatch(nextCard());
     try {
       await addToLibrary({ bookId: currentBook.id, status: "want" }).unwrap();
     } catch {}
-  }, [addToLibrary, dispatch, currentBook]);
+  }, [addToLibrary, dispatch, currentBook, books]);
 
   const handleLike = useCallback(async () => {
-    if (!currentBook) return;
+    if (!currentBook || books.length === 0) return;
+    const idx = books.findIndex((b) => b.id === currentBook.id);
+    const nextIdx = (idx + 1) % books.length;
+    desiredBookIdRef.current = books[nextIdx]?.id ?? null;
+    dispatch(markSwiped(currentBook.id));
     dispatch(nextCard());
     try {
       await addToLibrary({ bookId: currentBook.id, status: "want" }).unwrap();
     } catch {}
-  }, [addToLibrary, dispatch, currentBook]);
+  }, [addToLibrary, dispatch, currentBook, books]);
 
   if (isLoading) {
     return (
