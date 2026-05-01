@@ -55,6 +55,7 @@ export function EditChallengeScreen() {
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={insets.top + 56}
     >
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Pressable onPress={() => navigation.goBack()} style={styles.closeBtn}>

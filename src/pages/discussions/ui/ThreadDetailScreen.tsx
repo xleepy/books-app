@@ -149,11 +149,7 @@ export function ThreadDetailScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.root}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={insets.bottom + 8}
-    >
+    <View style={styles.root}>
       <ThreadHeader
         title={thread.title}
         isOwner={thread.isOwner}
@@ -166,6 +162,8 @@ export function ThreadDetailScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
       >
         <ThreadContent
           thread={thread}
@@ -180,8 +178,13 @@ export function ThreadDetailScreen() {
         />
       </ScrollView>
 
-      <ReplyBar onSubmit={handleReply} isPosting={isPosting} />
-    </KeyboardAvoidingView>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
+        <ReplyBar onSubmit={handleReply} isPosting={isPosting} />
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 

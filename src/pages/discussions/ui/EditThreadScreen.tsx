@@ -52,6 +52,7 @@ export function EditThreadScreen() {
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={insets.top + 56}
     >
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>

@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BookOpen, Compass, MessageCircle, Trophy } from 'lucide-react-native';
-import { colors, fontFamily } from '@shared/theme';
+import { colors, radii, shadows, typography } from '@shared/theme';
 
 const ICONS = {
   Discover: Compass,
@@ -67,15 +67,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 62,
     backgroundColor: colors.bgCard,
-    borderRadius: 36,
-    borderWidth: 1,
+    borderRadius: radii.pill,
+    borderWidth: 0.5,
     borderColor: colors.border,
     padding: 4,
-    shadowColor: '#1A161410',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 4,
+    ...shadows.float,
   },
   tab: {
     flex: 1,
@@ -88,8 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   tabLabel: {
-    fontFamily: fontFamily.semibold,
-    fontSize: 10,
+    ...typography.tabLabel,
     letterSpacing: 0.5,
   },
 });
