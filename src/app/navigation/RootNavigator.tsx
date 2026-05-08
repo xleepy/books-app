@@ -19,10 +19,24 @@ import { supabase } from "@shared/lib/supabase";
 import { setSession } from "@features/auth/model/authSlice";
 import { useGetMeQuery } from "@shared/api/meApi.generated";
 import { usePushToken } from "@features/push-notifications/model/usePushToken";
+import { ErrorBoundary } from "@shared/ui/ErrorBoundary";
 import type { RootState, AppDispatch } from "@store/store";
 import { colors } from "@shared/theme";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function makeScreen<T extends Record<string, unknown>>(
+  Component: React.ComponentType<T>,
+  name: string,
+) {
+  return function WrappedScreen(props: T) {
+    return (
+      <ErrorBoundary screenName={name}>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
+}
 
 export function RootNavigator() {
   const dispatch = useDispatch<AppDispatch>();
@@ -55,36 +69,40 @@ export function RootNavigator() {
   }
 
   if (!session) {
-    return <LoginScreen />;
+    return (
+      <ErrorBoundary screenName="Login">
+        <LoginScreen />
+      </ErrorBoundary>
+    );
   }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Tabs" component={TabNavigator} />
-      <Stack.Screen name="BookDetail" component={BookDetailScreen} />
-      <Stack.Screen name="LibraryList" component={LibraryListScreen} />
-      <Stack.Screen name="Progress" component={ProgressScreen} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="ThreadDetail" component={ThreadDetailScreen} />
+      <Stack.Screen name="Tabs" component={makeScreen(TabNavigator, "Tabs")} />
+      <Stack.Screen name="BookDetail" component={makeScreen(BookDetailScreen, "BookDetail")} />
+      <Stack.Screen name="LibraryList" component={makeScreen(LibraryListScreen, "LibraryList")} />
+      <Stack.Screen name="Progress" component={makeScreen(ProgressScreen, "Progress")} />
+      <Stack.Screen name="Settings" component={makeScreen(SettingsScreen, "Settings")} />
+      <Stack.Screen name="ThreadDetail" component={makeScreen(ThreadDetailScreen, "ThreadDetail")} />
       <Stack.Screen
         name="CreateThread"
-        component={CreateThreadScreen}
+        component={makeScreen(CreateThreadScreen, "CreateThread")}
         options={{ presentation: "modal" }}
       />
-      <Stack.Screen name="ChallengeDetail" component={ChallengeDetailScreen} />
+      <Stack.Screen name="ChallengeDetail" component={makeScreen(ChallengeDetailScreen, "ChallengeDetail")} />
       <Stack.Screen
         name="CreateChallenge"
-        component={CreateChallengeScreen}
+        component={makeScreen(CreateChallengeScreen, "CreateChallenge")}
         options={{ presentation: "modal" }}
       />
       <Stack.Screen
         name="EditThread"
-        component={EditThreadScreen}
+        component={makeScreen(EditThreadScreen, "EditThread")}
         options={{ presentation: "modal" }}
       />
       <Stack.Screen
         name="EditChallenge"
-        component={EditChallengeScreen}
+        component={makeScreen(EditChallengeScreen, "EditChallenge")}
         options={{ presentation: "modal" }}
       />
     </Stack.Navigator>

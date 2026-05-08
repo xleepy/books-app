@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -17,17 +18,29 @@ import { Screen } from "@shared/ui/Screen";
 import { ScreenHeader } from "@shared/ui/ScreenHeader";
 import { colors, fontFamily } from "@shared/theme";
 import { RootStackParamList } from "@app/navigation/types";
+import type { ListChallengesApiArg } from "@shared/api/challengesApi.generated";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
+const FILTER_OPTIONS = ["Active", "Monthly", "Yearly", "Weekly", "Custom"] as const;
+
+const LABEL_TO_ARG: Record<string, ListChallengesApiArg> = {
+  Active: "active",
+  Monthly: "monthly",
+  Yearly: "yearly",
+  Weekly: "weekly",
+  Custom: "custom",
+};
+
 export function ChallengesScreen() {
   const navigation = useNavigation<Nav>();
+  const [filterLabel, setFilterLabel] = useState<string>(FILTER_OPTIONS[0]);
   const {
     data: challengesData,
     isLoading: challengesLoading,
     isFetching,
     refetch,
-  } = useListChallengesQuery(undefined);
+  } = useListChallengesQuery(LABEL_TO_ARG[filterLabel]);
   const challenges = challengesData?.data ?? [];
 
   return (
@@ -56,7 +69,9 @@ export function ChallengesScreen() {
       {/* Fixed filter chips */}
       <View style={styles.filterWrap}>
         <FilterRow
-          filters={["Active", "Monthly", "Yearly", "Weekly", "Custom"]}
+          filters={[...FILTER_OPTIONS]}
+          initial={FILTER_OPTIONS[0]}
+          onChange={setFilterLabel}
         />
       </View>
       <Text style={styles.sectionTitle}>Active Challenges</Text>
