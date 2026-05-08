@@ -164,6 +164,7 @@ docs/designs/design-proposal.pen
 8. **Split page components into separate files** — Complex screens should decompose into page-specific sub-components under `pages/{feature}/ui/components/`. The screen file orchestrates data loading and composition; presentation components handle their own styles. See existing examples: `pages/discussions/ui/components/`, `pages/settings/ui/components/`.
 9. **Reset modal state without `useEffect`** — When a modal needs to reinitialize local state on open, wrap the inner content in a conditionally rendered nested component inside the `Modal`. This preserves `animationType` while letting React mount/unmount the body naturally. See the React Patterns Guide for the full pattern.
 10. **When in doubt, ask the user** — If you are uncertain about requirements, trade-offs, or the best approach to a problem, pause and ask the user before proceeding. Present the options or ambiguities you see, discuss possible solutions, and agree on a direction rather than making assumptions.
+11. **Keep AGENTS.md up-to-date** — If you modify code that changes any convention, stack version, directory structure, architecture, guide reference, feature doc table, Pencil frame listing, or quick command documented in AGENTS.md, update AGENTS.md to reflect the new reality. This file is the source of truth for future agents working on this codebase.
 
 ---
 
