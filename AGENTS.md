@@ -37,6 +37,17 @@ The `docs/` folder contains implementation specs and design references beyond th
 | [Challenges Spec](./docs/challenges-spec.md) | User-created challenges: API contract, UI spec, component breakdown |
 | [Design Proposal](./docs/designs/design-proposal.pen) | Pencil design frames for all screens (code-native JSON) |
 
+## New Feature Workflow (SDD)
+
+When a user asks for a new feature, follow **Spec-Driven Development (SDD)** — write the spec first, then implement:
+
+1. **Create a spec doc** at `docs/features/<feature-name>.md` — define the API contract, types, UI/UX spec, component breakdown, and acceptance criteria before writing any code. Use the existing specs ([friends](./docs/features/friends.md), [challenges](./docs/features/challenges.md)) as templates.
+2. **Review the spec with the user** — confirm the API contract, UI flow, and component breakdown look right.
+3. **Implement from the spec** — the spec doc becomes the source of truth for implementation.
+4. **Update status** — mark the spec as `in-progress` during implementation, `completed` when done.
+
+---
+
 ## Feature Documentation
 
 Each major feature is documented in `docs/features/<feature-name>.md`. These files capture:
