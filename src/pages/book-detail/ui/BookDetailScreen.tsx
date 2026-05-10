@@ -36,7 +36,7 @@ export function BookDetailScreen() {
   const [patchLibrary, { isLoading: isPatching }] = usePatchLibraryByBookIdMutation();
   const [deleteFromLibrary, { isLoading: isDeleting }] = useDeleteLibraryByBookIdMutation();
 
-  const libraryItem = libraryData?.data.find((b) => b.id === bookId);
+  const libraryItem = libraryData?.data?.find((b) => b.id === bookId);
   const pageCount = book?.pageCount ?? libraryItem?.pageCount ?? 300;
   const initialPage = libraryItem?.currentPage ?? 0;
 

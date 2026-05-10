@@ -30,10 +30,10 @@ function formatTimeLeft(minutes: number | null | undefined): string {
 
 export function LibraryScreen() {
   const navigation = useNavigation<Nav>();
-  const { data, isLoading } = useGetLibraryQuery({});
+  const { data, isLoading, isFetching } = useGetLibraryQuery({});
   const { data: stats } = useGetLibraryStatsQuery();
   const savedBooks = data?.data ?? [];
-  const totalBooks = data?.pagination.total ?? 0;
+  const totalBooks = data?.pagination?.total ?? 0;
   const currentBook = savedBooks.find((b) => b.status === "reading");
 
   return (
@@ -93,8 +93,10 @@ export function LibraryScreen() {
             <Text style={styles.seeAll}>See all</Text>
           </Pressable>
         </View>
-        {isLoading ? (
+        {isLoading || (isFetching && savedBooks.length === 0) ? (
           <ActivityIndicator color={colors.accent} />
+        ) : savedBooks.length === 0 ? (
+          <Text style={styles.emptyText}>No saved books yet</Text>
         ) : (
           <View style={styles.grid}>
             {savedBooks.slice(0, 4).map((book) => (
@@ -234,5 +236,12 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.medium,
     fontSize: 11,
     color: colors.fontSecondary,
+  },
+  emptyText: {
+    fontFamily: fontFamily.regular,
+    fontSize: 14,
+    color: colors.fontSecondary,
+    textAlign: "center",
+    paddingVertical: 20,
   },
 });

@@ -19,11 +19,13 @@ React Native / Expo app for discovering, tracking, and discussing books. Uses Re
 | [Feature-Sided Design (FSD) Guide](./docs/FSD_GUIDE.md) | Directory structure, layer boundaries (`entities/`, `features/`, `widgets/`, `pages/`, `shared/`), import rules |
 | [Redux & RTK Query Guide](./docs/REDUX_GUIDE.md) | Server state management, mutations with `.unwrap()`, cache invalidation, local slices vs RTK Query |
 | [React Patterns Guide](./docs/REACT_GUIDE.md) | Component patterns from react.dev: data loading vs presentation, avoiding unnecessary effects, form state, waiting for data |
+| [Pencil Design Skill](./docs/PENCIL_SKILL.md) | Platform design patterns (M3/Glass UI), design token reference, MCP-tool workflow for editing `.pen` files |
 
 Read the relevant guide before making changes to:
 - **Directory structure or imports** → FSD Guide
 - **API layer, mutations, caching** → Redux & RTK Guide
 - **Component design, effects, form state** → React Patterns Guide
+- **Designing or updating designs in Pencil** → Pencil Design Skill
 
 ---
 
@@ -45,6 +47,15 @@ When a user asks for a new feature, follow **Spec-Driven Development (SDD)** —
 2. **Review the spec with the user** — confirm the API contract, UI flow, and component breakdown look right.
 3. **Implement from the spec** — the spec doc becomes the source of truth for implementation.
 4. **Update status** — mark the spec as `in-progress` during implementation, `completed` when done.
+
+### Implementation Order
+
+**Always implement backend before frontend, and always generate the frontend API from the backend — never write manual `injectEndpoints()` calls on the frontend.**
+
+1. **Backend first** — implement routes, services, schemas, mappers, and DB changes in `../books-app-backend/`.
+2. **Export OpenAPI** — the backend auto-generates the spec at `/docs/json`. Export it with `cd ../books-app-backend && npx tsx scripts/export-openapi.ts` if the server isn't running.
+3. **Codegen the frontend API** — run `npm run codegen` in the frontend to produce `src/shared/api/*.generated.ts`. This fetches the OpenAPI spec and generates typed RTK Query hooks with correct cache invalidation.
+4. **Never write manual API files** — do NOT write `.injectEndpoints()` calls manually in `src/shared/api/`. The only exception is `src/shared/api/meApi.ts`, which extends the generated `meApi.generated.ts` with routes that codegen cannot express. If a new API domain is needed, add it to the backend first.
 
 ---
 
@@ -107,21 +118,17 @@ We use [Pencil](https://docs.pencil.dev/) for UI design drafts. The design file 
 docs/designs/design-proposal.pen
 ```
 
+For platform patterns (Material 3, Glass UI), design token reference, and the MCP-tool workflow for creating and editing designs, see the **[Pencil Design Skill](./docs/PENCIL_SKILL.md)** guide.
+
 ### When to use Pencil
 
 - **New screens or flows** — draft layout before writing code
 - **Design review** — iterate visually with stakeholders
 - **Component anatomy** — map reusable widgets from design to FSD layers
 
-### Working with `.pen` files
-
-- Pencil files are **code-native** JSON. AI agents can read and modify them via MCP tools.
-- The file is version-controlled alongside the codebase.
-- See the official [`.pen` format reference](https://docs.pencil.dev/for-developers/the-pen-format) for the full schema.
-
 ### Design → Code Workflow
 
-1. **Draft in Pencil first** — Use frames, text, and icons to rough out the screen. Prefer flexbox layout (`layout: "vertical"` / `"horizontal"`) over absolute positioning.
+1. **Draft in Pencil first** — follow the Pencil Design Skill guide for platform patterns (M3 vs Glass UI) and the MCP-tool workflow.
 2. **Use variables** — Reference design tokens like `$accent`, `$bg-primary`, `$font-primary` instead of hardcoding hex values. This keeps designs consistent with the app's theme.
 3. **Generate code** — Once the draft looks right, ask the agent to generate the React Native screen/component code from the design.
 4. **Refine in code** — Pencil drafts are approximations. Final polish (animations, dynamic data, exact spacing) happens in the actual component.
@@ -149,22 +156,27 @@ docs/designs/design-proposal.pen
 | `xmzte` | Genre Picker | **NEW — multi-select genre list** |
 | `rpCyx` | Challenge Detail | **NEW — with leaderboard** |
 | `1Utr4` | Create Challenge | **NEW — template picker + form** |
+| `hsogN` | Friends List | **NEW — search, pending badge, friend rows** |
+| `ct6hv` | Pending Requests | **NEW — incoming/outgoing with Accept/Reject** |
+| `yrjJ5` | Friends List — Glass UI (Apple) | **NEW — frosted cards, floating pill nav** |
+| `f8Ltcd` | Pending Requests — Glass UI (Apple) | **NEW — frosted cards, floating pill nav** |
 
 ---
 
 ## Key Conventions
 
 1. **Never edit generated files manually.** Files in `src/shared/api/*.generated.ts`, `src/generated/prisma/`, or any file with a `.generated.` suffix are produced by codegen tools. Always regenerate them via the appropriate command (`npm run codegen`, `npm run db:generate`, etc.). Manual edits will be lost on the next regeneration and can introduce type mismatches.
-2. **Mutations must use `.unwrap()`** with `try/catch` for error handling
-3. **Separate data loading from presentation** — Screen loads data, Form/Widget renders UI
-4. **Don't use `useEffect` to sync props → state** — pass initial values as props, use `key` prop to reset
-5. **Wait for all data before rendering** — show `ActivityIndicator` while any required query is loading
-6. **Import rules** follow the FSD layer hierarchy; check the FSD Guide table
-7. **Keep tests up-to-date** — When you modify code that already has test coverage, check the existing tests first. Update or add tests to cover the new behaviour, and run `npm test` to verify they pass. Never silently break existing tests.
-8. **Split page components into separate files** — Complex screens should decompose into page-specific sub-components under `pages/{feature}/ui/components/`. The screen file orchestrates data loading and composition; presentation components handle their own styles. See existing examples: `pages/discussions/ui/components/`, `pages/settings/ui/components/`.
-9. **Reset modal state without `useEffect`** — When a modal needs to reinitialize local state on open, wrap the inner content in a conditionally rendered nested component inside the `Modal`. This preserves `animationType` while letting React mount/unmount the body naturally. See the React Patterns Guide for the full pattern.
-10. **When in doubt, ask the user** — If you are uncertain about requirements, trade-offs, or the best approach to a problem, pause and ask the user before proceeding. Present the options or ambiguities you see, discuss possible solutions, and agree on a direction rather than making assumptions.
-11. **Keep AGENTS.md up-to-date** — If you modify code that changes any convention, stack version, directory structure, architecture, guide reference, feature doc table, Pencil frame listing, or quick command documented in AGENTS.md, update AGENTS.md to reflect the new reality. This file is the source of truth for future agents working on this codebase.
+2. **Never write manual API endpoints on the frontend.** All RTK Query endpoints must come from codegen (backend → OpenAPI → `npm run codegen` → `.generated.ts`). The only allowed exception is `src/shared/api/meApi.ts`. If you need a new API route, implement it in the backend first, then regenerate. See [Implementation Order](#implementation-order).
+3. **Mutations must use `.unwrap()`** with `try/catch` for error handling
+4. **Separate data loading from presentation** — Screen loads data, Form/Widget renders UI
+5. **Don't use `useEffect` to sync props → state** — pass initial values as props, use `key` prop to reset
+6. **Wait for all data before rendering** — show `ActivityIndicator` while any required query is loading
+7. **Import rules** follow the FSD layer hierarchy; check the FSD Guide table
+8. **Keep tests up-to-date** — When you modify code that already has test coverage, check the existing tests first. Update or add tests to cover the new behaviour, and run `npm test` to verify they pass. Never silently break existing tests.
+9. **Split page components into separate files** — Complex screens should decompose into page-specific sub-components under `pages/{feature}/ui/components/`. The screen file orchestrates data loading and composition; presentation components handle their own styles. See existing examples: `pages/discussions/ui/components/`, `pages/settings/ui/components/`.
+10. **Reset modal state without `useEffect`** — When a modal needs to reinitialize local state on open, wrap the inner content in a conditionally rendered nested component inside the `Modal`. This preserves `animationType` while letting React mount/unmount the body naturally. See the React Patterns Guide for the full pattern.
+11. **When in doubt, ask the user** — If you are uncertain about requirements, trade-offs, or the best approach to a problem, pause and ask the user before proceeding. Present the options or ambiguities you see, discuss possible solutions, and agree on a direction rather than making assumptions.
+12. **Keep AGENTS.md up-to-date** — If you modify code that changes any convention, stack version, directory structure, architecture, guide reference, feature doc table, Pencil frame listing, or quick command documented in AGENTS.md, update AGENTS.md to reflect the new reality. This file is the source of truth for future agents working on this codebase.
 
 ---
 

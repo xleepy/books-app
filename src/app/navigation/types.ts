@@ -13,6 +13,8 @@ export type RootStackParamList = {
   ChallengeDetail: { challengeId: string };
   CreateChallenge: undefined;
   EditChallenge: { challengeId: string; title: string; description: string };
+  FriendsList: undefined;
+  PendingRequests: undefined;
 };
 
 export type TabParamList = {

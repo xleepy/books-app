@@ -13,6 +13,8 @@ import { EditThreadScreen } from "@pages/discussions/ui/EditThreadScreen";
 import { ChallengeDetailScreen } from "@pages/challenge-detail/ui/ChallengeDetailScreen";
 import { CreateChallengeScreen } from "@pages/create-challenge/ui/CreateChallengeScreen";
 import { EditChallengeScreen } from "@pages/create-challenge/ui/EditChallengeScreen";
+import { FriendsListScreen } from "@pages/friends/ui/FriendsListScreen";
+import { PendingRequestsScreen } from "@pages/pending-requests/ui/PendingRequestsScreen";
 import { TabNavigator } from "./TabNavigator";
 import { RootStackParamList } from "./types";
 import { supabase } from "@shared/lib/supabase";
@@ -103,6 +105,15 @@ export function RootNavigator() {
       <Stack.Screen
         name="EditChallenge"
         component={makeScreen(EditChallengeScreen, "EditChallenge")}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="FriendsList"
+        component={makeScreen(FriendsListScreen, "FriendsList")}
+      />
+      <Stack.Screen
+        name="PendingRequests"
+        component={makeScreen(PendingRequestsScreen, "PendingRequests")}
         options={{ presentation: "modal" }}
       />
     </Stack.Navigator>

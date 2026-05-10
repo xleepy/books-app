@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -15,17 +16,20 @@ import {
   Bell,
   BellRing,
   Bookmark,
+  ChevronRight,
   Eye,
   Lock,
   Mail,
   Shield,
   Target,
   Trophy,
+  Users,
 } from "lucide-react-native";
 import { supabase } from "@shared/lib/supabase";
-import { colors } from "@shared/theme";
+import { colors, fontFamily } from "@shared/theme";
 import { RootState } from "@store/store";
 import type { AppDispatch } from "@store/store";
+import { Badge } from "@shared/ui";
 import { RootStackParamList } from "@app/navigation/types";
 import {
   meApi,
@@ -33,6 +37,7 @@ import {
   usePutMePreferencesMutation,
 } from "@shared/api/meApi.generated";
 import { usePatchMeMutation } from "@shared/api/meApi";
+import { useGetPendingRequestsQuery } from "@shared/api/friendsApi.generated";
 import type { Preferences } from "@entities/user/model/types";
 import { usePushToken } from "@features/push-notifications/model/usePushToken";
 import {
@@ -68,6 +73,8 @@ export function SettingsScreen() {
     .join("");
 
   const { data: prefs, isLoading: prefsLoading } = useGetMePreferencesQuery();
+  const { data: pendingData } = useGetPendingRequestsQuery();
+  const pendingCount = pendingData?.data?.incoming?.length ?? 0;
   const [putPreferences, { isLoading: isSaving }] =
     usePutMePreferencesMutation();
   const [patchMe] = usePatchMeMutation();
@@ -227,6 +234,39 @@ export function SettingsScreen() {
           levelTitle={user.levelTitle}
         />
 
+        {/* Social */}
+        <SectionLabel text="SOCIAL" />
+        <View style={styles.card}>
+          <Pressable
+            onPress={() => navigation.navigate("FriendsList")}
+          >
+            <View style={styles.friendsRow}>
+              <View style={styles.friendsRowLeft}>
+                <View
+                  style={[
+                    styles.friendsIconBox,
+                    { backgroundColor: colors.accentLight },
+                  ]}
+                >
+                  <Users size={16} color={colors.accent} />
+                </View>
+                <View style={styles.friendsRowText}>
+                  <Text style={styles.chevronRowTitle}>Friends</Text>
+                  <Text style={styles.chevronRowSubtitle}>
+                    Manage your friends list
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.friendsRowRight}>
+                {pendingCount > 0 && (
+                  <Badge count={pendingCount} />
+                )}
+                <ChevronRight size={16} color={colors.fontTertiary} />
+              </View>
+            </View>
+          </Pressable>
+        </View>
+
         {/* Reading */}
         <SectionLabel text="READING" />
         <View style={styles.card}>
@@ -370,5 +410,42 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
     overflow: "hidden",
+  },
+  friendsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  friendsRowLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  friendsIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  friendsRowText: {
+    gap: 2,
+  },
+  friendsRowRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  chevronRowTitle: {
+    fontFamily: fontFamily.medium,
+    fontSize: 15,
+    color: colors.fontPrimary,
+  },
+  chevronRowSubtitle: {
+    fontFamily: fontFamily.regular,
+    fontSize: 12,
+    color: colors.fontSecondary,
   },
 });

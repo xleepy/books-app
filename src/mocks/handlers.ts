@@ -283,4 +283,122 @@ export const handlers = [
   http.get(`${BASE}/challenges/:id/leaderboard`, () =>
     HttpResponse.json({ data: mockLeaderboard }),
   ),
+
+  // Friends
+  http.get(`${BASE}/friends`, () =>
+    HttpResponse.json({
+      data: [
+        {
+          id: "friend-1",
+          userId: "user-2",
+          username: "Alex Reader",
+          avatarHue: 120,
+          level: 8,
+          levelTitle: "Page Turner",
+          friendsSince: "2025-11-15T10:30:00Z",
+          mutualCount: 3,
+        },
+        {
+          id: "friend-2",
+          userId: "user-3",
+          username: "Sam Bookly",
+          avatarHue: 240,
+          level: 15,
+          levelTitle: "Bookworm",
+          friendsSince: "2025-09-03T08:00:00Z",
+          mutualCount: 1,
+        },
+        {
+          id: "friend-3",
+          userId: "user-4",
+          username: "Taylor Pages",
+          avatarHue: 40,
+          level: 5,
+          levelTitle: "Newcomer",
+          friendsSince: "2026-01-20T14:15:00Z",
+          mutualCount: 0,
+        },
+      ],
+      total: 3,
+    }),
+  ),
+
+  http.get(`${BASE}/friends/pending`, () =>
+    HttpResponse.json({
+      data: {
+        incoming: [
+          {
+            id: "req-1",
+            userId: "user-5",
+            username: "Morgan Leaf",
+            avatarHue: 180,
+            level: 10,
+            levelTitle: "Scholar",
+            direction: "incoming",
+            sentAt: new Date(Date.now() - 86400000).toISOString(),
+          },
+          {
+            id: "req-2",
+            userId: "user-6",
+            username: "Casey Spine",
+            avatarHue: 320,
+            level: 3,
+            levelTitle: "Newcomer",
+            direction: "incoming",
+            sentAt: new Date(Date.now() - 172800000).toISOString(),
+          },
+        ],
+        outgoing: [
+          {
+            id: "req-3",
+            userId: "user-7",
+            username: "Jordan Plot",
+            avatarHue: 60,
+            level: 7,
+            levelTitle: "Reader",
+            direction: "outgoing",
+            sentAt: new Date(Date.now() - 259200000).toISOString(),
+          },
+        ],
+      },
+    }),
+  ),
+
+  http.post(`${BASE}/friends/request`, async ({ request }) => {
+    const body = (await request.json()) as { userId: string };
+    return HttpResponse.json(
+      {
+        id: `req-${Date.now()}`,
+        userId: body.userId,
+        username: "New Friend",
+        avatarHue: 200,
+        level: 1,
+        levelTitle: "Newcomer",
+        direction: "outgoing",
+        sentAt: new Date().toISOString(),
+      },
+      { status: 201 },
+    );
+  }),
+
+  http.post(`${BASE}/friends/accept/:requestId`, () =>
+    HttpResponse.json({
+      id: "friend-4",
+      userId: "user-5",
+      username: "Morgan Leaf",
+      avatarHue: 180,
+      level: 10,
+      levelTitle: "Scholar",
+      friendsSince: new Date().toISOString(),
+      mutualCount: 0,
+    }),
+  ),
+
+  http.post(`${BASE}/friends/reject/:requestId`, () =>
+    new HttpResponse(null, { status: 204 }),
+  ),
+
+  http.delete(`${BASE}/friends/:friendshipId`, () =>
+    new HttpResponse(null, { status: 204 }),
+  ),
 ];

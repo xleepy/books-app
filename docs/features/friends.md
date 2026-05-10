@@ -293,15 +293,61 @@ Alert.alert(
 
 ---
 
-## 9. Related Files
+## 9. Design Reference
+
+All screens are designed in `docs/designs/design-proposal.pen` (see [Pencil Design Skill](../PENCIL_SKILL.md) for platform patterns and conventions).
+
+### 9.1 Frame Inventory
+
+| Frame | Screen | Platform | Key Treatment |
+|---|---|---|---|
+| `hsogN` | Friends List | Material 3 (Android) | `$bg-card` cards, full-width tab bar, 4px blur shadows |
+| `ct6hv` | Pending Requests | Material 3 (Android) | Modal layout, Accept/Reject pills, Cancel link |
+| `yrjJ5` | Friends List | Glass UI (Apple) | Frosted `#FFFFFFF0` cards, 20px radius, floating pill nav |
+| `f8Ltcd` | Pending Requests | Glass UI (Apple) | Frosted cards, floating pill nav |
+
+### 9.2 Settings Entry Point
+
+Both Settings variants (`zQK8M` — M3, `c3zBx7` — Glass UI) include a Friends row below the profile card:
+- `users` icon in a 32x32 `$accent-light` circle
+- Pending-request count badge (`$accent` pill, `$font-inverse` text)
+- Chevron-right disclosure indicator
+- Taps to push `FriendsListScreen`
+
+### 9.3 Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| Pending row uses card pattern, not inline | Matches Settings toggle-row pattern — consistent tap targets and visual hierarchy |
+| Friend rows use avatar initial, not photo | Matches the Settings avatar pattern; photos come from CDN at runtime |
+| Badge on Pending row vs section header | Badge is immediately scannable; section headers are static labels |
+| Glass UI uses 20px card radius (vs 16px M3) | Larger radius reads as softer/glassier; matches existing Glass screens |
+| Glass UI has floating pill nav (not full-width) | Signature iOS pattern — pill `#FFFFFFE6` with 16px blur, 0.5px glass stroke |
+| Accept/Reject are horizontal pill buttons | Two-action pattern: filled primary (Accept) + outlined secondary (Reject) |
+| Cancel is a text link, not a button | Destructive but non-urgent; avoids competing with Accept/Reject CTAs |
+
+### 9.4 States Covered
+
+| State | Friends List | Pending Requests |
+|---|---|---|
+| **Loaded** | Scrollable card of friend rows with dividers | Incoming/outgoing cards with action buttons |
+| **Loading** | `ActivityIndicator` centered (not drawn — runtime concern) | Same |
+| **Empty** | Centered illustration + "Add friends to get started" CTA (not drawn) | "No pending friend requests" text |
+| **Error** | Full-screen error with retry (not drawn) | Same |
+| **Optimistic** | Row removed on remove friend; rollback on error | Row removed on accept/reject/cancel; rollback on error |
+
+---
+
+## 10. Related Files
 
 | File | Purpose |
 |---|---|
 | `../books-app-backend/docs/features/friends.md` | Backend feature specification (to be created) |
-| `docs/designs/design-proposal.pen` | Pencil designs (add Friends + Pending frames) |
+| `docs/designs/design-proposal.pen` | Pencil designs — frames `hsogN`, `ct6hv`, `yrjJ5`, `f8Ltcd` |
+| `docs/PENCIL_SKILL.md` | Platform patterns (M3 vs Glass UI) and design token reference |
 | `src/shared/api/friendsApi.generated.ts` | Generated RTK Query API (regenerate after backend) |
 | `src/entities/friend/model/types.ts` | Friend domain types (to be created) |
 
 ---
 
-*Generated following Spec-Driven Development pattern: API contract → Types → UI Spec → Component breakdown → Implementation.*
+*Spec-Driven Development: API contract → Types → UI Spec → Component breakdown → Design → Implementation.*

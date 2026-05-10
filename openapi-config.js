@@ -126,6 +126,25 @@ const config = {
         { pattern: "leaveChallenge", invalidatesTags: ["Challenge"] },
       ],
     },
+    "./src/shared/api/friendsApi.generated.ts": {
+      exportName: "friendsApi",
+      filterEndpoints: [
+        "getFriends",
+        "getPendingRequests",
+        "sendFriendRequest",
+        "acceptFriendRequest",
+        "rejectFriendRequest",
+        "removeFriend",
+      ],
+      endpointOverrides: [
+        { pattern: "getFriends", providesTags: ["Friend"] },
+        { pattern: "getPendingRequests", providesTags: ["Friend"] },
+        { pattern: "sendFriendRequest", invalidatesTags: ["Friend"] },
+        { pattern: "acceptFriendRequest", invalidatesTags: ["Friend"] },
+        { pattern: "rejectFriendRequest", invalidatesTags: ["Friend"] },
+        { pattern: "removeFriend", invalidatesTags: ["Friend"] },
+      ],
+    },
   },
 };
 
