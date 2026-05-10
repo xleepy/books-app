@@ -105,16 +105,137 @@ Every screen has two variants: **Material 3 (Android)** and **Glass UI (Apple)**
 
 ## Reusable Components in `design-proposal.pen`
 
-The file has no formal reusable components. Common patterns (card rows, dividers, tab items) are created inline per screen. When adding a new screen, copy an existing screen of the target platform and adapt its content.
+All reusable components live inside the **Design System** frame (`E6HfZV`) at the right edge of the canvas. They are organized by platform section. Use `ref` objects to place instances inside screens.
+
+### Usage Pattern
+
+```javascript
+// Insert a component instance
+card=I(parentId,{type:"ref",ref:"h2twRr"})
+// Override child properties (use path: instanceId/childId)
+U(card+"/cardLabel",{content:"My Title"})
+// Replace a slot's content
+newContent=R(card+"/cardContent",{type:"frame",layout:"vertical"})
+```
+
+### Platform-Agnostic (Shared) Components
+
+These use `$`-prefixed theme variables and work on both platforms without modification. Colors automatically switch between M3 and Glass UI based on the `platform` theme axis.
+
+| Component | ID | Description | Overridable Children |
+|-----------|-----|-------------|---------------------|
+| `divider` | `Sl8KT` | Horizontal 1px line, `$border-light` fill, `fill_container` width | — |
+| `sectHdr` | `hXUnO` | Section header text (12px, 600, `$font-secondary`, letterSpacing 0.8) | Content override via `U(inst, {content:"...})` |
+| `notifBadge` | `StDs7` | 24×24 circle, `$accent` fill, centered count text | `badgeCount` (text) — number inside |
+| `tagPillPri` | `f9faly` | Primary tag pill: `$accent-light` bg, cornerRadius 12, padding [4,12] | `pillLabel` (text) — tag text in `$accent` |
+| `tagPillSec` | `gGgW1` | Secondary tag pill: `$bg-secondary` bg, `$font-secondary` text | `pillLabel` (text) |
+| `spoilerPill` | `AgIiX` | Spoiler pill: `$accent-light` bg, 22h, cornerRadius 11, padding [0,8] | `pillLabel` (text) — "Spoiler" in `$accent` |
+| `acceptBtn` | `xsTf1` | Accept button: `$accent` fill, cornerRadius 8, padding [8,16] | `btnLabel` (text) — "Accept" in `$font-inverse` |
+| `rejectBtn` | `gSslp` | Reject button: `$bg-secondary` fill, cornerRadius 8, padding [8,16] | `btnLabel` (text) — "Reject" in `$font-secondary` |
+| `cancelLink` | `Y7OCW9` | Plain text link in `$accent-red`, 14px, 600 | Content override |
+| `backBtn` | `CDPOY` | 40×40 circle, chevron-left icon in `$font-primary` | `btnIcon` (icon_font) |
+| `closeBtn` | `C3fDQ` | 40×40 circle, X icon in `$font-primary` | `btnIcon` (icon_font) |
+| `sendBtn` | `jCla8` | 40×40 circle, `$accent` fill, send icon in `$font-inverse` | `btnIcon` (icon_font) |
+| `addBtn` | `r5mWG` | 40×40 circle, `$accent` fill, plus icon in `$font-inverse` | `btnIcon` (icon_font) |
+| `levelBadge` | `o4bfe` | 64×64 circle, `$xp-purple-light` fill, cornerRadius 32 | `levelNum` (text) — level number in `$xp-purple` |
+| `levelBadgeSm` | `a6yeea` | 22×22 circle, `$xp-purple` fill, cornerRadius 11 | `levelNum` (text) — level number in `$font-inverse` |
+| `streakBadge` | `dAU2G` | Pill badge: `$streak-orange-light` fill, 24h, cornerRadius 12, padding [0,10] | `streakLabel` (text) — streak text in `$streak-orange` |
+| `badgeCircle` | `pUZGp` | 32×32 rounded square, `$accent-light` fill, cornerRadius 10, centered icon | `badgeIcon` (icon_font) — 16×16 icon in `$accent` |
+
+### Material 3 (Android) Components
+
+| Component | ID | Description | Overridable Children |
+|-----------|-----|-------------|---------------------|
+| `m3Card` | `h2twRr` | Card: cornerRadius 16, `$bg-card` fill, 1px `$border-light` stroke, shadow blur 4, clipped | `cardContent` (slot) — replace with content frame |
+| `m3HeroCard` | `XFr8t` | Blue hero card: cornerRadius 12, `#4A82B8` fill, clipped (no shadow) | `heroContent` (slot) |
+| `m3SearchBar` | `KX2si` | Search bar: cornerRadius 12, `$bg-secondary` fill, 44h, padding [0,14], gap 10 | `searchIcon` (icon_font), `searchPlaceholder` (text) |
+| `m3FilledBtn` | `l020UU` | Filled CTA button: cornerRadius 20, `$accent` fill, padding [8,20] | `btnLabel` (text) — 16px, 600, `$font-inverse` |
+| `m3OutlineBtn` | `cil2j` | Outline button: cornerRadius 20, `$bg-secondary` fill, padding [8,20] | `btnLabel` (text) — 16px, 600, `$font-secondary` |
+| `m3SignOutBtn` | `M1xjW` | Sign out: cornerRadius 12, `#FFF0F0` fill, shadow blur 4, gap 8, padding [16,20], `fill_container` width | `btnIcon` (log-out icon in `$accent-red`), `btnLabel` ("Sign Out" in `$accent-red`) |
+| `m3FilterChip` | `zTGvC` | Inactive filter chip: 34h, cornerRadius 17, `$bg-secondary` fill, padding [0,16] | `chipLabel` (text) — 13px, 500, `$font-secondary` |
+| `m3FilterChipActive` | `DBH5M` | Active filter chip: 34h, cornerRadius 17, `$accent` fill | `chipLabel` (text) — 13px, 600, `$font-inverse` |
+| `m3TabBar` | `ZAsRv` | Bottom nav bar: 80h, `$bg-primary` fill, top border 1px `$border`, padding [12,16,28,16], **4 tabs** (see below) | See tab activation pattern below |
+
+### Glass UI (Apple) Components
+
+| Component | ID | Description | Overridable Children |
+|-----------|-----|-------------|---------------------|
+| `iosCard` | `eHZ31` | Frosted card: cornerRadius 20, `#FFFFFFF0` fill, 0.5px `$border-light` stroke, shadow blur 12, clipped | `cardContent` (slot) |
+| `iosHeroCard` | `o1UiKT` | Blue hero card: cornerRadius 20, `#4A82B8` fill, glow shadow blur 16 `#007AFF40`, clipped | `heroContent` (slot) |
+| `iosSearchBar` | `Fvsms` | Search bar: cornerRadius 12, `#FFFFFFF0` fill, 0.5px `#E5E5EA` stroke, shadow blur 4, 44h | `searchIcon` (icon_font), `searchPlaceholder` (text) |
+| `iosFilledBtn` | `uCbZC` | Filled CTA button: cornerRadius 16, `#FF6B35` fill, glow shadow blur 16 `#FF6B3530`, padding [14,24] | `btnLabel` (text) — 16px, 600, `$font-inverse` |
+| `iosSignOutBtn` | `SacS5` | Sign out: cornerRadius 16, `#FFF0F0F0` fill, shadow blur 8, gap 8, padding [16,20], `fill_container` width | `btnIcon` (log-out icon in `$accent-red`), `btnLabel` ("Sign Out" in `$accent-red`) |
+| `iosFilterChip` | `d91JTU` | Inactive filter chip: 36h, cornerRadius 18, `#FFFFFFF0` fill, 0.5px `#FFFFFF26` stroke, shadow blur 4 | `chipLabel` (text) — 13px, 500, `$font-secondary` |
+| `iosFilterChipActive` | `Dz3ww` | Active filter chip: 36h, cornerRadius 18, `#FF6B35` fill | `chipLabel` (text) — 13px, 600, `$font-inverse` |
+| `iosTabBar` | `gmSJZ` | Floating pill nav: wrapper with bottom padding 24; pill 340×56, cornerRadius 28, `#FFFFFFE6` fill, 0.5px stroke, shadow blur 16, **4 tabs** (see below) | See tab activation pattern below |
+
+### Tab Bar Activation Pattern
+
+Both `m3TabBar` and `iosTabBar` contain 4 tabs: `tab1` (Discover), `tab2` (Discussions/Discuss), `tab3` (Library), `tab4` (Compete). Each tab has `tabNIcon` and `tabNLabel` children. Activate a tab by overriding fills:
+
+```javascript
+// Activate tab 2 (Discussions) on M3
+U(bar+"/tab2Icon",{fill:"$accent"})
+U(bar+"/tab2Label",{fill:"$accent",fontWeight:"600"})
+// Or for Glass UI
+U(bar+"/tab2Icon",{fill:"#FF6B35"})
+U(bar+"/tab2Label",{fill:"#FF6B35",fontWeight:"600"})
+U(bar+"/tab2",{fill:"#FF6B3526"})  // iOS active background
+```
+
+### Component Child IDs (for Overrides)
+
+When overriding descendants of component instances, use the origin's internal node IDs:
+
+| Component | Internal IDs |
+|-----------|-------------|
+| `m3TabBar` (ZAsRv) | `tab1Icon`: V88XtH, `tab1Label`: CeJPY, `tab2Icon`: REnlw, `tab2Label`: RN3Ma, `tab3Icon`: UNdtP, `tab3Label`: sWazB, `tab4Icon`: Ghdsz, `tab4Label`: Qk6AS |
+| `iosTabBar` (gmSJZ) | `tab1Icon`: WGm7d, `tab1Label`: meBiD, `tab1Frame`: jyVDI, `tab2Icon`: J5G8w, `tab2Label`: Ji8BL, `tab2Frame`: HECSZ, `tab3Icon`: qYCQ8, `tab3Label`: rXZba, `tab3Frame`: LeiIX, `tab4Icon`: O5sPsq, `tab4Label`: Uoot3, `tab4Frame`: b6gygF |
+| `m3SearchBar` (KX2si) | `searchPlaceholder`: wtrBP (text) |
+| `iosSearchBar` (Fvsms) | `searchPlaceholder`: r7FxA (text) |
+| `m3Card` (h2twRr) | `cardContent`: WOV6s (slot — replace with content) |
+| `iosCard` (eHZ31) | `cardContent`: w0KO6g (slot — replace with content) |
+| Buttons (acceptBtn/rejectBtn/etc.) | `btnLabel` for text, `btnIcon` for icon_font |
+| `notifBadge` (StDs7) | `badgeCount`: THJoT (text) |
+| Filter chips | `chipLabel` for text |
+
+### Card Retrofitting Pattern
+
+Cards with complex internal content require slot replacement:
+
+```javascript
+// 1. Insert card instance
+card=I(parentId,{type:"ref",ref:"h2twRr",width:"fill_container"})
+// 2. Replace the slot with a new content frame
+content=R(card+"/WOV6s",{type:"frame",layout:"vertical",gap:12,padding:16})
+// 3. Copy the old card's children into the new content frame
+C("oldCardChild1",content,{})
+C("oldCardChild2",content,{})
+// 4. Delete the old card
+D("oldCardId")
+// 5. Move the new card to the old card's position
+M(card,"parentId",oldIndex)
+```
+
+### Retrofitting Status
+
+Existing screens have been retrofitted with reusable components where practical:
+
+| Retrofit | Screens | Status |
+|----------|---------|--------|
+| M3 tab bars | Discover, Library, Discussions, Book Detail, Challenges, Reading Stats, Settings, Friends List, Pending Requests | Done (9/9) |
+| Glass UI tab bars | Discover, Library, Discussions, Book Detail, Challenges, Reading Stats, Settings, Friends List, Pending Requests | Done (9/10 — Challenge Detail uses actionBar) |
+| Search bars | Discussions (M3 + Glass UI), Friends List (M3 + Glass UI) | Done (4/4) |
+| Cards | All screens | Available for new screens; complex internal content makes retrofitting high-effort per screen |
 
 ### Copying a Screen Between Platforms
 
-To create the other-platform variant of a screen:
+When creating the other-platform variant of a screen using reusable components:
 1. `C` (Copy) the existing screen frame to a new position on the canvas
-2. Update cards: `fill: "$bg-card"` → `"#FFFFFFF0"`, `cornerRadius: 16` → `20`, shadow `blur: 4` → `12`, shadow `color: "#1F1A1810"` → `"#00000010"`
-3. `D` (Delete) the old tab bar
-4. `I` (Insert) a new floating pill tab bar matching the Glass UI pattern
-5. Set `alignItems: "center"` on the floatNav wrapper
+2. Replace M3 component refs with Glass UI equivalents (e.g., `ref:"h2twRr"` → `ref:"eHZ31"`)
+3. Replace `m3TabBar` ref with `iosTabBar` ref
+4. For inline elements (status bars, custom layouts), adapt manually per the platform patterns above
+5. Set `alignItems: "center"` on the screen frame if using `iosTabBar`
 
 ---
 
@@ -141,16 +262,18 @@ All design editing uses MCP tools — there is no CLI, no generation, and no sep
 
 ### Typical Screen Creation Flow
 
-1. **Find space** — `pencil_find_empty_space_on_canvas` for a 390x844 area
+1. **Find space** — `pencil_find_empty_space_on_canvas` for a 390×844 area
 2. **Create placeholder** — `I(document, { type: "frame", ..., placeholder: true })` at the found position
-3. **Build structure** — Status bar → Header → Scroll container → Content → Tab bar (in multiple `batch_design` calls, max 25 ops each)
+3. **Build structure** — Status bar → Header → Scroll container → Content (using `ref` reusable components where applicable) → Tab bar (using `m3TabBar` or `iosTabBar` ref)
 4. **Verify** — `pencil_snapshot_layout` to check bounding boxes, `pencil_get_screenshot` for visual review
 5. **Remove placeholder** — `U(frameId, { placeholder: false })`
 6. **Update AGENTS.md** — Add the new frame to the screen table
 
+**Prefer reusable components over inline construction.** When building content sections, use `ref` instances of `m3Card`/`iosCard`, `m3SearchBar`/`iosSearchBar`, `sectHdr`, `divider`, `tagPillPri`/`tagPillSec`, and the button components rather than creating these patterns inline. Inline construction is only appropriate for truly unique elements.
+
 ### Designing for Both Platforms
 
-Always create both variants. Start with Material 3, then copy-and-adapt for Glass UI. The table in AGENTS.md tracks which frames correspond to which screen/platform.
+Always create both variants. Start with Material 3, then copy the screen and swap component refs to Glass UI equivalents. The table in AGENTS.md tracks which frames correspond to which screen/platform.
 
 ---
 
