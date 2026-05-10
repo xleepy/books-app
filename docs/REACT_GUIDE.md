@@ -387,7 +387,89 @@ Nesting a scrolling container inside another scrolling container breaks windowin
 
 ---
 
-## 8. Quick Reference: When to use...
+## 8. Error Boundaries — Every Screen Must Have One
+
+**Every screen must be wrapped in an `ErrorBoundary`** so runtime render errors don't cause blank screens. React Navigation swallows uncaught errors inside its internal view hierarchy, so without per-screen boundaries, a component crash results in an empty white screen with no feedback.
+
+### `ErrorBoundary` component (`shared/ui/ErrorBoundary.tsx`)
+
+- Shows the error **name** and **message** so developers can debug without log access
+- Displays the **screen name** so you know which screen crashed
+- Has a **Show/Hide details** toggle that reveals the full stack trace (selectable for copy/paste)
+- Has a **Try Again** button that resets the boundary and remounts children
+- Logs to `console.error` as well
+
+### Pattern: `wrapScreen` helper
+
+Both the root stack navigator and the tab navigator use a `wrapScreen` helper to wrap every screen component in an error boundary:
+
+```tsx
+// RootNavigator.tsx — wraps stack screens
+import { ErrorBoundary } from '@shared/ui/ErrorBoundary';
+
+function makeScreen<T extends Record<string, unknown>>(
+  Component: React.ComponentType<T>,
+  name: string,
+) {
+  return function WrappedScreen(props: T) {
+    return (
+      <ErrorBoundary screenName={name}>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
+}
+
+<Stack.Screen name="BookDetail" component={makeScreen(BookDetailScreen, "BookDetail")} />
+```
+
+```tsx
+// TabNavigator.tsx — wraps tab screens (same pattern, different helper name)
+function wrapScreen<T extends Record<string, unknown>>(
+  Component: React.ComponentType<T>,
+  name: string,
+) {
+  return function WrappedScreen(props: T) {
+    return (
+      <ErrorBoundary screenName={name}>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
+}
+
+<Tab.Screen name="Library" component={wrapScreen(LibraryScreen, "Library")} />
+```
+
+### Why per-screen boundaries matter
+
+- React Navigation's internal rendering layer can swallow errors thrown by screen components, producing a blank screen instead of the ErrorBoundary UI.
+- Stack screens are wrapped via `makeScreen` in `RootNavigator.tsx`. Tab screens are wrapped via `wrapScreen` in `TabNavigator.tsx`.
+- When adding a **new screen**, always use the appropriate wrapper. When adding a **new tab**, use `wrapScreen` in `TabNavigator.tsx`.
+
+### Safe data access with optional chaining
+
+When accessing RTK Query response data, always chain `?.` through every nullable level. RTK Query's `data` is `undefined` until the first fetch completes, and can briefly be `undefined` during cache invalidation/refetch cycles:
+
+```tsx
+// ❌ WRONG — crashes if data or data.pagination is undefined
+const totalBooks = data?.pagination.total ?? 0;
+
+// ✅ CORRECT — chains ?. through every level
+const totalBooks = data?.pagination?.total ?? 0;
+
+// ❌ WRONG — crashes if libraryData?.data is undefined
+const libraryItem = libraryData?.data.find((b) => b.id === bookId);
+
+// ✅ CORRECT
+const libraryItem = libraryData?.data?.find((b) => b.id === bookId);
+```
+
+This is especially important after mutations that invalidate cache tags — the library data can temporarily be `undefined` while RTK Query refetches in the background.
+
+---
+
+## 9. Quick Reference: When to use...
 
 | Pattern | Use when | Don't use when |
 |---------|---------|---------------|
@@ -400,16 +482,18 @@ Nesting a scrolling container inside another scrolling container breaks windowin
 | FlatList | Rendering arrays of scrollable items | Static content (use ScrollView) |
 | RTK Query | Server state, caching, invalidation | Local UI-only state |
 | Redux slice | Cross-screen state, auth, complex feature logic | Form drafts, temporary flags |
+| ErrorBoundary | Every screen component (via `makeScreen`/`wrapScreen`) | Event handler errors (use try/catch instead) |
 
 ---
 
-## 8. Checklist for Page Components
+## 10. Checklist for Page Components
 
 Before submitting a PR for a new page/screen:
 
 - [ ] Data fetching and presentation are in separate components (Screen + Form/Widget)
 - [ ] Screen shows loading state until ALL required data is ready
 - [ ] Screen shows error state when data fails to load
+- [ ] Every screen is wrapped in an `ErrorBoundary` (stack screens via `makeScreen`, tab screens via `wrapScreen`)
 - [ ] No `useEffect` used to sync props into `useState` (use `key` instead)
 - [ ] Form/component receives data as primitive props (not raw API responses)
 - [ ] Form/component calls `onXxx` callbacks instead of direct navigation
@@ -417,6 +501,7 @@ Before submitting a PR for a new page/screen:
 - [ ] UI is disabled while mutations are in flight
 - [ ] Lists use `FlatList` (not `ScrollView` with `.map()`), with `keyExtractor` provided
 - [ ] `FlatList` is not nested inside another scrolling container (`ScrollView` or another `FlatList`)
+- [ ] RTK Query data accessed with `?.` at every nullable level (e.g., `data?.pagination?.total`, not `data?.pagination.total`)
 
 ---
 
