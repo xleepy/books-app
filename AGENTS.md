@@ -14,14 +14,15 @@ React Native / Expo app for discovering, tracking, and discussing books. Uses Re
 
 ## Guides
 
-| Guide | Purpose |
-|-------|---------|
-| [Feature-Sided Design (FSD) Guide](./docs/FSD_GUIDE.md) | Directory structure, layer boundaries (`entities/`, `features/`, `widgets/`, `pages/`, `shared/`), import rules |
-| [Redux & RTK Query Guide](./docs/REDUX_GUIDE.md) | Server state management, mutations with `.unwrap()`, cache invalidation, local slices vs RTK Query |
-| [React Patterns Guide](./docs/REACT_GUIDE.md) | Component patterns from react.dev: data loading vs presentation, avoiding unnecessary effects, form state, waiting for data |
-| [Pencil Design Skill](./docs/PENCIL_SKILL.md) | Platform design patterns (M3/Glass UI), design token reference, MCP-tool workflow for editing `.pen` files |
+| Guide                                                   | Purpose                                                                                                                     |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [Feature-Sided Design (FSD) Guide](./docs/FSD_GUIDE.md) | Directory structure, layer boundaries (`entities/`, `features/`, `widgets/`, `pages/`, `shared/`), import rules             |
+| [Redux & RTK Query Guide](./docs/REDUX_GUIDE.md)        | Server state management, mutations with `.unwrap()`, cache invalidation, local slices vs RTK Query                          |
+| [React Patterns Guide](./docs/REACT_GUIDE.md)           | Component patterns from react.dev: data loading vs presentation, avoiding unnecessary effects, form state, waiting for data |
+| [Pencil Design Skill](./docs/PENCIL_SKILL.md)           | Platform design patterns (M3/Glass UI), design token reference, MCP-tool workflow for editing `.pen` files                  |
 
 Read the relevant guide before making changes to:
+
 - **Directory structure or imports** → FSD Guide
 - **API layer, mutations, caching** → Redux & RTK Guide
 - **Component design, effects, form state** → React Patterns Guide
@@ -33,11 +34,11 @@ Read the relevant guide before making changes to:
 
 The `docs/` folder contains implementation specs and design references beyond the core guides:
 
-| Document | Purpose |
-|----------|---------|
-| [Implementation Plan](./docs/PLAN.md) | Phased milestones, screen inventory, tech stack, verification checklist |
-| [Challenges Spec](./docs/challenges-spec.md) | User-created challenges: API contract, UI spec, component breakdown |
-| [Design Proposal](./docs/designs/design-proposal.pen) | Pencil design frames for all screens (code-native JSON) |
+| Document                                              | Purpose                                                                 |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| [Implementation Plan](./docs/PLAN.md)                 | Phased milestones, screen inventory, tech stack, verification checklist |
+| [Challenges Spec](./docs/challenges-spec.md)          | User-created challenges: API contract, UI spec, component breakdown     |
+| [Design Proposal](./docs/designs/design-proposal.pen) | Pencil design frames for all screens (code-native JSON)                 |
 
 ## New Feature Workflow (SDD)
 
@@ -74,13 +75,12 @@ When a feature is **completed**, update its doc to reflect the final implementat
 
 When updating any feature doc, **revisit all other feature docs** that reference it (by name, file path, API route, or shared component) and keep those cross-references accurate. This includes both frontend `docs/features/*.md` and backend `../books-app-backend/docs/features/*.md`.
 
-| Feature | Doc |
-|---------|-----|
+| Feature                       | Doc                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
 | Thread & Challenge Management | [docs/features/thread-challenge-management.md](./docs/features/thread-challenge-management.md) |
-| User-Created Challenges | [docs/features/challenges.md](./docs/features/challenges.md) |
+| User-Created Challenges       | [docs/features/challenges.md](./docs/features/challenges.md)                                   |
 
 ---
-
 
 ## Quick Commands
 
@@ -142,25 +142,6 @@ For platform patterns (Material 3, Glass UI), design token reference, and the MC
 - **Sizing** — Prefer `fill_container` and `fit_content` over hardcoded dimensions
 - **Colors** — Only use documented theme variables (see `src/shared/theme/index.ts`)
 
-### Screens Currently in `design-proposal.pen`
-
-| Frame | Screen | Status |
-|---|---|---|
-| `JB7eP` | Discover - Swipe | Draft |
-| `RRrEc` | Book Detail - Reviews | Draft |
-| `x0upN` | Discussion Threads | Draft |
-| `fTp4Y` | My Library | Draft |
-| `uyE9s` | Reading Stats & Level | Draft |
-| `Wg9V3` | Challenges & Competitions | Draft |
-| `ur9RF` | User Settings | Draft |
-| `xmzte` | Genre Picker | **NEW — multi-select genre list** |
-| `rpCyx` | Challenge Detail | **NEW — with leaderboard** |
-| `1Utr4` | Create Challenge | **NEW — template picker + form** |
-| `hsogN` | Friends List | **NEW — search, pending badge, friend rows** |
-| `ct6hv` | Pending Requests | **NEW — incoming/outgoing with Accept/Reject** |
-| `yrjJ5` | Friends List — Glass UI (Apple) | **NEW — frosted cards, floating pill nav** |
-| `f8Ltcd` | Pending Requests — Glass UI (Apple) | **NEW — frosted cards, floating pill nav** |
-
 ---
 
 ## Key Conventions
@@ -187,12 +168,15 @@ For platform patterns (Material 3, Glass UI), design token reference, and the MC
 When a screen grows beyond ~150 lines or contains multiple distinct UI sections, extract page-specific components into `pages/{feature}/ui/components/`.
 
 ### Rules
+
 - **Screen file** (`{Page}Screen.tsx`) handles data loading, mutations, navigation, and composes sub-components
 - **Component files** are pure presentation: props in, UI out
 - Each component owns its `StyleSheet` — no shared styles across components
 - Components are **not** exported from `shared/` or `widgets/` — they are page-private
 
 ### Example
+
+
 ```
 pages/settings/ui/
   SettingsScreen.tsx          # data loading + composition
