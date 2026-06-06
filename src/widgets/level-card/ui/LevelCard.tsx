@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: fontFamily.medium,
     fontSize: 13,
-    color: '#FFFFFFCC',
+    color: colors.fontInverse,
+    opacity: 0.8,
   },
   barWrap: {
     gap: 6,
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
   xpText: {
     fontFamily: fontFamily.medium,
     fontSize: 11,
-    color: '#FFFFFFB3',
+    color: colors.fontInverse,
+    opacity: 0.7,
   },
 });

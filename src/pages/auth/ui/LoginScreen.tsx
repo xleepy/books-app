@@ -13,7 +13,7 @@ import {
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import * as AppleAuthentication from "expo-apple-authentication";
-import { supabase } from "@shared/lib/supabase";
+import { isMockAuthEnabled, supabase } from "@shared/lib/supabase";
 import { colors } from "@shared/theme";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -23,6 +23,16 @@ export function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  async function handleMockSignIn() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email || "jane@example.com",
+      password: password || "mock-password",
+    });
+    setLoading(false);
+    if (error) Alert.alert("Error", error.message);
+  }
 
   async function handleEmailAuth() {
     setLoading(true);
@@ -34,6 +44,11 @@ export function LoginScreen() {
   }
 
   async function handleAppleSignIn() {
+    if (isMockAuthEnabled) {
+      await handleMockSignIn();
+      return;
+    }
+
     try {
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -56,6 +71,11 @@ export function LoginScreen() {
   }
 
   async function handleGoogleSignIn() {
+    if (isMockAuthEnabled) {
+      await handleMockSignIn();
+      return;
+    }
+
     setLoading(true);
     const redirectUrl = Linking.createURL("/");
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -86,26 +106,38 @@ export function LoginScreen() {
         <Text style={styles.title}>Books</Text>
         <Text style={styles.subtitle}>Track your reading journey</Text>
 
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={handleGoogleSignIn}
-          disabled={loading}
-        >
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
-        </TouchableOpacity>
+        {isMockAuthEnabled ? (
+          <TouchableOpacity
+            style={styles.mockButton}
+            onPress={handleMockSignIn}
+            disabled={loading}
+          >
+            <Text style={styles.mockButtonText}>Continue as mock user</Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleSignIn}
+              disabled={loading}
+            >
+              <Text style={styles.googleButtonText}>Continue with Google</Text>
+            </TouchableOpacity>
 
-        {Platform.OS === "ios" && (
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonType={
-              AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
-            }
-            buttonStyle={
-              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-            }
-            cornerRadius={12}
-            style={styles.appleButton}
-            onPress={handleAppleSignIn}
-          />
+            {Platform.OS === "ios" && (
+              <AppleAuthentication.AppleAuthenticationButton
+                buttonType={
+                  AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+                }
+                buttonStyle={
+                  AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+                }
+                cornerRadius={12}
+                style={styles.appleButton}
+                onPress={handleAppleSignIn}
+              />
+            )}
+          </>
         )}
 
         <View style={styles.divider}>
@@ -202,6 +234,18 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_600SemiBold",
     fontSize: 15,
     color: colors.fontPrimary,
+  },
+  mockButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  mockButtonText: {
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 15,
+    color: colors.fontInverse,
   },
   divider: {
     flexDirection: "row",

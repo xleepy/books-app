@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { colors, fontFamily } from '@shared/theme';
 
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     backgroundColor: colors.accent,
-    shadowColor: '#C45A3C30',
+    shadowColor: Platform.OS === 'ios' ? '#FF6B3530' : '#C45A3C30',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 16,

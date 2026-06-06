@@ -86,7 +86,7 @@ export function DiscussionsScreen() {
           <Text style={styles.emptyText}>
             {search
               ? "No threads match your search."
-              : "No threads yet — start one!"}
+              : "No threads yet. Be the first to start one!"}
           </Text>
         </View>
       ) : (

@@ -19,7 +19,7 @@
       "name": "emptyNote",
       "width": 0,
       "height": 0,
-      "content": "Empty state: centred text 'No discussions yet. Be the first to start one!' — 14px regular $font-secondary"
+      "content": "Empty state: centred text 'No threads yet. Be the first to start one!' — 14px regular $font-secondary"
     },
     {
       "type": "note",
@@ -7962,7 +7962,7 @@
       "id": "Yeyh4",
       "x": 9295,
       "y": 0,
-      "name": "Discussions - Material 3 (Android)",
+      "name": "Discuss - Material 3 (Android)",
       "width": 390,
       "height": 844,
       "fill": "$bg-primary",
@@ -8061,7 +8061,7 @@
                   "id": "JJoWu",
                   "name": "titleText",
                   "fill": "$font-primary",
-                  "content": "Discussions",
+                  "content": "Discuss",
                   "fontFamily": "Inter",
                   "fontSize": 28,
                   "fontWeight": "700"
@@ -8128,7 +8128,7 @@
               "name": "sb1",
               "descendants": {
                 "wtrBP": {
-                  "content": "Search discussions...",
+                  "content": "Search threads...",
                   "fontSize": 14
                 }
               }
@@ -8925,7 +8925,7 @@
       "id": "dkTBd",
       "x": 9725,
       "y": 0,
-      "name": "Discussions - Glass UI (Apple)",
+      "name": "Discuss - Glass UI (Apple)",
       "width": 390,
       "height": 844,
       "fill": "$bg-primary",
@@ -9024,7 +9024,7 @@
                   "id": "bKCGP",
                   "name": "titleText",
                   "fill": "$font-primary",
-                  "content": "Discussions",
+                  "content": "Discuss",
                   "fontFamily": "Inter",
                   "fontSize": 28,
                   "fontWeight": "700"
@@ -9101,7 +9101,7 @@
               "name": "sb2",
               "descendants": {
                 "r7FxA": {
-                  "content": "Search discussions...",
+                  "content": "Search threads...",
                   "fontSize": 14
                 }
               }
@@ -23674,7 +23674,7 @@
                   "type": "text",
                   "id": "RN3Ma",
                   "fill": "$tab-inactive",
-                  "content": "Discussions",
+                  "content": "Discuss",
                   "fontFamily": "Inter",
                   "fontSize": 12,
                   "fontWeight": "500"

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import { colors } from '@shared/theme';
 
 interface ActionButtonProps {
@@ -15,7 +15,7 @@ export function ActionButton({
   size = 56,
   background = colors.bgCard,
   borderColor = colors.border,
-  shadowColor = '#1A161410',
+  shadowColor = Platform.OS === 'ios' ? '#0000000D' : '#1A161410',
   onPress,
   children,
 }: ActionButtonProps) {

@@ -21,8 +21,9 @@ npm run codegen  # Regenerate RTK Query API clients from OpenAPI spec
 | `EXPO_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
 | `EXPO_PUBLIC_MOCK_API` | Set to `true` to run with MSW mocks instead of the real backend |
+| `EXPO_PUBLIC_MOCK_AUTH` | Set to `true` to bypass Supabase auth in dev; automatically enabled by `EXPO_PUBLIC_MOCK_API=true` |
 
-The app requires a Supabase session to render the main navigation. Set `EXPO_PUBLIC_MOCK_API=true` to bypass the auth gate and use MSW fixtures without a real Supabase project.
+The app requires a Supabase session to render the main navigation. Set `EXPO_PUBLIC_MOCK_API=true` to bypass the auth gate and use MSW fixtures without a real Supabase project. To mock only Supabase auth while pointing at another backend, set `EXPO_PUBLIC_MOCK_AUTH=true`.
 
 ## API layer
 
@@ -73,6 +74,8 @@ EXPO_PUBLIC_MOCK_API=true
 ```
 
 When the flag is set, `index.ts` calls `enableMocking()` before mounting the app. MSW starts its interceptor (`src/mocks/index.ts`) and logs `[MSW] Mock server started` to the console. Unhandled requests are logged as warnings.
+
+`EXPO_PUBLIC_MOCK_API=true` also enables mock authentication in dev mode. The app starts with a signed-in mock session using the `mock-token` bearer token. If you sign out, the login screen shows a "Continue as mock user" button, and email sign-in/sign-up accepts any values.
 
 ### Tests
 

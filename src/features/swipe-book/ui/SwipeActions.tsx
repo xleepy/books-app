@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Bookmark, Heart, X } from 'lucide-react-native';
 import { ActionButton } from '@shared/ui';
 import { colors } from '@shared/theme';
@@ -22,7 +22,7 @@ export function SwipeActions({ onPass, onBookmark, onLike }: SwipeActionsProps) 
         size={56}
         background={colors.accent}
         borderColor="transparent"
-        shadowColor="#C45A3C40"
+        shadowColor={Platform.OS === 'ios' ? '#FF6B3540' : '#C45A3C40'}
         onPress={onLike}
       >
         <Heart size={24} color={colors.fontInverse} fill={colors.fontInverse} />

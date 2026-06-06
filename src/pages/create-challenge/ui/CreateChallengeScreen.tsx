@@ -274,11 +274,7 @@ export function CreateChallengeScreen() {
         {/* Templates */}
         <View style={styles.field}>
           <Text style={styles.label}>Choose a Template</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.tplRow}
-          >
+          <View style={styles.tplGrid}>
             {templates.map((tpl) => {
               const colorset = templateColors[tpl.key] ?? templateColors.custom;
               const active = selectedTemplate === tpl.key;
@@ -294,16 +290,19 @@ export function CreateChallengeScreen() {
                 >
                   <MetricIcon
                     name={tpl.metric}
-                    size={28}
+                    size={22}
                     color={colorset.icon}
                   />
-                  <Text style={[styles.tplLabel, { color: colorset.icon }]}>
+                  <Text
+                    style={[styles.tplLabel, { color: colorset.icon }]}
+                    numberOfLines={1}
+                  >
                     {tpl.label}
                   </Text>
                 </Pressable>
               );
             })}
-          </ScrollView>
+          </View>
         </View>
 
         {/* Title */}
@@ -526,17 +525,22 @@ const styles = StyleSheet.create({
     minHeight: 80,
     paddingTop: 14,
   },
+  tplGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   tplRow: {
     flexDirection: "row",
     gap: 10,
     paddingRight: 20,
   },
   tplCard: {
-    width: 100,
-    height: 120,
+    width: "31.5%",
+    height: 70,
     borderRadius: 16,
-    padding: 12,
-    gap: 8,
+    padding: 8,
+    gap: 6,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
@@ -547,7 +551,7 @@ const styles = StyleSheet.create({
   },
   tplLabel: {
     fontFamily: fontFamily.semibold,
-    fontSize: 12,
+    fontSize: 11,
     textAlign: "center",
   },
   pillRow: {

@@ -186,7 +186,8 @@ const styles = StyleSheet.create({
     color: colors.fontSecondary,
   },
   tileLabelLight: {
-    color: "#FFFFFFCC",
+    color: colors.fontInverse,
+    opacity: 0.8,
   },
   section: {
     gap: 14,
